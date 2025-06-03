@@ -1,36 +1,131 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# منصة فتح للتعلّم الذكي
 
-## Getting Started
+منصة تعليمية ذكية تفتح لك أبواب المعرفة بتقنيات الذكاء الاصطناعي المتطورة
 
-First, run the development server:
+## 🚀 الميزات الرئيسية
 
+- **مساعد ذكي تفاعلي**: احصل على إجابات فورية لأسئلتك من مساعد ذكي متطور
+- **أدوات تلخيص النصوص**: لخص النصوص الطويلة بذكاء
+- **تتبع التقدم**: راقب تقدمك في التعلم مع إحصائيات مفصلة
+- **واجهة عربية**: دعم كامل للغة العربية مع RTL
+- **إدارة شاملة**: لوحة تحكم متقدمة للمسؤولين
+
+## 🛠️ التقنيات المستخدمة
+
+- **Frontend**: Next.js 15, TypeScript, Tailwind CSS
+- **Backend**: Next.js API Routes, Prisma ORM
+- **Database**: PostgreSQL
+- **Authentication**: NextAuth.js
+- **AI Integration**: OpenAI API
+- **Styling**: Tailwind CSS مع دعم RTL
+
+## 📋 متطلبات التشغيل
+
+- Node.js 18+
+- PostgreSQL 14+
+- حساب OpenAI API
+
+## ⚡ التثبيت والتشغيل
+
+### 1. تثبيت المكتبات
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+npm install
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+### 2. إعداد متغيرات البيئة
+انسخ ملف `.env.example` إلى `.env` وأضف القيم المطلوبة:
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+```bash
+cp .env.example .env
+```
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+املأ المتغيرات التالية في ملف `.env`:
+```env
+# Database
+DATABASE_URL="postgresql://username:password@localhost:5432/fateh_platform_db"
 
-## Learn More
+# NextAuth.js
+NEXTAUTH_URL="http://localhost:3000"
+NEXTAUTH_SECRET="your-secret-key-here"
 
-To learn more about Next.js, take a look at the following resources:
+# Google OAuth (اختياري)
+GOOGLE_CLIENT_ID="your-google-client-id"
+GOOGLE_CLIENT_SECRET="your-google-client-secret"
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+# OpenAI API
+OPENAI_API_KEY="your-openai-api-key"
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+### 3. إعداد قاعدة البيانات
+```bash
+# إنشاء قاعدة البيانات وتطبيق المخطط
+npm run db:push
 
-## Deploy on Vercel
+# إنشاء البيانات التجريبية
+npm run db:seed
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+### 4. تشغيل المشروع
+```bash
+npm run dev
+```
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+المشروع سيعمل على: http://localhost:3000
+
+## 👥 بيانات تسجيل الدخول التجريبية
+
+بعد تشغيل `npm run db:seed`:
+
+**المدير:**
+- البريد الإلكتروني: `admin@fateh.com`
+- كلمة المرور: `admin123`
+
+**الطالب:**
+- البريد الإلكتروني: `student@fateh.com`
+- كلمة المرور: `student123`
+
+## 🔧 أوامر مفيدة
+
+```bash
+# تطوير
+npm run dev              # تشغيل الخادم التطويري
+npm run build           # بناء المشروع للإنتاج
+npm run start           # تشغيل المشروع المبني
+
+# قاعدة البيانات
+npm run db:generate     # توليد عميل Prisma
+npm run db:push         # تطبيق المخطط على قاعدة البيانات
+npm run db:migrate      # إنشاء وتطبيق migration
+npm run db:studio       # فتح Prisma Studio
+npm run db:seed         # إنشاء البيانات التجريبية
+
+# جودة الكود
+npm run lint            # فحص الكود
+```
+
+## 🌟 الميزات المتقدمة
+
+### المساعد الذكي
+- دعم السياق من محتوى الدرس
+- حدود استخدام يومية (10 للطلاب، 50 للمسؤولين)
+- تسجيل التفاعلات وتتبع التكلفة
+
+### أداة تلخيص النصوص
+- ثلاثة مستويات للتلخيص (قصير، متوسط، طويل)
+- إحصائيات الضغط والتوفير
+- دعم النصوص العربية
+
+### نظام الأدوار
+- **طالب**: الوصول للدورات والمساعد الذكي
+- **مسؤول**: إدارة كاملة للمحتوى والمستخدمين
+
+## 🔒 الأمان
+
+- تشفير كلمات المرور باستخدام bcrypt
+- حماية APIs بنظام JWT
+- تأمين مفاتيح API في متغيرات البيئة
+- تطبيق مبدأ الصلاحيات الأدنى
+
+---
+
+**منصة فتح للتعلّم الذكي** - افتح آفاق التعلّم مع الذكاء الاصطناعي 🚀

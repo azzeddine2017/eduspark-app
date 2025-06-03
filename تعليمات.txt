@@ -1,0 +1,3 @@
+ cd "منصة التعلّم الذكي EduSpark\src\eduspark-app" && npm run db:seed-holacracy
+ 
+  cd "منصة التعلّم الذكي EduSpark\src\eduspark-app" && npm run dev
