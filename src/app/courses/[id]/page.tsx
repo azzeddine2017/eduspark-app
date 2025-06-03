@@ -1,5 +1,6 @@
 import Link from "next/link"
-import { notFound, redirect } from "next/navigation"
+import Image from "next/image"
+import { notFound } from "next/navigation"
 import { getCurrentUser } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import EnrollButton from "@/components/EnrollButton"
@@ -65,14 +66,7 @@ export default async function CoursePage({ params }: CoursePageProps) {
     })
   }
 
-  const handleEnrollment = async () => {
-    if (!user) {
-      redirect('/auth/signin')
-    }
-
-    // This would be handled by a form action or API call
-    // For now, we'll just show the enrollment button
-  }
+  // Removed unused handleEnrollment function
 
   const totalDuration = course.lessons.reduce((total, lesson) => total + (lesson.duration || 0), 0)
 
@@ -118,9 +112,11 @@ export default async function CoursePage({ params }: CoursePageProps) {
             <div className="bg-white dark:bg-gray-800 rounded-lg shadow overflow-hidden">
               {/* Course Header */}
               {course.thumbnail && (
-                <img
+                <Image
                   src={course.thumbnail}
                   alt={course.title}
+                  width={800}
+                  height={256}
                   className="w-full h-64 object-cover"
                 />
               )}

@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { notFound } from "next/navigation"
 import { getCurrentUser } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
@@ -13,7 +14,7 @@ interface LessonPageProps {
 }
 
 export default async function LessonPage({ params }: LessonPageProps) {
-  const { id, lessonId } = await params
+  const { lessonId } = await params
   const user = await getCurrentUser()
 
   const lesson = await prisma.lesson.findUnique({
@@ -150,22 +151,24 @@ export default async function LessonPage({ params }: LessonPageProps) {
                 <div className="prose prose-lg max-w-none dark:prose-invert">
                   {/* Render lesson content based on its structure */}
                   {typeof lesson.content === 'object' && lesson.content && 'blocks' in lesson.content ? (
-                    (lesson.content as any).blocks?.map((block: any, index: number) => (
+                    (lesson.content as { blocks: Array<{ type: string; data: Record<string, unknown> }> }).blocks?.map((block: { type: string; data: Record<string, unknown> }, index: number) => (
                       <div key={index} className="mb-6">
                         {block.type === 'text' && (
                           <div dangerouslySetInnerHTML={{ __html: block.data.text || block.data }} />
                         )}
                         {block.type === 'image' && (
-                          <img
-                            src={block.data.url || block.data.src}
-                            alt={block.data.caption || 'صورة الدرس'}
+                          <Image
+                            src={(block.data.url || block.data.src) as string}
+                            alt={(block.data.caption as string) || 'صورة الدرس'}
+                            width={800}
+                            height={400}
                             className="w-full rounded-lg"
                           />
                         )}
                         {block.type === 'video' && (
                           <div className="aspect-video">
                             <iframe
-                              src={block.data.url}
+                              src={block.data.url as string}
                               className="w-full h-full rounded-lg"
                               allowFullScreen
                             />

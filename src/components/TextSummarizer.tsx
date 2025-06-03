@@ -58,7 +58,7 @@ export default function TextSummarizer({ lessonId, className = "" }: TextSummari
       } else {
         alert(data.error || "حدث خطأ في تلخيص النص")
       }
-    } catch (error) {
+    } catch {
       alert("حدث خطأ في الاتصال بالخادم")
     } finally {
       setLoading(false)
@@ -84,7 +84,7 @@ export default function TextSummarizer({ lessonId, className = "" }: TextSummari
   return (
     <div className={`bg-white dark:bg-gray-800 border border-gray-200 dark:border-gray-700 rounded-lg shadow-sm ${className}`}>
       {/* Header */}
-      <div 
+      <div
         className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 cursor-pointer"
         onClick={() => setIsOpen(!isOpen)}
       >
@@ -97,10 +97,10 @@ export default function TextSummarizer({ lessonId, className = "" }: TextSummari
           </h3>
         </div>
         <button className="text-gray-400 hover:text-gray-600 dark:hover:text-gray-300">
-          <svg 
-            className={`w-5 h-5 transform transition-transform ${isOpen ? 'rotate-180' : ''}`} 
-            fill="none" 
-            stroke="currentColor" 
+          <svg
+            className={`w-5 h-5 transform transition-transform ${isOpen ? 'rotate-180' : ''}`}
+            fill="none"
+            stroke="currentColor"
             viewBox="0 0 24 24"
           >
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -209,7 +209,7 @@ export default function TextSummarizer({ lessonId, className = "" }: TextSummari
                   {summary}
                 </p>
               </div>
-              
+
               {/* Statistics */}
               {stats && (
                 <div className="mt-3 grid grid-cols-3 gap-4 text-center">

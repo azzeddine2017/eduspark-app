@@ -2,6 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
+import { Bot, MessageCircle, X, Trash2, Send, Loader2 } from 'lucide-react'
 
 interface Message {
   id: string
@@ -17,13 +18,13 @@ interface AIAssistantProps {
   className?: string
 }
 
-export default function AIAssistant({ lessonId, courseId, context, className = "" }: AIAssistantProps) {
+export default function AIAssistant({ lessonId, courseId, context }: AIAssistantProps) {
   const { data: session } = useSession()
   const [isOpen, setIsOpen] = useState(false)
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      content: 'مرحباً! أنا مساعدك الذكي في منصة فتح. كيف يمكنني مساعدتك اليوم؟ 🤖',
+      content: 'مرحباً! أنا مساعدك الذكي في منصة فتح. كيف يمكنني مساعدتك اليوم؟',
       isUser: false,
       timestamp: new Date()
     }
@@ -82,7 +83,7 @@ export default function AIAssistant({ lessonId, courseId, context, className = "
       } else {
         throw new Error(data.error || 'حدث خطأ في الاتصال')
       }
-    } catch (error) {
+    } catch {
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
         content: 'عذراً، حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.',
@@ -106,7 +107,7 @@ export default function AIAssistant({ lessonId, courseId, context, className = "
     setMessages([
       {
         id: '1',
-        content: 'مرحباً! أنا مساعدك الذكي في منصة فتح. كيف يمكنني مساعدتك اليوم؟ 🤖',
+        content: 'مرحباً! أنا مساعدك الذكي في منصة فتح. كيف يمكنني مساعدتك اليوم؟',
         isUser: false,
         timestamp: new Date()
       }
@@ -141,10 +142,10 @@ export default function AIAssistant({ lessonId, courseId, context, className = "
         className="fixed bottom-6 left-6 w-14 h-14 bg-primary rounded-full shadow-lg hover:shadow-xl transition-all duration-300 flex items-center justify-center z-50 hover:scale-110"
         title="المساعد الذكي"
       >
-        <span className="text-white text-2xl">🤖</span>
+        <Bot className="w-7 h-7 text-white" />
         {!isOpen && (
           <div className="absolute -top-2 -right-2 w-6 h-6 bg-success rounded-full flex items-center justify-center">
-            <span className="text-white text-xs">💬</span>
+            <MessageCircle className="w-3 h-3 text-white" />
           </div>
         )}
       </button>
@@ -155,7 +156,7 @@ export default function AIAssistant({ lessonId, courseId, context, className = "
           {/* Header */}
           <div className="bg-primary text-white p-4 flex items-center justify-between">
             <div className="flex items-center">
-              <span className="text-2xl ml-2">🤖</span>
+              <Bot className="w-6 h-6 ml-2" />
               <div>
                 <h3 className="font-bold arabic-text">المساعد الذكي</h3>
                 <p className="text-xs opacity-90">مدعوم بتقنية Gemini</p>
@@ -167,14 +168,14 @@ export default function AIAssistant({ lessonId, courseId, context, className = "
                 className="p-1 hover:bg-white hover:bg-opacity-20 rounded"
                 title="مسح المحادثة"
               >
-                🗑️
+                <Trash2 className="w-4 h-4" />
               </button>
               <button
                 onClick={() => setIsOpen(false)}
                 className="p-1 hover:bg-white hover:bg-opacity-20 rounded"
                 title="إغلاق"
               >
-                ✕
+                <X className="w-4 h-4" />
               </button>
             </div>
           </div>
@@ -211,8 +212,8 @@ export default function AIAssistant({ lessonId, courseId, context, className = "
             {isLoading && (
               <div className="flex justify-start">
                 <div className="bg-surface text-text border border-border px-4 py-2 rounded-2xl">
-                  <div className="flex items-center space-x-1">
-                    <div className="animate-pulse">🤖</div>
+                  <div className="flex items-center space-x-1 space-x-reverse">
+                    <Bot className="w-4 h-4 animate-pulse text-primary" />
                     <span className="text-sm arabic-text">يكتب...</span>
                   </div>
                 </div>
@@ -257,9 +258,9 @@ export default function AIAssistant({ lessonId, courseId, context, className = "
                 className="btn btn-primary p-2 disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isLoading ? (
-                  <div className="loading-spinner w-4 h-4"></div>
+                  <Loader2 className="w-4 h-4 animate-spin" />
                 ) : (
-                  '📤'
+                  <Send className="w-4 h-4" />
                 )}
               </button>
             </div>

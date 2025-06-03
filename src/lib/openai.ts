@@ -38,11 +38,24 @@ export async function callGemini(prompt: string): Promise<string> {
 }
 
 export const INTERACTION_LIMITS = {
-  STUDENT_DAILY: 10,
-  ADMIN_DAILY: 50,
+  STUDENT: 10,
+  ADMIN: 50,
 } as const
 
 export const PROMPTS = {
+  LESSON_ASSISTANT: `أنت مساعد تعليمي ذكي في منصة فتح للتعلّم الذكي. مهمتك مساعدة الطلاب في فهم المحتوى التعليمي والإجابة على أسئلتهم بطريقة واضحة ومفيدة.
+
+السياق التعليمي: {context}
+سؤال الطالب: {question}
+
+قدم إجابة مفيدة وواضحة باللغة العربية، مع التركيز على:
+- الشرح البسيط والواضح
+- أمثلة عملية عند الإمكان
+- ربط المفهوم بالحياة العملية
+- تشجيع الطالب على التعلم
+
+الإجابة:`,
+
   QUESTION_ANSWER: `أنت مساعد تعليمي ذكي. ساعد الطالب في فهم المحتوى التعليمي وأجب على أسئلته بطريقة واضحة ومفيدة.
 
 السياق: {context}

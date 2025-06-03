@@ -1,4 +1,5 @@
 import Link from "next/link"
+import Image from "next/image"
 import { getCurrentUser } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import ThemeToggle from "@/components/ThemeToggle"
@@ -132,9 +133,11 @@ export default async function CoursesPage() {
                 className="card p-0 overflow-hidden hover:shadow-lg transition-all duration-300 transform hover:scale-105"
               >
                 {course.thumbnail ? (
-                  <img
+                  <Image
                     src={course.thumbnail}
                     alt={course.title}
+                    width={400}
+                    height={192}
                     className="w-full h-48 object-cover"
                   />
                 ) : (

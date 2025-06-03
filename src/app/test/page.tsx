@@ -1,6 +1,5 @@
 import Layout from "@/components/Layout"
 import AIAssistant from "@/components/AIAssistant"
-import ThemeToggle from "@/components/ThemeToggle"
 
 export default function TestPage() {
   return (

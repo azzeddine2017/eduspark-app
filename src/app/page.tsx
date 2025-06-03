@@ -2,6 +2,23 @@ import Link from "next/link"
 import { getCurrentUser } from "@/lib/auth"
 import ThemeToggle from "@/components/ThemeToggle"
 import AIAssistant from "@/components/AIAssistant"
+import {
+  Bot,
+  BookOpen,
+  Users,
+  Wrench,
+  Heart,
+  Target,
+  GraduationCap,
+  BookMarked,
+  LogIn,
+  UserPlus,
+  Settings,
+  Rocket,
+  Infinity,
+  Clock,
+  CheckCircle
+} from "lucide-react"
 
 export default async function Home() {
   const user = await getCurrentUser()
@@ -30,15 +47,17 @@ export default async function Home() {
                   {user.role === 'ADMIN' && (
                     <Link
                       href="/admin"
-                      className="btn btn-primary"
+                      className="btn btn-primary flex items-center"
                     >
+                      <Settings className="w-4 h-4 ml-2" />
                       لوحة التحكم
                     </Link>
                   )}
                   <Link
                     href="/courses"
-                    className="btn btn-secondary"
+                    className="btn btn-secondary flex items-center"
                   >
+                    <BookOpen className="w-4 h-4 ml-2" />
                     الدورات
                   </Link>
                 </>
@@ -46,14 +65,16 @@ export default async function Home() {
                 <>
                   <Link
                     href="/auth/signin"
-                    className="nav-link arabic-text"
+                    className="nav-link arabic-text flex items-center"
                   >
+                    <LogIn className="w-4 h-4 ml-2" />
                     تسجيل الدخول
                   </Link>
                   <Link
                     href="/auth/register"
-                    className="btn btn-primary"
+                    className="btn btn-primary flex items-center"
                   >
+                    <UserPlus className="w-4 h-4 ml-2" />
                     إنشاء حساب
                   </Link>
                 </>
@@ -83,15 +104,26 @@ export default async function Home() {
           <div className="mt-8 flex flex-col sm:flex-row gap-4 justify-center">
             <Link
               href={user ? "/courses" : "/auth/register"}
-              className="btn btn-primary text-lg px-8 py-4 shadow-lg hover:shadow-xl transform hover:scale-105"
+              className="btn btn-primary text-lg px-8 py-4 shadow-lg hover:shadow-xl transform hover:scale-105 flex items-center justify-center"
             >
-              {user ? "🎓 تصفح الدورات" : "🚀 ابدأ التعلم الآن"}
+              {user ? (
+                <>
+                  <GraduationCap className="w-5 h-5 ml-2" />
+                  تصفح الدورات
+                </>
+              ) : (
+                <>
+                  <Rocket className="w-5 h-5 ml-2" />
+                  ابدأ التعلم الآن
+                </>
+              )}
             </Link>
             <Link
               href="/about"
-              className="btn btn-secondary text-lg px-8 py-4"
+              className="btn btn-secondary text-lg px-8 py-4 flex items-center justify-center"
             >
-              📖 تعرف على المنصة
+              <BookMarked className="w-5 h-5 ml-2" />
+              تعرف على المنصة
             </Link>
           </div>
         </div>
@@ -112,7 +144,7 @@ export default async function Home() {
               <div className="flex items-start">
                 <div className="flex-shrink-0">
                   <div className="w-12 h-12 bg-primary rounded-lg flex items-center justify-center">
-                    <span className="text-white text-2xl">🤖</span>
+                    <Bot className="w-6 h-6 text-white" />
                   </div>
                 </div>
                 <div className="mr-4">
@@ -130,7 +162,7 @@ export default async function Home() {
               <div className="flex items-start">
                 <div className="flex-shrink-0">
                   <div className="w-12 h-12 bg-success rounded-lg flex items-center justify-center">
-                    <span className="text-white text-2xl">📚</span>
+                    <BookOpen className="w-6 h-6 text-white" />
                   </div>
                 </div>
                 <div className="mr-4">
@@ -148,7 +180,7 @@ export default async function Home() {
               <div className="flex items-start">
                 <div className="flex-shrink-0">
                   <div className="w-12 h-12 bg-accent rounded-lg flex items-center justify-center">
-                    <span className="text-white text-2xl">🏛️</span>
+                    <Users className="w-6 h-6 text-white" />
                   </div>
                 </div>
                 <div className="mr-4">
@@ -166,7 +198,7 @@ export default async function Home() {
               <div className="flex items-start">
                 <div className="flex-shrink-0">
                   <div className="w-12 h-12 bg-warning rounded-lg flex items-center justify-center">
-                    <span className="text-white text-2xl">🛠️</span>
+                    <Wrench className="w-6 h-6 text-white" />
                   </div>
                 </div>
                 <div className="mr-4">
@@ -184,7 +216,7 @@ export default async function Home() {
               <div className="flex items-start">
                 <div className="flex-shrink-0">
                   <div className="w-12 h-12 bg-info rounded-lg flex items-center justify-center">
-                    <span className="text-white text-2xl">👥</span>
+                    <Heart className="w-6 h-6 text-white" />
                   </div>
                 </div>
                 <div className="mr-4">
@@ -202,7 +234,7 @@ export default async function Home() {
               <div className="flex items-start">
                 <div className="flex-shrink-0">
                   <div className="w-12 h-12 bg-error rounded-lg flex items-center justify-center">
-                    <span className="text-white text-2xl">🎯</span>
+                    <Target className="w-6 h-6 text-white" />
                   </div>
                 </div>
                 <div className="mr-4">
@@ -226,14 +258,23 @@ export default async function Home() {
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
               <div className="text-center">
+                <div className="flex items-center justify-center mb-4">
+                  <CheckCircle className="w-12 h-12 text-primary" />
+                </div>
                 <div className="text-4xl font-bold text-primary mb-2">100%</div>
                 <div className="text-textSecondary arabic-text">مجاني للجميع</div>
               </div>
               <div className="text-center">
+                <div className="flex items-center justify-center mb-4">
+                  <Clock className="w-12 h-12 text-success" />
+                </div>
                 <div className="text-4xl font-bold text-success mb-2">24/7</div>
                 <div className="text-textSecondary arabic-text">متاح دائماً</div>
               </div>
               <div className="text-center">
+                <div className="flex items-center justify-center mb-4">
+                  <Infinity className="w-12 h-12 text-accent" />
+                </div>
                 <div className="text-4xl font-bold text-accent mb-2">∞</div>
                 <div className="text-textSecondary arabic-text">إمكانيات لا محدودة</div>
               </div>

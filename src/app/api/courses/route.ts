@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { prisma } from '@/lib/prisma'
 import { getCurrentUser } from '@/lib/auth'
+import { Prisma, CourseLevel } from '@prisma/client'
 
 export async function GET(request: NextRequest) {
   try {
@@ -13,7 +14,7 @@ export async function GET(request: NextRequest) {
 
     const skip = (page - 1) * limit
 
-    const where: any = {
+    const where: Prisma.CourseWhereInput = {
       isPublished: true,
     }
 
@@ -25,14 +26,14 @@ export async function GET(request: NextRequest) {
       }
     }
 
-    if (level) {
-      where.level = level
+    if (level && Object.values(CourseLevel).includes(level as CourseLevel)) {
+      where.level = level as CourseLevel
     }
 
     if (search) {
       where.OR = [
-        { title: { contains: search, mode: 'insensitive' } },
-        { description: { contains: search, mode: 'insensitive' } }
+        { title: { contains: search } },
+        { description: { contains: search } }
       ]
     }
 

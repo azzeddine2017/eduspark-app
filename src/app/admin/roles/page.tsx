@@ -4,10 +4,11 @@ import { getCurrentUser } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import { HOLACRACY_ROLES, getRoleDescription } from "@/lib/permissions"
 import RoleAssignmentForm from "@/components/admin/RoleAssignmentForm"
+import { UserRole } from "@prisma/client"
 
 export default async function RolesManagementPage() {
   const user = await getCurrentUser()
-  
+
   if (!user || user.role !== 'ADMIN') {
     redirect('/auth/signin')
   }
@@ -71,7 +72,7 @@ export default async function RolesManagementPage() {
         {/* Role Statistics */}
         <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-8 gap-4 mb-8">
           {Object.entries(roleStats).map(([role, count]) => {
-            const roleInfo = getRoleDescription(role as any)
+            const roleInfo = getRoleDescription(role as UserRole)
             return (
               <div key={role} className="bg-white dark:bg-gray-800 overflow-hidden shadow rounded-lg">
                 <div className="p-4">

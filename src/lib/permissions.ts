@@ -101,7 +101,7 @@ export function hasPermission(userRole: UserRole, permission: string): boolean {
     return false
   }
 
-  return (rolePermissions as any)[permission] === true
+  return (rolePermissions as Record<string, boolean>)[permission] === true
 }
 
 // دالة للحصول على جميع صلاحيات المستخدم
@@ -109,7 +109,7 @@ export function getUserPermissions(userRole: UserRole) {
   if (userRole === 'ADMIN') {
     return PERMISSIONS.ADMIN
   }
-  
+
   return PERMISSIONS[userRole] || {}
 }
 

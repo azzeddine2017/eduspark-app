@@ -1,14 +1,16 @@
 "use client"
 
-import { useState } from "react"
+import { useState, Suspense } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
 import ThemeToggle from "@/components/ThemeToggle"
+import { Mail, Lock, Eye, EyeOff, LogIn, UserPlus, ArrowLeft } from "lucide-react"
 
-export default function SignInPage() {
+function SignInForm() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
+  const [showPassword, setShowPassword] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState(false)
   const router = useRouter()
@@ -39,12 +41,7 @@ export default function SignInPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
-      {/* Theme Toggle */}
-      <div className="absolute top-4 left-4">
-        <ThemeToggle />
-      </div>
-
+    <>
       <div className="max-w-md w-full space-y-8">
         {/* Header */}
         <div className="text-center">
@@ -85,7 +82,8 @@ export default function SignInPage() {
 
             <div>
               <label htmlFor="email" className="block text-sm font-medium text-text arabic-text mb-2">
-                📧 البريد الإلكتروني
+                <Mail className="inline w-4 h-4 ml-1" />
+                البريد الإلكتروني
               </label>
               <input
                 id="email"
@@ -102,19 +100,29 @@ export default function SignInPage() {
 
             <div>
               <label htmlFor="password" className="block text-sm font-medium text-text arabic-text mb-2">
-                🔒 كلمة المرور
+                <Lock className="inline w-4 h-4 ml-1" />
+                كلمة المرور
               </label>
-              <input
-                id="password"
-                name="password"
-                type="password"
-                autoComplete="current-password"
-                required
-                className="form-input w-full"
-                placeholder="أدخل كلمة المرور"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-              />
+              <div className="relative">
+                <input
+                  id="password"
+                  name="password"
+                  type={showPassword ? "text" : "password"}
+                  autoComplete="current-password"
+                  required
+                  className="form-input w-full pl-10"
+                  placeholder="أدخل كلمة المرور"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword(!showPassword)}
+                  className="absolute left-3 top-1/2 transform -translate-y-1/2 text-textSecondary hover:text-text"
+                >
+                  {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
+                </button>
+              </div>
             </div>
 
             <div className="flex items-center justify-between">
@@ -141,15 +149,18 @@ export default function SignInPage() {
               <button
                 type="submit"
                 disabled={loading}
-                className="btn btn-primary w-full text-lg py-3"
+                className="btn btn-primary w-full text-lg py-3 flex items-center justify-center"
               >
                 {loading ? (
-                  <div className="flex items-center justify-center">
+                  <>
                     <div className="loading-spinner ml-2"></div>
                     جاري تسجيل الدخول...
-                  </div>
+                  </>
                 ) : (
-                  "🚀 تسجيل الدخول"
+                  <>
+                    <LogIn className="w-5 h-5 ml-2" />
+                    تسجيل الدخول
+                  </>
                 )}
               </button>
             </div>
@@ -186,7 +197,8 @@ export default function SignInPage() {
           <div className="mt-6 text-center">
             <span className="text-textSecondary arabic-text">
               ليس لديك حساب؟{" "}
-              <Link href="/auth/register" className="text-primary hover:text-secondary font-medium">
+              <Link href="/auth/register" className="text-primary hover:text-secondary font-medium inline-flex items-center">
+                <UserPlus className="w-4 h-4 ml-1" />
                 إنشاء حساب جديد
               </Link>
             </span>
@@ -195,11 +207,34 @@ export default function SignInPage() {
 
         {/* Back to Home */}
         <div className="text-center">
-          <Link href="/" className="text-textSecondary hover:text-primary transition-colors arabic-text">
-            ← العودة للصفحة الرئيسية
+          <Link href="/" className="text-textSecondary hover:text-primary transition-colors arabic-text inline-flex items-center">
+            <ArrowLeft className="w-4 h-4 ml-1" />
+            العودة للصفحة الرئيسية
           </Link>
         </div>
       </div>
+    </>
+  )
+}
+
+export default function SignInPage() {
+  return (
+    <div className="min-h-screen bg-background flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
+      {/* Theme Toggle */}
+      <div className="absolute top-4 left-4">
+        <ThemeToggle />
+      </div>
+
+      <Suspense fallback={
+        <div className="max-w-md w-full space-y-8">
+          <div className="text-center">
+            <div className="loading-spinner mx-auto"></div>
+            <p className="mt-4 text-textSecondary">جاري التحميل...</p>
+          </div>
+        </div>
+      }>
+        <SignInForm />
+      </Suspense>
     </div>
   )
 }

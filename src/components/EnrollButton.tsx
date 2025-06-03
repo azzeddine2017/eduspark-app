@@ -34,7 +34,7 @@ export default function EnrollButton({ courseId, className = "" }: EnrollButtonP
       } else {
         setError(data.error || 'حدث خطأ في التسجيل')
       }
-    } catch (error) {
+    } catch {
       setError('حدث خطأ في الاتصال بالخادم')
     } finally {
       setLoading(false)
@@ -50,7 +50,7 @@ export default function EnrollButton({ courseId, className = "" }: EnrollButtonP
       >
         {loading ? 'جاري التسجيل...' : 'التسجيل في الدورة'}
       </button>
-      
+
       {error && (
         <div className="mt-2 text-sm text-red-600 bg-red-50 p-2 rounded">
           {error}

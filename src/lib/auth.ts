@@ -45,7 +45,7 @@ export const authOptions: NextAuthOptions = {
           email: user.email,
           name: user.name,
           role: user.role,
-          image: user.avatar,
+          image: user.avatar || undefined,
         }
       }
     }),
@@ -74,7 +74,6 @@ export const authOptions: NextAuthOptions = {
   },
   pages: {
     signIn: '/auth/signin',
-    signUp: '/auth/register',
   },
 }
 

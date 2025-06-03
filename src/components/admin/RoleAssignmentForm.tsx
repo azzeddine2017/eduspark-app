@@ -19,7 +19,7 @@ interface RoleAssignmentFormProps {
 
 const AVAILABLE_ROLES: UserRole[] = [
   'STUDENT',
-  'INSTRUCTOR', 
+  'INSTRUCTOR',
   'CONTENT_CREATOR',
   'MENTOR',
   'COMMUNITY_MANAGER',
@@ -38,7 +38,7 @@ export default function RoleAssignmentForm({ users }: RoleAssignmentFormProps) {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
-    
+
     if (!selectedUserId) {
       setMessage({ type: 'error', text: 'يرجى اختيار مستخدم' })
       return
@@ -70,7 +70,7 @@ export default function RoleAssignmentForm({ users }: RoleAssignmentFormProps) {
       } else {
         setMessage({ type: 'error', text: data.error || 'حدث خطأ في تعيين الدور' })
       }
-    } catch (error) {
+    } catch {
       setMessage({ type: 'error', text: 'حدث خطأ في الاتصال بالخادم' })
     } finally {
       setLoading(false)
@@ -183,8 +183,8 @@ export default function RoleAssignmentForm({ users }: RoleAssignmentFormProps) {
       {/* Message */}
       {message && (
         <div className={`p-4 rounded-md ${
-          message.type === 'success' 
-            ? 'bg-green-50 text-green-800 border border-green-200' 
+          message.type === 'success'
+            ? 'bg-green-50 text-green-800 border border-green-200'
             : 'bg-red-50 text-red-800 border border-red-200'
         }`}>
           {message.text}
