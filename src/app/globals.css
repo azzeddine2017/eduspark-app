@@ -32,9 +32,9 @@
   --color-accent: #A78BFA;
   --color-background: #0F172A;
   --color-surface: #1E293B;
-  --color-text: #F1F5F9;
-  --color-textSecondary: #94A3B8;
-  --color-border: #334155;
+  --color-text: #F8FAFC;
+  --color-textSecondary: #CBD5E1;
+  --color-border: #475569;
   --color-success: #34D399;
   --color-warning: #FBBF24;
   --color-error: #F87171;
@@ -74,13 +74,44 @@ body {
   background-color: var(--color-background);
   color: var(--color-text);
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+  line-height: 1.6;
 }
 
 /* تحسين الخطوط العربية */
 .arabic-text {
-  font-family: 'Noto Sans Arabic', 'Cairo', 'Amiri', sans-serif;
+  font-family: 'Noto Sans Arabic', 'Cairo', 'Tajawal', 'Amiri', sans-serif;
   direction: rtl;
   text-align: right;
+  line-height: 1.8;
+  font-weight: 400;
+}
+
+/* تحسين التباين للنصوص */
+.text-high-contrast {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+.text-medium-contrast {
+  color: var(--color-textSecondary);
+  font-weight: 400;
+}
+
+/* تحسين الخطوط للعناوين */
+h1, h2, h3, h4, h5, h6 {
+  color: var(--color-text);
+  font-weight: 600;
+  line-height: 1.4;
+}
+
+.arabic-text h1,
+.arabic-text h2,
+.arabic-text h3,
+.arabic-text h4,
+.arabic-text h5,
+.arabic-text h6 {
+  font-family: 'Cairo', 'Tajawal', 'Noto Sans Arabic', sans-serif;
+  font-weight: 700;
 }
 
 /* تحسين الأزرار */
@@ -115,6 +146,17 @@ body {
 
 .btn-secondary:hover {
   background-color: var(--color-border);
+}
+
+.btn-outline {
+  background-color: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.btn-outline:hover {
+  background-color: var(--color-surface);
+  border-color: var(--color-primary);
 }
 
 /* تحسين البطاقات */
@@ -230,10 +272,22 @@ body {
   color: #166534;
 }
 
+.dark .notification-success {
+  background-color: #064e3b;
+  border-color: #34d399;
+  color: #a7f3d0;
+}
+
 .notification-warning {
   background-color: #fffbeb;
   border-color: #fbbf24;
   color: #92400e;
+}
+
+.dark .notification-warning {
+  background-color: #451a03;
+  border-color: #fbbf24;
+  color: #fde68a;
 }
 
 .notification-error {
@@ -242,10 +296,22 @@ body {
   color: #991b1b;
 }
 
+.dark .notification-error {
+  background-color: #450a0a;
+  border-color: #f87171;
+  color: #fca5a5;
+}
+
 .notification-info {
   background-color: #f0f9ff;
   border-color: #38bdf8;
   color: #1e40af;
+}
+
+.dark .notification-info {
+  background-color: #0c4a6e;
+  border-color: #38bdf8;
+  color: #bae6fd;
 }
 
 /* تحسين الجداول */

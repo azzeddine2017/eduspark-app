@@ -92,11 +92,11 @@ export default async function Home() {
               🌟 مدرسة المجتمع الذكية
             </span>
           </div>
-          <h2 className="text-4xl font-bold text-text sm:text-5xl md:text-6xl arabic-text">
+          <h2 className="text-4xl font-bold text-high-contrast sm:text-5xl md:text-6xl arabic-text">
             افتح آفاق التعلّم مع
             <span className="text-primary block mt-2"> منصة فتح</span>
           </h2>
-          <p className="mt-6 max-w-3xl mx-auto text-lg text-textSecondary arabic-text leading-relaxed">
+          <p className="mt-6 max-w-3xl mx-auto text-lg text-medium-contrast arabic-text leading-relaxed">
             منصة تعليمية ذكية مجانية تفتح لك أبواب المعرفة بتقنيات الذكاء الاصطناعي المتطورة
             <br />
             <span className="text-primary font-semibold">تعليم للجميع - لا أحد يُترك خلف الركب</span>
@@ -131,10 +131,10 @@ export default async function Home() {
         {/* Features */}
         <div className="mt-20">
           <div className="text-center mb-12">
-            <h3 className="text-3xl font-bold text-text arabic-text mb-4">
+            <h3 className="text-3xl font-bold text-high-contrast arabic-text mb-4">
               ميزات منصة فتح المجتمعية
             </h3>
-            <p className="text-textSecondary arabic-text max-w-2xl mx-auto">
+            <p className="text-medium-contrast arabic-text max-w-2xl mx-auto">
               تعلم مجاني عالي الجودة مع تقنيات الذكاء الاصطناعي المتطورة
             </p>
           </div>
@@ -148,10 +148,10 @@ export default async function Home() {
                   </div>
                 </div>
                 <div className="mr-4">
-                  <h3 className="text-xl font-semibold text-text arabic-text mb-2">
+                  <h3 className="text-xl font-semibold text-high-contrast arabic-text mb-2">
                     مساعد ذكي متطور
                   </h3>
-                  <p className="text-textSecondary arabic-text leading-relaxed">
+                  <p className="text-medium-contrast arabic-text leading-relaxed">
                     احصل على إجابات فورية لأسئلتك من مساعد ذكي يدعم اللغة العربية بتقنية Gemini
                   </p>
                 </div>
@@ -166,10 +166,10 @@ export default async function Home() {
                   </div>
                 </div>
                 <div className="mr-4">
-                  <h3 className="text-xl font-semibold text-text arabic-text mb-2">
+                  <h3 className="text-xl font-semibold text-high-contrast arabic-text mb-2">
                     تعليم مجتمعي شامل
                   </h3>
-                  <p className="text-textSecondary arabic-text leading-relaxed">
+                  <p className="text-medium-contrast arabic-text leading-relaxed">
                     برامج تعليمية للجميع: الأطفال، الشباب، الأسر، وكبار السن
                   </p>
                 </div>
@@ -184,10 +184,10 @@ export default async function Home() {
                   </div>
                 </div>
                 <div className="mr-4">
-                  <h3 className="text-xl font-semibold text-text arabic-text mb-2">
+                  <h3 className="text-xl font-semibold text-high-contrast arabic-text mb-2">
                     إدارة مفتوحة (هولاكراسي)
                   </h3>
-                  <p className="text-textSecondary arabic-text leading-relaxed">
+                  <p className="text-medium-contrast arabic-text leading-relaxed">
                     نظام إداري شفاف يشرك المجتمع في اتخاذ القرارات
                   </p>
                 </div>
@@ -202,10 +202,10 @@ export default async function Home() {
                   </div>
                 </div>
                 <div className="mr-4">
-                  <h3 className="text-xl font-semibold text-text arabic-text mb-2">
+                  <h3 className="text-xl font-semibold text-high-contrast arabic-text mb-2">
                     مهارات حياتية عملية
                   </h3>
-                  <p className="text-textSecondary arabic-text leading-relaxed">
+                  <p className="text-medium-contrast arabic-text leading-relaxed">
                     تعلم الطبخ، الحرف، الإدارة المالية، والمهارات التقنية
                   </p>
                 </div>
@@ -220,10 +220,10 @@ export default async function Home() {
                   </div>
                 </div>
                 <div className="mr-4">
-                  <h3 className="text-xl font-semibold text-text arabic-text mb-2">
+                  <h3 className="text-xl font-semibold text-high-contrast arabic-text mb-2">
                     مجتمع متطوعين
                   </h3>
-                  <p className="text-textSecondary arabic-text leading-relaxed">
+                  <p className="text-medium-contrast arabic-text leading-relaxed">
                     انضم كمتطوع أو استفد من خبرات المتطوعين في مجتمعك
                   </p>
                 </div>
@@ -238,10 +238,10 @@ export default async function Home() {
                   </div>
                 </div>
                 <div className="mr-4">
-                  <h3 className="text-xl font-semibold text-text arabic-text mb-2">
+                  <h3 className="text-xl font-semibold text-high-contrast arabic-text mb-2">
                     تعلم مخصص
                   </h3>
-                  <p className="text-textSecondary arabic-text leading-relaxed">
+                  <p className="text-medium-contrast arabic-text leading-relaxed">
                     مسارات تعليمية مخصصة حسب احتياجاتك ومستواك
                   </p>
                 </div>
@@ -253,7 +253,7 @@ export default async function Home() {
         {/* Community Impact Section */}
         <div className="mt-20 bg-surface rounded-2xl p-8">
           <div className="text-center">
-            <h3 className="text-3xl font-bold text-text arabic-text mb-6">
+            <h3 className="text-3xl font-bold text-high-contrast arabic-text mb-6">
               أثر مجتمعي حقيقي
             </h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -262,21 +262,21 @@ export default async function Home() {
                   <CheckCircle className="w-12 h-12 text-primary" />
                 </div>
                 <div className="text-4xl font-bold text-primary mb-2">100%</div>
-                <div className="text-textSecondary arabic-text">مجاني للجميع</div>
+                <div className="text-medium-contrast arabic-text font-medium">مجاني للجميع</div>
               </div>
               <div className="text-center">
                 <div className="flex items-center justify-center mb-4">
                   <Clock className="w-12 h-12 text-success" />
                 </div>
                 <div className="text-4xl font-bold text-success mb-2">24/7</div>
-                <div className="text-textSecondary arabic-text">متاح دائماً</div>
+                <div className="text-medium-contrast arabic-text font-medium">متاح دائماً</div>
               </div>
               <div className="text-center">
                 <div className="flex items-center justify-center mb-4">
                   <Infinity className="w-12 h-12 text-accent" />
                 </div>
                 <div className="text-4xl font-bold text-accent mb-2">∞</div>
-                <div className="text-textSecondary arabic-text">إمكانيات لا محدودة</div>
+                <div className="text-medium-contrast arabic-text font-medium">إمكانيات لا محدودة</div>
               </div>
             </div>
           </div>
