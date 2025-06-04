@@ -76,6 +76,7 @@ model User {
   quizAttempts    QuizAttempt[]
   settings        UserSettings?
   lessonProgress  LessonProgress[]
+  apiKeys         UserApiKey?
 
   // Holacracy Relations
   roleAssignments RoleAssignment[]
@@ -190,6 +191,23 @@ model UserSettings {
   updatedAt DateTime @updatedAt
 
   @@map("user_settings")
+}
+
+model UserApiKey {
+  id        String   @id @default(cuid())
+  userId    String   @unique
+  geminiKey String?  // Encrypted Gemini API key
+  openaiKey String?  // Encrypted OpenAI API key (for future use)
+  isActive  Boolean  @default(true)
+
+  // User relation
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // Timestamps
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("user_api_keys")
 }
 
 model LLMInteractionLog {

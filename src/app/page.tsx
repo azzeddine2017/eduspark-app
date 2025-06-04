@@ -1,6 +1,6 @@
 import Link from "next/link"
 import { getCurrentUser } from "@/lib/auth"
-import ThemeToggle from "@/components/ThemeToggle"
+import SimpleThemeToggle from "@/components/SimpleThemeToggle"
 import AIAssistant from "@/components/AIAssistant"
 import {
   Bot,
@@ -38,7 +38,7 @@ export default async function Home() {
               </h1>
             </div>
             <nav className="flex items-center space-x-4 space-x-reverse">
-              <ThemeToggle />
+              <SimpleThemeToggle />
               {user ? (
                 <>
                   <span className="text-textSecondary arabic-text">

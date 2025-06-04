@@ -2,7 +2,7 @@ import Link from "next/link"
 import Image from "next/image"
 import { getCurrentUser } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
-import ThemeToggle from "@/components/ThemeToggle"
+import SimpleThemeToggle from "@/components/SimpleThemeToggle"
 
 export default async function CoursesPage() {
   const user = await getCurrentUser()
@@ -45,7 +45,7 @@ export default async function CoursesPage() {
               </Link>
             </div>
             <nav className="flex items-center space-x-4 space-x-reverse">
-              <ThemeToggle />
+              <SimpleThemeToggle />
               {user ? (
                 <>
                   <span className="text-textSecondary arabic-text">

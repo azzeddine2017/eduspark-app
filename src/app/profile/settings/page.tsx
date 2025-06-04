@@ -4,11 +4,11 @@ import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { useTheme } from "next-themes"
 import Link from "next/link"
-import { 
-  Settings, 
-  Bell, 
-  Moon, 
-  Sun, 
+import {
+  Settings,
+  Bell,
+  Moon,
+  Sun,
   Monitor,
   Globe,
   Shield,
@@ -27,6 +27,7 @@ import {
   AlertTriangle
 } from "lucide-react"
 import Header from "@/components/Header"
+import ApiKeyManager from "@/components/ApiKeyManager"
 
 export default function SettingsPage() {
   const { data: session } = useSession()
@@ -43,19 +44,19 @@ export default function SettingsPage() {
     achievementNotifications: true,
     communityNotifications: false,
     weeklyDigest: true,
-    
+
     // إعدادات الخصوصية
     profileVisibility: 'public', // public, friends, private
     showProgress: true,
     showAchievements: true,
     allowMessages: true,
-    
+
     // إعدادات التعلم
     autoplay: false,
     subtitles: true,
     playbackSpeed: 1,
     language: 'ar',
-    
+
     // إعدادات المساعد الذكي
     aiAssistant: true,
     aiSuggestions: true,
@@ -165,7 +166,7 @@ export default function SettingsPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -224,32 +225,32 @@ export default function SettingsPage() {
                   <button
                     onClick={() => setTheme('light')}
                     className={`p-4 rounded-lg border-2 transition-all ${
-                      theme === 'light' 
-                        ? 'border-primary bg-primary bg-opacity-10' 
+                      theme === 'light'
+                        ? 'border-primary bg-primary bg-opacity-10'
                         : 'border-border hover:border-primary'
                     }`}
                   >
                     <Sun className="w-6 h-6 mx-auto mb-2 text-primary" />
                     <span className="text-sm text-high-contrast arabic-text">فاتح</span>
                   </button>
-                  
+
                   <button
                     onClick={() => setTheme('dark')}
                     className={`p-4 rounded-lg border-2 transition-all ${
-                      theme === 'dark' 
-                        ? 'border-primary bg-primary bg-opacity-10' 
+                      theme === 'dark'
+                        ? 'border-primary bg-primary bg-opacity-10'
                         : 'border-border hover:border-primary'
                     }`}
                   >
                     <Moon className="w-6 h-6 mx-auto mb-2 text-primary" />
                     <span className="text-sm text-high-contrast arabic-text">مظلم</span>
                   </button>
-                  
+
                   <button
                     onClick={() => setTheme('system')}
                     className={`p-4 rounded-lg border-2 transition-all ${
-                      theme === 'system' 
-                        ? 'border-primary bg-primary bg-opacity-10' 
+                      theme === 'system'
+                        ? 'border-primary bg-primary bg-opacity-10'
                         : 'border-border hover:border-primary'
                     }`}
                   >
@@ -460,6 +461,9 @@ export default function SettingsPage() {
               </div>
             </div>
           </div>
+
+          {/* API Keys Management */}
+          <ApiKeyManager />
 
           {/* Data Management */}
           <div className="card p-6">

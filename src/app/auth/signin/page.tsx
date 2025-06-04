@@ -4,7 +4,7 @@ import { useState, Suspense } from "react"
 import { signIn } from "next-auth/react"
 import { useRouter, useSearchParams } from "next/navigation"
 import Link from "next/link"
-import ThemeToggle from "@/components/ThemeToggle"
+import SimpleThemeToggle from "@/components/SimpleThemeToggle"
 import { Mail, Lock, Eye, EyeOff, LogIn, UserPlus, ArrowLeft } from "lucide-react"
 
 function SignInForm() {
@@ -222,7 +222,7 @@ export default function SignInPage() {
     <div className="min-h-screen bg-background flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       {/* Theme Toggle */}
       <div className="absolute top-4 left-4">
-        <ThemeToggle />
+        <SimpleThemeToggle />
       </div>
 
       <Suspense fallback={

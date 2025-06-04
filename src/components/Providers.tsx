@@ -2,7 +2,7 @@
 
 import { SessionProvider } from "next-auth/react"
 import { ReactNode } from "react"
-import { ThemeProvider } from "@/contexts/ThemeContext"
+import { ThemeProvider } from "@/components/ThemeProvider"
 
 interface ProvidersProps {
   children: ReactNode
@@ -11,7 +11,12 @@ interface ProvidersProps {
 export default function Providers({ children }: ProvidersProps) {
   return (
     <SessionProvider>
-      <ThemeProvider>
+      <ThemeProvider
+        attribute="class"
+        defaultTheme="system"
+        enableSystem
+        disableTransitionOnChange
+      >
         {children}
       </ThemeProvider>
     </SessionProvider>

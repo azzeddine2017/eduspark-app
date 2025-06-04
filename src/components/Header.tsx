@@ -2,7 +2,7 @@
 
 import Link from "next/link"
 import { useSession, signOut } from "next-auth/react"
-import ThemeToggle from "./ThemeToggle"
+import SimpleThemeToggle from "./SimpleThemeToggle"
 import { Settings, BookOpen, LogIn, UserPlus, LogOut, User, Menu, X } from "lucide-react"
 import { useState } from "react"
 
@@ -53,7 +53,7 @@ export default function Header({
           </div>
 
           <nav className="flex items-center space-x-4 space-x-reverse">
-            <ThemeToggle />
+            <SimpleThemeToggle />
 
             {user ? (
               <>

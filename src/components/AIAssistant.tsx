@@ -2,7 +2,8 @@
 
 import { useState, useRef, useEffect } from 'react'
 import { useSession } from 'next-auth/react'
-import { Bot, MessageCircle, X, Trash2, Send, Loader2 } from 'lucide-react'
+import { Bot, MessageCircle, X, Trash2, Send, Loader2, Settings, ExternalLink } from 'lucide-react'
+import Link from 'next/link'
 
 interface Message {
   id: string
@@ -24,7 +25,7 @@ export default function AIAssistant({ lessonId, courseId, context }: AIAssistant
   const [messages, setMessages] = useState<Message[]>([
     {
       id: '1',
-      content: 'مرحباً! أنا مساعدك الذكي في منصة فتح. كيف يمكنني مساعدتك اليوم؟',
+      content: 'مرحباً! أنا مساعدك الذكي في منصة فتح. كيف يمكنني مساعدتك اليوم؟\n\n💡 إذا لم أتمكن من الإجابة، تأكد من إضافة مفتاح Gemini API في الإعدادات (أيقونة ⚙️ أعلاه).',
       isUser: false,
       timestamp: new Date()
     }
@@ -83,10 +84,17 @@ export default function AIAssistant({ lessonId, courseId, context }: AIAssistant
       } else {
         throw new Error(data.error || 'حدث خطأ في الاتصال')
       }
-    } catch {
+    } catch (error: any) {
+      let errorContent = 'عذراً، حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.'
+
+      // رسالة مخصصة إذا كان الخطأ متعلق بمفتاح API
+      if (error?.message?.includes('مفتاح Gemini API')) {
+        errorContent = 'يرجى إضافة مفتاح Gemini API في الإعدادات لاستخدام المساعد الذكي.'
+      }
+
       const errorMessage: Message = {
         id: (Date.now() + 1).toString(),
-        content: 'عذراً، حدث خطأ في الاتصال. يرجى المحاولة مرة أخرى.',
+        content: errorContent,
         isUser: false,
         timestamp: new Date()
       }
@@ -107,7 +115,7 @@ export default function AIAssistant({ lessonId, courseId, context }: AIAssistant
     setMessages([
       {
         id: '1',
-        content: 'مرحباً! أنا مساعدك الذكي في منصة فتح. كيف يمكنني مساعدتك اليوم؟',
+        content: 'مرحباً! أنا مساعدك الذكي في منصة فتح. كيف يمكنني مساعدتك اليوم؟\n\n💡 إذا لم أتمكن من الإجابة، تأكد من إضافة مفتاح Gemini API في الإعدادات (أيقونة ⚙️ أعلاه).',
         isUser: false,
         timestamp: new Date()
       }
@@ -163,6 +171,14 @@ export default function AIAssistant({ lessonId, courseId, context }: AIAssistant
               </div>
             </div>
             <div className="flex items-center space-x-2 space-x-reverse">
+              <Link
+                href="/profile/settings"
+                className="p-1 hover:bg-white hover:bg-opacity-20 rounded"
+                title="إعدادات API"
+                onClick={() => setIsOpen(false)}
+              >
+                <Settings className="w-4 h-4" />
+              </Link>
               <button
                 onClick={clearChat}
                 className="p-1 hover:bg-white hover:bg-opacity-20 rounded"

@@ -101,9 +101,9 @@ export async function POST(request: NextRequest) {
       .replace('{context}', fullContext)
       .replace('{question}', message)
 
-    // Call Gemini API
+    // Call Gemini API with user's API key
     const startTime = Date.now()
-    const response = await callGemini(prompt)
+    const response = await callGemini(prompt, user.id)
     const responseTime = Date.now() - startTime
 
     // Calculate cost (estimated for Gemini)
@@ -140,8 +140,22 @@ export async function POST(request: NextRequest) {
 
   } catch (error) {
     console.error('AI Chat error:', error)
+
+    // رسائل خطأ مخصصة
+    let errorMessage = 'حدث خطأ في معالجة طلبك. يرجى المحاولة مرة أخرى.'
+
+    if (error instanceof Error) {
+      if (error.message.includes('مفتاح API غير موجود')) {
+        errorMessage = 'يرجى إضافة مفتاح Gemini API في الإعدادات لاستخدام المساعد الذكي.'
+      } else if (error.message.includes('غير متاحة حالياً')) {
+        errorMessage = 'خدمة الذكاء الاصطناعي غير متاحة حالياً. يرجى المحاولة لاحقاً.'
+      } else if (error.message.includes('تجاوز الحد المسموح')) {
+        errorMessage = 'تم تجاوز الحد المسموح من الاستفسارات. يرجى المحاولة لاحقاً.'
+      }
+    }
+
     return NextResponse.json(
-      { error: 'حدث خطأ في معالجة طلبك. يرجى المحاولة مرة أخرى.' },
+      { error: errorMessage },
       { status: 500 }
     )
   }

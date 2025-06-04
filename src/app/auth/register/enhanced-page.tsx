@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import ThemeToggle from "@/components/ThemeToggle"
+import SimpleThemeToggle from "@/components/SimpleThemeToggle"
 import { User, Mail, Lock, Eye, EyeOff, ArrowRight, ArrowLeft, CheckCircle, Calendar, MapPin, Phone, Briefcase, GraduationCap, Users, Heart, Globe } from "lucide-react"
 
 interface FormData {
@@ -707,7 +707,7 @@ export default function EnhancedRegisterPage() {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center py-12 px-4 sm:px-6 lg:px-8">
       <div className="absolute top-4 left-4">
-        <ThemeToggle />
+        <SimpleThemeToggle />
       </div>
 
       <div className="max-w-2xl w-full space-y-8">
