@@ -1,3 +1,10 @@
  cd "منصة التعلّم الذكي EduSpark\src\eduspark-app" && npm run db:seed-holacracy
  
   cd "منصة التعلّم الذكي EduSpark\src\eduspark-app" && npm run dev
+
+  المدير: admin@fateh.com / admin123
+الطالب: student@fateh.com / student123
+
+npm run check-setup
+npm run setup
+

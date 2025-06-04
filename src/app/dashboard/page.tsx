@@ -2,10 +2,10 @@ import { getCurrentUser } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
-import { 
-  BookOpen, 
-  Trophy, 
-  Clock, 
+import {
+  BookOpen,
+  Trophy,
+  Clock,
   TrendingUp,
   Play,
   CheckCircle,
@@ -53,7 +53,7 @@ export default async function DashboardPage() {
 
     // آخر التقدم
     prisma.lessonProgress.findMany({
-      where: { 
+      where: {
         userId: user.id,
         completed: true
       },
@@ -72,9 +72,9 @@ export default async function DashboardPage() {
 
     // إجمالي الدروس المكتملة
     prisma.lessonProgress.count({
-      where: { 
+      where: {
         userId: user.id,
-        completed: true 
+        completed: true
       }
     }),
 
@@ -85,7 +85,7 @@ export default async function DashboardPage() {
     }),
 
     // آخر التفاعلات مع المساعد الذكي
-    prisma.llmInteractionLog.findMany({
+    prisma.lLMInteractionLog.findMany({
       where: { userId: user.id },
       orderBy: { createdAt: 'desc' },
       take: 3,
@@ -113,7 +113,7 @@ export default async function DashboardPage() {
   const totalCourses = enrollments.length
   const completedCourses = enrollments.filter(e => e.progress === 100).length
   const totalTimeInHours = Math.round((totalTimeSpent._sum.timeSpent || 0) / 3600)
-  const averageProgress = enrollments.length > 0 
+  const averageProgress = enrollments.length > 0
     ? Math.round(enrollments.reduce((sum, e) => sum + e.progress, 0) / enrollments.length)
     : 0
 
@@ -123,7 +123,7 @@ export default async function DashboardPage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Welcome Section */}
         <div className="mb-8">
@@ -220,7 +220,7 @@ export default async function DashboardPage() {
                   عرض الكل
                 </Link>
               </div>
-              
+
               <div className="space-y-4">
                 {currentCourses.slice(0, 3).map((enrollment) => (
                   <div key={enrollment.id} className="flex items-center justify-between p-4 bg-surface rounded-lg hover:bg-border transition-colors">
@@ -234,7 +234,7 @@ export default async function DashboardPage() {
                           <span className="text-xs font-medium text-high-contrast">{enrollment.progress}%</span>
                         </div>
                         <div className="w-full bg-border rounded-full h-2">
-                          <div 
+                          <div
                             className="bg-primary h-2 rounded-full transition-all duration-300"
                             style={{ width: `${enrollment.progress}%` }}
                           ></div>
@@ -249,7 +249,7 @@ export default async function DashboardPage() {
                     </Link>
                   </div>
                 ))}
-                
+
                 {currentCourses.length === 0 && (
                   <div className="text-center py-8">
                     <BookOpen className="w-12 h-12 text-medium-contrast mx-auto mb-4" />
@@ -268,7 +268,7 @@ export default async function DashboardPage() {
                 <TrendingUp className="w-5 h-5 ml-2" />
                 النشاط الأخير
               </h3>
-              
+
               <div className="space-y-4">
                 {recentProgress.map((progress) => (
                   <div key={progress.id} className="flex items-center p-3 bg-surface rounded-lg">
@@ -288,7 +288,7 @@ export default async function DashboardPage() {
                     </div>
                   </div>
                 ))}
-                
+
                 {recentProgress.length === 0 && (
                   <div className="text-center py-4">
                     <Target className="w-8 h-8 text-medium-contrast mx-auto mb-2" />
@@ -307,7 +307,7 @@ export default async function DashboardPage() {
                 <Zap className="w-5 h-5 ml-2" />
                 إجراءات سريعة
               </h3>
-              
+
               <div className="space-y-3">
                 <Link
                   href="/courses"
@@ -316,7 +316,7 @@ export default async function DashboardPage() {
                   <BookOpen className="w-4 h-4 ml-2" />
                   تصفح الدورات
                 </Link>
-                
+
                 <Link
                   href="/profile"
                   className="w-full btn btn-outline flex items-center justify-center"
@@ -324,7 +324,7 @@ export default async function DashboardPage() {
                   <Users className="w-4 h-4 ml-2" />
                   الملف الشخصي
                 </Link>
-                
+
                 <Link
                   href="/profile/settings"
                   className="w-full btn btn-outline flex items-center justify-center"
@@ -341,7 +341,7 @@ export default async function DashboardPage() {
                 <MessageCircle className="w-5 h-5 ml-2" />
                 المساعد الذكي
               </h3>
-              
+
               <div className="space-y-3">
                 {recentInteractions.map((interaction) => (
                   <div key={interaction.id} className="p-3 bg-surface rounded-lg">
@@ -353,7 +353,7 @@ export default async function DashboardPage() {
                     </p>
                   </div>
                 ))}
-                
+
                 {recentInteractions.length === 0 && (
                   <div className="text-center py-4">
                     <MessageCircle className="w-8 h-8 text-medium-contrast mx-auto mb-2" />
@@ -369,7 +369,7 @@ export default async function DashboardPage() {
                 <Award className="w-5 h-5 ml-2" />
                 الإنجازات الأخيرة
               </h3>
-              
+
               <div className="space-y-3">
                 {completedCourses > 0 && (
                   <div className="flex items-center p-3 bg-success bg-opacity-10 rounded-lg">
@@ -380,7 +380,7 @@ export default async function DashboardPage() {
                     </div>
                   </div>
                 )}
-                
+
                 {totalLessonsCompleted >= 10 && (
                   <div className="flex items-center p-3 bg-primary bg-opacity-10 rounded-lg">
                     <Star className="w-6 h-6 text-primary ml-3" />
@@ -390,7 +390,7 @@ export default async function DashboardPage() {
                     </div>
                   </div>
                 )}
-                
+
                 {totalCourses === 0 && totalLessonsCompleted === 0 && (
                   <div className="text-center py-4">
                     <Target className="w-8 h-8 text-medium-contrast mx-auto mb-2" />

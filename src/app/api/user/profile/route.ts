@@ -6,7 +6,7 @@ import bcrypt from "bcryptjs"
 export async function GET() {
   try {
     const user = await getCurrentUser()
-    
+
     if (!user) {
       return NextResponse.json(
         { error: "غير مصرح لك بالوصول" },
@@ -54,7 +54,7 @@ export async function GET() {
 export async function PUT(request: NextRequest) {
   try {
     const user = await getCurrentUser()
-    
+
     if (!user) {
       return NextResponse.json(
         { error: "غير مصرح لك بالوصول" },
@@ -175,7 +175,7 @@ export async function PUT(request: NextRequest) {
 export async function DELETE() {
   try {
     const user = await getCurrentUser()
-    
+
     if (!user) {
       return NextResponse.json(
         { error: "غير مصرح لك بالوصول" },
@@ -186,7 +186,7 @@ export async function DELETE() {
     // حذف جميع البيانات المرتبطة بالمستخدم
     await prisma.$transaction(async (tx) => {
       // حذف سجلات التفاعل مع المساعد الذكي
-      await tx.llmInteractionLog.deleteMany({
+      await tx.lLMInteractionLog.deleteMany({
         where: { userId: user.id }
       })
 
@@ -211,7 +211,7 @@ export async function DELETE() {
         await tx.lesson.deleteMany({
           where: { courseId: course.id }
         })
-        
+
         // حذف التسجيلات في الدورة
         await tx.enrollment.deleteMany({
           where: { courseId: course.id }

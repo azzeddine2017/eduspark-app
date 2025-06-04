@@ -2,14 +2,14 @@ import { getCurrentUser } from "@/lib/auth"
 import { redirect } from "next/navigation"
 import { prisma } from "@/lib/prisma"
 import Link from "next/link"
-import { 
-  User, 
-  BookOpen, 
-  Trophy, 
-  Clock, 
-  Settings, 
-  Edit3, 
-  Mail, 
+import {
+  User,
+  BookOpen,
+  Trophy,
+  Clock,
+  Settings,
+  Edit3,
+  Mail,
   Calendar,
   Target,
   Heart,
@@ -45,32 +45,32 @@ export default async function ProfilePage() {
       }
     }),
     prisma.lessonProgress.count({
-      where: { 
+      where: {
         userId: user.id,
-        completed: true 
+        completed: true
       }
     }),
-    prisma.llmInteractionLog.count({
+    prisma.lLMInteractionLog.count({
       where: { userId: user.id }
     })
   ])
 
   // حساب التقدم الإجمالي
-  const totalLessons = enrollments.reduce((sum, enrollment) => 
+  const totalLessons = enrollments.reduce((sum, enrollment) =>
     sum + enrollment.course._count.lessons, 0
   )
-  const progressPercentage = totalLessons > 0 ? 
+  const progressPercentage = totalLessons > 0 ?
     Math.round((completedLessons / totalLessons) * 100) : 0
 
   // حساب الدورات المكتملة
-  const completedCourses = enrollments.filter(enrollment => 
+  const completedCourses = enrollments.filter(enrollment =>
     enrollment.progress === 100
   ).length
 
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header Section */}
         <div className="mb-8">
@@ -169,14 +169,14 @@ export default async function ProfilePage() {
                 <Activity className="w-5 h-5 ml-2" />
                 نظرة عامة على التقدم
               </h3>
-              
+
               <div className="mb-6">
                 <div className="flex justify-between items-center mb-2">
                   <span className="text-sm text-medium-contrast arabic-text">التقدم الإجمالي</span>
                   <span className="text-sm font-medium text-high-contrast">{progressPercentage}%</span>
                 </div>
                 <div className="w-full bg-surface rounded-full h-3">
-                  <div 
+                  <div
                     className="bg-gradient-to-r from-primary to-secondary h-3 rounded-full transition-all duration-300"
                     style={{ width: `${progressPercentage}%` }}
                   ></div>
@@ -201,7 +201,7 @@ export default async function ProfilePage() {
                 <BookOpen className="w-5 h-5 ml-2" />
                 الدورات الحالية
               </h3>
-              
+
               <div className="space-y-4">
                 {enrollments.slice(0, 3).map((enrollment) => (
                   <div key={enrollment.id} className="flex items-center justify-between p-4 bg-surface rounded-lg">
@@ -218,7 +218,7 @@ export default async function ProfilePage() {
                           <span className="text-xs font-medium text-high-contrast">{enrollment.progress}%</span>
                         </div>
                         <div className="w-full bg-border rounded-full h-2">
-                          <div 
+                          <div
                             className="bg-primary h-2 rounded-full transition-all duration-300"
                             style={{ width: `${enrollment.progress}%` }}
                           ></div>
@@ -233,7 +233,7 @@ export default async function ProfilePage() {
                     </Link>
                   </div>
                 ))}
-                
+
                 {enrollments.length === 0 && (
                   <div className="text-center py-8">
                     <BookOpen className="w-12 h-12 text-medium-contrast mx-auto mb-4" />
@@ -255,7 +255,7 @@ export default async function ProfilePage() {
                 <Settings className="w-5 h-5 ml-2" />
                 إجراءات سريعة
               </h3>
-              
+
               <div className="space-y-3">
                 <Link
                   href="/profile/edit"
@@ -264,7 +264,7 @@ export default async function ProfilePage() {
                   <Edit3 className="w-4 h-4 ml-2" />
                   تعديل الملف الشخصي
                 </Link>
-                
+
                 <Link
                   href="/courses"
                   className="w-full btn btn-outline flex items-center justify-center"
@@ -272,7 +272,7 @@ export default async function ProfilePage() {
                   <BookOpen className="w-4 h-4 ml-2" />
                   تصفح الدورات
                 </Link>
-                
+
                 <Link
                   href="/profile/settings"
                   className="w-full btn btn-outline flex items-center justify-center"
@@ -289,11 +289,11 @@ export default async function ProfilePage() {
                 <MessageCircle className="w-5 h-5 ml-2" />
                 استخدام المساعد الذكي
               </h3>
-              
+
               <div className="text-center">
                 <p className="text-3xl font-bold text-primary">{totalInteractions}</p>
                 <p className="text-sm text-medium-contrast arabic-text">إجمالي التفاعلات</p>
-                
+
                 <div className="mt-4 p-3 bg-surface rounded-lg">
                   <p className="text-sm text-medium-contrast arabic-text">
                     الحد اليومي: {user.role === 'ADMIN' ? '50' : '10'} استفسار
@@ -308,7 +308,7 @@ export default async function ProfilePage() {
                 <Trophy className="w-5 h-5 ml-2" />
                 الإنجازات
               </h3>
-              
+
               <div className="space-y-3">
                 {completedCourses > 0 && (
                   <div className="flex items-center p-3 bg-success bg-opacity-10 rounded-lg">
@@ -319,7 +319,7 @@ export default async function ProfilePage() {
                     </div>
                   </div>
                 )}
-                
+
                 {enrollments.length >= 5 && (
                   <div className="flex items-center p-3 bg-primary bg-opacity-10 rounded-lg">
                     <Heart className="w-6 h-6 text-primary ml-3" />
@@ -329,7 +329,7 @@ export default async function ProfilePage() {
                     </div>
                   </div>
                 )}
-                
+
                 {totalInteractions >= 50 && (
                   <div className="flex items-center p-3 bg-accent bg-opacity-10 rounded-lg">
                     <MessageCircle className="w-6 h-6 text-accent ml-3" />
@@ -339,7 +339,7 @@ export default async function ProfilePage() {
                     </div>
                   </div>
                 )}
-                
+
                 {completedCourses === 0 && enrollments.length === 0 && totalInteractions < 10 && (
                   <div className="text-center py-4">
                     <Target className="w-8 h-8 text-medium-contrast mx-auto mb-2" />

@@ -5,7 +5,7 @@ import { prisma } from "@/lib/prisma"
 export async function GET() {
   try {
     const user = await getCurrentUser()
-    
+
     if (!user) {
       return NextResponse.json(
         { error: "غير مصرح لك بالوصول" },
@@ -77,7 +77,7 @@ export async function GET() {
       }),
 
       // تفاعلات المساعد الذكي
-      prisma.llmInteractionLog.findMany({
+      prisma.lLMInteractionLog.findMany({
         where: { userId: user.id },
         select: {
           id: true,
