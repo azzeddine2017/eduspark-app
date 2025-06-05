@@ -3,8 +3,8 @@
 import Link from "next/link"
 import { useSession, signOut } from "next-auth/react"
 import SimpleThemeToggle from "./SimpleThemeToggle"
-import { Settings, BookOpen, LogIn, UserPlus, LogOut, User, Menu, X } from "lucide-react"
-import { useState } from "react"
+import { Settings, BookOpen, LogIn, UserPlus, LogOut, User, Menu, X, ChevronDown } from "lucide-react"
+import { useState, useRef, useEffect } from "react"
 
 interface HeaderProps {
   title?: string
@@ -20,10 +20,26 @@ export default function Header({
   const { data: session } = useSession()
   const user = session?.user
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
+  const userMenuRef = useRef<HTMLDivElement>(null)
 
   const handleSignOut = () => {
     signOut({ callbackUrl: "/" })
   }
+
+  // إغلاق قائمة المستخدم عند النقر خارجها
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
+        setIsUserMenuOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+    }
+  }, [])
 
   return (
     <header className="bg-surface shadow-sm border-b border-border sticky top-0 z-40">
@@ -58,10 +74,6 @@ export default function Header({
             {user ? (
               <>
                 <div className="hidden sm:flex items-center space-x-4 space-x-reverse">
-                  <span className="text-textSecondary arabic-text text-sm font-medium">
-                    مرحباً، {user.name}
-                  </span>
-
                   {user.role === 'ADMIN' && (
                     <Link
                       href="/admin"
@@ -73,14 +85,6 @@ export default function Header({
                   )}
 
                   <Link
-                    href="/dashboard"
-                    className="btn btn-secondary text-sm flex items-center"
-                  >
-                    <BookOpen className="w-4 h-4 ml-1" />
-                    لوحة التحكم
-                  </Link>
-
-                  <Link
                     href="/courses"
                     className="btn btn-outline text-sm flex items-center"
                   >
@@ -88,22 +92,72 @@ export default function Header({
                     الدورات
                   </Link>
 
-                  <Link
-                    href="/profile"
-                    className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-sm font-bold hover:bg-opacity-80 transition-colors"
-                    title="الملف الشخصي"
-                  >
-                    <User className="w-4 h-4" />
-                  </Link>
+                  {/* User Dropdown Menu */}
+                  <div className="relative" ref={userMenuRef}>
+                    <button
+                      onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
+                      className="flex items-center space-x-2 space-x-reverse bg-surface hover:bg-background rounded-lg px-3 py-2 transition-colors border border-border"
+                    >
+                      <div className="w-8 h-8 bg-primary rounded-full flex items-center justify-center text-white text-sm font-bold">
+                        <User className="w-4 h-4" />
+                      </div>
+                      <div className="text-right">
+                        <p className="text-sm font-medium text-text arabic-text">{user.name}</p>
+                        <p className="text-xs text-textSecondary arabic-text">{user.role === 'ADMIN' ? 'مدير' : user.role === 'INSTRUCTOR' ? 'مدرس' : 'طالب'}</p>
+                      </div>
+                      <ChevronDown className={`w-4 h-4 text-textSecondary transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
+                    </button>
 
-                  <button
-                    onClick={handleSignOut}
-                    className="btn btn-outline text-sm flex items-center text-error hover:bg-error hover:text-white"
-                    title="تسجيل الخروج"
-                  >
-                    <LogOut className="w-4 h-4 ml-1" />
-                    خروج
-                  </button>
+                    {/* Dropdown Menu */}
+                    {isUserMenuOpen && (
+                      <div className="absolute left-0 mt-2 w-56 bg-surface rounded-lg shadow-lg border border-border py-2 z-50">
+                        <div className="px-4 py-2 border-b border-border">
+                          <p className="text-sm font-medium text-text arabic-text">{user.name}</p>
+                          <p className="text-xs text-textSecondary arabic-text">{user.email}</p>
+                        </div>
+
+                        <Link
+                          href="/profile"
+                          className="flex items-center px-4 py-2 text-sm text-text hover:bg-background transition-colors arabic-text"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          <User className="w-4 h-4 ml-2" />
+                          الملف الشخصي
+                        </Link>
+
+                        <Link
+                          href="/dashboard"
+                          className="flex items-center px-4 py-2 text-sm text-text hover:bg-background transition-colors arabic-text"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          <BookOpen className="w-4 h-4 ml-2" />
+                          لوحة التحكم
+                        </Link>
+
+                        <Link
+                          href="/profile/settings"
+                          className="flex items-center px-4 py-2 text-sm text-text hover:bg-background transition-colors arabic-text"
+                          onClick={() => setIsUserMenuOpen(false)}
+                        >
+                          <Settings className="w-4 h-4 ml-2" />
+                          الإعدادات
+                        </Link>
+
+                        <div className="border-t border-border mt-2 pt-2">
+                          <button
+                            onClick={() => {
+                              setIsUserMenuOpen(false)
+                              handleSignOut()
+                            }}
+                            className="flex items-center w-full px-4 py-2 text-sm text-error hover:bg-error hover:text-white transition-colors arabic-text"
+                          >
+                            <LogOut className="w-4 h-4 ml-2" />
+                            تسجيل الخروج
+                          </button>
+                        </div>
+                      </div>
+                    )}
+                  </div>
                 </div>
 
                 {/* Mobile Menu Button */}

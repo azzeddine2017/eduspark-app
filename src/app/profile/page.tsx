@@ -22,6 +22,7 @@ import {
 import Header from "@/components/Header"
 import ProfileEditForm from "@/components/ProfileEditForm"
 import ProgressChart from "@/components/ProgressChart"
+import LogoutButton from "@/components/LogoutButton"
 
 export default async function ProfilePage() {
   const user = await getCurrentUser()
@@ -280,6 +281,11 @@ export default async function ProfilePage() {
                   <Settings className="w-4 h-4 ml-2" />
                   الإعدادات
                 </Link>
+
+                <LogoutButton
+                  className="w-full btn btn-outline flex items-center justify-center text-error hover:bg-error hover:text-white border-error"
+                  showConfirmation={true}
+                />
               </div>
             </div>
 
