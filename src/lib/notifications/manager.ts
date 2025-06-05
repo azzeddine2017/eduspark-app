@@ -1,9 +1,9 @@
 import { prisma } from '@/lib/prisma'
 import { NotificationType, NotificationPriority, User } from '@prisma/client'
-import { 
-  createNotificationFromTemplate, 
-  validateTemplateData, 
-  NotificationData 
+import {
+  createNotificationFromTemplate,
+  validateTemplateData,
+  NotificationData
 } from './templates'
 
 // واجهة خيارات الإشعار
@@ -33,7 +33,7 @@ export interface SendResult {
  * مدير الإشعارات الرئيسي
  */
 export class NotificationManager {
-  
+
   /**
    * إرسال إشعار واحد أو متعدد
    */
@@ -49,7 +49,7 @@ export class NotificationManager {
 
       // تحديد المستلمين
       let recipientIds: string[] = []
-      
+
       if (options.userId) {
         recipientIds = [options.userId]
       } else if (options.userIds && options.userIds.length > 0) {
@@ -234,8 +234,25 @@ export class NotificationManager {
     users: Array<{ id: string; email: string; name: string }>,
     options: NotificationOptions
   ): Promise<void> {
-    // سيتم تنفيذ هذا في المرحلة التالية مع نظام البريد الإلكتروني
-    console.log('إرسال البريد الإلكتروني سيتم تنفيذه لاحقاً')
+    try {
+      // استيراد مدير البريد الإلكتروني
+      const { emailManager } = await import('../email/mailer')
+
+      // إرسال البريد الإلكتروني لكل مستخدم
+      for (const user of users) {
+        try {
+          await emailManager.sendNotificationEmail(
+            user.email,
+            options.type,
+            { ...options.data, userName: user.name }
+          )
+        } catch (error) {
+          console.error(`خطأ في إرسال البريد الإلكتروني للمستخدم ${user.email}:`, error)
+        }
+      }
+    } catch (error) {
+      console.error('خطأ في إرسال إشعارات البريد الإلكتروني:', error)
+    }
   }
 
   /**
@@ -348,7 +365,7 @@ export async function sendCourseEnrollmentNotification(
  */
 export async function sendLessonCompletedNotification(
   userId: string,
-  lessonData: { 
+  lessonData: {
     lessonId: string
     lessonName: string
     courseId: string
