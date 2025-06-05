@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useSession, signOut } from "next-auth/react"
 import SimpleThemeToggle from "./SimpleThemeToggle"
-import { Settings, BookOpen, LogIn, UserPlus, LogOut, User, Menu, X, ChevronDown } from "lucide-react"
+import { Settings, BookOpen, LogIn, UserPlus, LogOut, User, Menu, X, ChevronDown, Info, Users, Heart, Shield, FileText } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 
 interface HeaderProps {
@@ -17,21 +17,36 @@ export default function Header({
   showBackButton = false,
   backUrl = "/"
 }: HeaderProps) {
-  const { data: session } = useSession()
+  const { data: session, status } = useSession()
   const user = session?.user
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false)
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false)
+  const [isPagesMenuOpen, setIsPagesMenuOpen] = useState(false)
   const userMenuRef = useRef<HTMLDivElement>(null)
+  const pagesMenuRef = useRef<HTMLDivElement>(null)
+
+  // تشخيص المشكلة - فقط في development
+  if (process.env.NODE_ENV === 'development') {
+    console.log('Header Debug:', {
+      status,
+      session,
+      user,
+      userRole: user?.role
+    })
+  }
 
   const handleSignOut = () => {
     signOut({ callbackUrl: "/" })
   }
 
-  // إغلاق قائمة المستخدم عند النقر خارجها
+  // إغلاق القوائم عند النقر خارجها
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
       if (userMenuRef.current && !userMenuRef.current.contains(event.target as Node)) {
         setIsUserMenuOpen(false)
+      }
+      if (pagesMenuRef.current && !pagesMenuRef.current.contains(event.target as Node)) {
+        setIsPagesMenuOpen(false)
       }
     }
 
@@ -69,12 +84,89 @@ export default function Header({
           </div>
 
           <nav className="flex items-center space-x-4 space-x-reverse">
+            {/* Public Pages Menu */}
+            <div className="relative hidden md:block" ref={pagesMenuRef}>
+              <button
+                onClick={() => setIsPagesMenuOpen(!isPagesMenuOpen)}
+                className="flex items-center space-x-1 space-x-reverse text-sm text-text hover:text-primary transition-colors arabic-text px-3 py-2 rounded-lg hover:bg-background"
+              >
+                <span>الصفحات</span>
+                <ChevronDown className={`w-4 h-4 transition-transform ${isPagesMenuOpen ? 'rotate-180' : ''}`} />
+              </button>
+
+              {/* Pages Dropdown Menu */}
+              {isPagesMenuOpen && (
+                <div className="absolute left-0 mt-2 w-48 bg-surface rounded-lg shadow-lg border border-border py-2 z-50">
+                  <Link
+                    href="/about"
+                    className="flex items-center px-4 py-2 text-sm text-text hover:bg-background transition-colors arabic-text"
+                    onClick={() => setIsPagesMenuOpen(false)}
+                  >
+                    <Info className="w-4 h-4 ml-2" />
+                    عن المنصة
+                  </Link>
+
+                  <Link
+                    href="/community"
+                    className="flex items-center px-4 py-2 text-sm text-text hover:bg-background transition-colors arabic-text"
+                    onClick={() => setIsPagesMenuOpen(false)}
+                  >
+                    <Users className="w-4 h-4 ml-2" />
+                    المجتمع
+                  </Link>
+
+                  <Link
+                    href="/volunteer"
+                    className="flex items-center px-4 py-2 text-sm text-text hover:bg-background transition-colors arabic-text"
+                    onClick={() => setIsPagesMenuOpen(false)}
+                  >
+                    <Heart className="w-4 h-4 ml-2" />
+                    التطوع
+                  </Link>
+
+                  <Link
+                    href="/contact"
+                    className="flex items-center px-4 py-2 text-sm text-text hover:bg-background transition-colors arabic-text"
+                    onClick={() => setIsPagesMenuOpen(false)}
+                  >
+                    <Users className="w-4 h-4 ml-2" />
+                    اتصل بنا
+                  </Link>
+
+                  <div className="border-t border-border mt-2 pt-2">
+                    <Link
+                      href="/privacy"
+                      className="flex items-center px-4 py-2 text-sm text-textSecondary hover:bg-background transition-colors arabic-text"
+                      onClick={() => setIsPagesMenuOpen(false)}
+                    >
+                      <Shield className="w-4 h-4 ml-2" />
+                      سياسة الخصوصية
+                    </Link>
+
+                    <Link
+                      href="/terms"
+                      className="flex items-center px-4 py-2 text-sm text-textSecondary hover:bg-background transition-colors arabic-text"
+                      onClick={() => setIsPagesMenuOpen(false)}
+                    >
+                      <FileText className="w-4 h-4 ml-2" />
+                      شروط الاستخدام
+                    </Link>
+                  </div>
+                </div>
+              )}
+            </div>
+
             <SimpleThemeToggle />
 
-            {user ? (
+            {status === 'loading' ? (
+              <div className="flex items-center space-x-2 space-x-reverse">
+                <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
+                <div className="w-20 h-4 bg-gray-200 rounded animate-pulse"></div>
+              </div>
+            ) : session ? (
               <>
                 <div className="hidden sm:flex items-center space-x-4 space-x-reverse">
-                  {user.role === 'ADMIN' && (
+                  {user?.role === 'ADMIN' && (
                     <Link
                       href="/admin"
                       className="btn btn-primary text-sm flex items-center"
@@ -102,8 +194,8 @@ export default function Header({
                         <User className="w-4 h-4" />
                       </div>
                       <div className="text-right">
-                        <p className="text-sm font-medium text-text arabic-text">{user.name}</p>
-                        <p className="text-xs text-textSecondary arabic-text">{user.role === 'ADMIN' ? 'مدير' : user.role === 'INSTRUCTOR' ? 'مدرس' : 'طالب'}</p>
+                        <p className="text-sm font-medium text-text arabic-text">{user?.name || session.user?.name || 'مستخدم'}</p>
+                        <p className="text-xs text-textSecondary arabic-text">{user?.role === 'ADMIN' ? 'مدير' : user?.role === 'INSTRUCTOR' ? 'مدرس' : 'طالب'}</p>
                       </div>
                       <ChevronDown className={`w-4 h-4 text-textSecondary transition-transform ${isUserMenuOpen ? 'rotate-180' : ''}`} />
                     </button>
@@ -112,8 +204,8 @@ export default function Header({
                     {isUserMenuOpen && (
                       <div className="absolute left-0 mt-2 w-56 bg-surface rounded-lg shadow-lg border border-border py-2 z-50">
                         <div className="px-4 py-2 border-b border-border">
-                          <p className="text-sm font-medium text-text arabic-text">{user.name}</p>
-                          <p className="text-xs text-textSecondary arabic-text">{user.email}</p>
+                          <p className="text-sm font-medium text-text arabic-text">{user?.name || session.user?.name || 'مستخدم'}</p>
+                          <p className="text-xs text-textSecondary arabic-text">{user?.email || session.user?.email}</p>
                         </div>
 
                         <Link
@@ -176,6 +268,20 @@ export default function Header({
               </>
             ) : (
               <div className="flex items-center space-x-3 space-x-reverse">
+                {/* Mobile Menu Button for non-logged users */}
+                <div className="md:hidden">
+                  <button
+                    onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+                    className="p-2 rounded-lg hover:bg-background transition-colors"
+                  >
+                    {isMobileMenuOpen ? (
+                      <X className="w-6 h-6 text-textSecondary" />
+                    ) : (
+                      <Menu className="w-6 h-6 text-textSecondary" />
+                    )}
+                  </button>
+                </div>
+
                 <Link
                   href="/auth/signin"
                   className="nav-link arabic-text text-sm hover:text-primary transition-colors flex items-center"
@@ -196,12 +302,12 @@ export default function Header({
         </div>
       </div>
 
-      {/* Mobile Menu */}
-      {user && isMobileMenuOpen && (
-        <div className="sm:hidden border-t border-border bg-surface">
+      {/* Mobile Menu for Logged Users */}
+      {session && isMobileMenuOpen && (
+        <div className="md:hidden border-t border-border bg-surface">
           <div className="px-4 py-3 space-y-2">
             <div className="text-textSecondary arabic-text text-sm mb-3 font-medium">
-              مرحباً، {user.name}
+              مرحباً، {user?.name || session.user?.name || 'مستخدم'}
             </div>
 
             <Link
@@ -222,7 +328,7 @@ export default function Header({
               الدورات
             </Link>
 
-            {user.role === 'ADMIN' && (
+            {user?.role === 'ADMIN' && (
               <Link
                 href="/admin"
                 className="flex items-center w-full text-right py-2 px-3 rounded-lg hover:bg-background transition-colors text-text arabic-text"
@@ -242,16 +348,128 @@ export default function Header({
               الملف الشخصي
             </Link>
 
-            <button
-              onClick={() => {
-                setIsMobileMenuOpen(false)
-                handleSignOut()
-              }}
-              className="flex items-center w-full text-right py-2 px-3 rounded-lg hover:bg-background transition-colors text-error arabic-text"
+            {/* Public Pages in Mobile */}
+            <div className="border-t border-border pt-2 mt-2">
+              <div className="text-textSecondary arabic-text text-xs mb-2 font-medium px-3">
+                الصفحات العامة
+              </div>
+
+              <Link
+                href="/about"
+                className="flex items-center w-full text-right py-2 px-3 rounded-lg hover:bg-background transition-colors text-text arabic-text"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Info className="w-4 h-4 ml-2" />
+                عن المنصة
+              </Link>
+
+              <Link
+                href="/community"
+                className="flex items-center w-full text-right py-2 px-3 rounded-lg hover:bg-background transition-colors text-text arabic-text"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Users className="w-4 h-4 ml-2" />
+                المجتمع
+              </Link>
+
+              <Link
+                href="/volunteer"
+                className="flex items-center w-full text-right py-2 px-3 rounded-lg hover:bg-background transition-colors text-text arabic-text"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Heart className="w-4 h-4 ml-2" />
+                التطوع
+              </Link>
+
+              <Link
+                href="/contact"
+                className="flex items-center w-full text-right py-2 px-3 rounded-lg hover:bg-background transition-colors text-text arabic-text"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Users className="w-4 h-4 ml-2" />
+                اتصل بنا
+              </Link>
+            </div>
+
+            <div className="border-t border-border pt-2 mt-2">
+              <button
+                onClick={() => {
+                  setIsMobileMenuOpen(false)
+                  handleSignOut()
+                }}
+                className="flex items-center w-full text-right py-2 px-3 rounded-lg hover:bg-background transition-colors text-error arabic-text"
+              >
+                <LogOut className="w-4 h-4 ml-2" />
+                تسجيل الخروج
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Mobile Menu for Non-Logged Users */}
+      {!session && isMobileMenuOpen && (
+        <div className="md:hidden border-t border-border bg-surface">
+          <div className="px-4 py-3 space-y-2">
+            <div className="text-textSecondary arabic-text text-sm mb-3 font-medium">
+              الصفحات العامة
+            </div>
+
+            <Link
+              href="/about"
+              className="flex items-center w-full text-right py-2 px-3 rounded-lg hover:bg-background transition-colors text-text arabic-text"
+              onClick={() => setIsMobileMenuOpen(false)}
             >
-              <LogOut className="w-4 h-4 ml-2" />
-              تسجيل الخروج
-            </button>
+              <Info className="w-4 h-4 ml-2" />
+              عن المنصة
+            </Link>
+
+            <Link
+              href="/community"
+              className="flex items-center w-full text-right py-2 px-3 rounded-lg hover:bg-background transition-colors text-text arabic-text"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <Users className="w-4 h-4 ml-2" />
+              المجتمع
+            </Link>
+
+            <Link
+              href="/volunteer"
+              className="flex items-center w-full text-right py-2 px-3 rounded-lg hover:bg-background transition-colors text-text arabic-text"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <Heart className="w-4 h-4 ml-2" />
+              التطوع
+            </Link>
+
+            <Link
+              href="/contact"
+              className="flex items-center w-full text-right py-2 px-3 rounded-lg hover:bg-background transition-colors text-text arabic-text"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <Users className="w-4 h-4 ml-2" />
+              اتصل بنا
+            </Link>
+
+            <div className="border-t border-border pt-2 mt-2">
+              <Link
+                href="/privacy"
+                className="flex items-center w-full text-right py-2 px-3 rounded-lg hover:bg-background transition-colors text-textSecondary arabic-text"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Shield className="w-4 h-4 ml-2" />
+                سياسة الخصوصية
+              </Link>
+
+              <Link
+                href="/terms"
+                className="flex items-center w-full text-right py-2 px-3 rounded-lg hover:bg-background transition-colors text-textSecondary arabic-text"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <FileText className="w-4 h-4 ml-2" />
+                شروط الاستخدام
+              </Link>
+            </div>
           </div>
         </div>
       )}

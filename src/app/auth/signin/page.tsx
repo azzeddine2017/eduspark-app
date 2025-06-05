@@ -31,7 +31,8 @@ function SignInForm() {
     if (result?.error) {
       setError("البريد الإلكتروني أو كلمة المرور غير صحيحة")
     } else {
-      router.push("/courses")
+      // إعادة تحميل الصفحة للتأكد من تحديث الجلسة
+      window.location.href = "/dashboard"
     }
     setLoading(false)
   }

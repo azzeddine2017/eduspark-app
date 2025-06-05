@@ -64,6 +64,7 @@ export const authOptions: NextAuthOptions = {
     async jwt({ token, user }) {
       if (user) {
         token.role = user.role
+        token.id = user.id
       }
       return token
     },
@@ -72,6 +73,16 @@ export const authOptions: NextAuthOptions = {
         session.user.id = token.sub!
         session.user.role = token.role as UserRole
       }
+
+      // Debug logging - فقط في development
+      if (process.env.NODE_ENV === 'development') {
+        console.log('Session callback:', {
+          sessionUser: session.user,
+          tokenRole: token.role,
+          tokenSub: token.sub
+        })
+      }
+
       return session
     },
   },

@@ -377,3 +377,133 @@ h1, h2, h3, h4, h5, h6 {
     transform: rotate(360deg);
   }
 }
+
+/* إضافة فئات للتباين المحسن */
+.input {
+  background-color: var(--color-background);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  border-radius: var(--border-radius);
+  padding: 0.75rem;
+  transition: all 0.2s ease;
+  width: 100%;
+}
+
+.input:focus {
+  outline: none;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+}
+
+.input::placeholder {
+  color: var(--color-textSecondary);
+}
+
+/* تحسين التباين للنصوص في الوضع المظلم */
+.dark .text-text {
+  color: #F8FAFC;
+}
+
+.dark .text-textSecondary {
+  color: #CBD5E1;
+}
+
+.dark .text-high-contrast {
+  color: #F8FAFC;
+  font-weight: 500;
+}
+
+.dark .text-medium-contrast {
+  color: #CBD5E1;
+  font-weight: 400;
+}
+
+/* تحسين الأزرار في الوضع المظلم */
+.dark .btn-outline {
+  background-color: transparent;
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.dark .btn-outline:hover {
+  background-color: var(--color-surface);
+  border-color: var(--color-primary);
+  color: var(--color-text);
+}
+
+.dark .btn-secondary {
+  background-color: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+}
+
+.dark .btn-secondary:hover {
+  background-color: #334155;
+  color: var(--color-text);
+}
+
+/* تحسين القوائم المنسدلة */
+.dropdown-menu {
+  background-color: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--border-radius);
+  box-shadow: var(--shadow-lg);
+  z-index: 50;
+}
+
+.dropdown-item {
+  color: var(--color-text);
+  transition: all 0.2s ease;
+}
+
+.dropdown-item:hover {
+  background-color: var(--color-background);
+  color: var(--color-primary);
+}
+
+.dark .dropdown-item:hover {
+  background-color: #334155;
+  color: var(--color-primary);
+}
+
+/* تحسين التباين للروابط */
+.link {
+  color: var(--color-primary);
+  text-decoration: none;
+  transition: color 0.2s ease;
+}
+
+.link:hover {
+  color: var(--color-secondary);
+  text-decoration: underline;
+}
+
+/* تحسين الحدود */
+.border-error {
+  border-color: var(--color-error) !important;
+}
+
+.border-success {
+  border-color: var(--color-success) !important;
+}
+
+.border-warning {
+  border-color: var(--color-warning) !important;
+}
+
+/* تحسين الخلفيات مع التباين */
+.bg-gradient-primary {
+  background: linear-gradient(135deg, var(--color-primary), var(--color-secondary));
+}
+
+.bg-gradient-success {
+  background: linear-gradient(135deg, var(--color-success), #059669);
+}
+
+.bg-gradient-warning {
+  background: linear-gradient(135deg, var(--color-warning), #d97706);
+}
+
+.bg-gradient-error {
+  background: linear-gradient(135deg, var(--color-error), #dc2626);
+}
