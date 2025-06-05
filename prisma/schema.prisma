@@ -84,6 +84,15 @@ model User {
   proposedDecisions Decision[]
   objections      Objection[]
 
+  // Notifications Relations
+  receivedNotifications Notification[] @relation("UserNotifications")
+  sentNotifications     Notification[] @relation("SentNotifications")
+  notificationPreferences NotificationPreference? @relation("NotificationPreferences")
+
+  // Analytics Relations
+  analyticsEvents   AnalyticsEvent[] @relation("UserAnalytics")
+  dailyActivities   UserActivity[]   @relation("UserDailyActivity")
+
   @@map("users")
 }
 
@@ -516,4 +525,217 @@ enum DecisionStatus {
   APPROVED
   IMPLEMENTED
   REJECTED
+}
+
+// أنواع الإشعارات المختلفة
+enum NotificationType {
+  COURSE_ENROLLMENT     // التسجيل في دورة جديدة
+  LESSON_COMPLETED      // إكمال درس
+  COURSE_COMPLETED      // إكمال دورة كاملة
+  NEW_COURSE_AVAILABLE  // دورة جديدة متاحة
+  ASSIGNMENT_DUE        // موعد تسليم مهمة
+  QUIZ_AVAILABLE        // اختبار متاح
+  QUIZ_RESULT           // نتيجة اختبار
+  SYSTEM_ANNOUNCEMENT   // إعلان من النظام
+  ROLE_ASSIGNMENT       // تعيين دور جديد
+  DECISION_PROPOSED     // قرار مقترح في الهولاكراسي
+  MESSAGE_RECEIVED      // رسالة جديدة
+  ACHIEVEMENT_UNLOCKED  // إنجاز جديد
+}
+
+// حالة الإشعار
+enum NotificationStatus {
+  UNREAD    // غير مقروء
+  READ      // مقروء
+  ARCHIVED  // مؤرشف
+}
+
+// أولوية الإشعار
+enum NotificationPriority {
+  LOW       // منخفضة
+  MEDIUM    // متوسطة
+  HIGH      // عالية
+  URGENT    // عاجلة
+}
+
+// نموذج الإشعارات الأساسي
+model Notification {
+  id          String               @id @default(cuid())
+  title       String               // عنوان الإشعار
+  message     String               @db.Text // محتوى الإشعار
+  type        NotificationType     // نوع الإشعار
+  status      NotificationStatus   @default(UNREAD) // حالة القراءة
+  priority    NotificationPriority @default(MEDIUM) // أولوية الإشعار
+
+  // بيانات إضافية (JSON) - مثل روابط، معرفات، إلخ
+  metadata    Json?                // بيانات إضافية مرنة
+
+  // الرابط المرتبط بالإشعار (اختياري)
+  actionUrl   String?              // رابط الإجراء
+
+  // معرف المستخدم المستلم
+  userId      String
+  user        User                 @relation("UserNotifications", fields: [userId], references: [id], onDelete: Cascade)
+
+  // معرف المرسل (اختياري - قد يكون النظام)
+  senderId    String?
+  sender      User?                @relation("SentNotifications", fields: [senderId], references: [id], onDelete: SetNull)
+
+  // تواريخ مهمة
+  createdAt   DateTime             @default(now()) // تاريخ الإنشاء
+  readAt      DateTime?            // تاريخ القراءة
+  expiresAt   DateTime?            // تاريخ انتهاء الصلاحية
+
+  @@map("notifications")
+}
+
+// قوالب الإشعارات لإعادة الاستخدام
+model NotificationTemplate {
+  id          String               @id @default(cuid())
+  name        String               @unique // اسم القالب
+  title       String               // عنوان القالب
+  message     String               @db.Text // محتوى القالب (يدعم المتغيرات)
+  type        NotificationType     // نوع الإشعار
+  priority    NotificationPriority @default(MEDIUM)
+
+  // إعدادات القالب
+  isActive    Boolean              @default(true) // هل القالب نشط
+  variables   Json?                // المتغيرات المطلوبة في القالب
+
+  // قالب البريد الإلكتروني (اختياري)
+  emailSubject String?             // موضوع البريد الإلكتروني
+  emailBody    String?             @db.Text // محتوى البريد الإلكتروني (HTML)
+
+  // تواريخ
+  createdAt   DateTime             @default(now())
+  updatedAt   DateTime             @updatedAt
+
+  @@map("notification_templates")
+}
+
+// تفضيلات الإشعارات للمستخدمين
+model NotificationPreference {
+  id                    String               @id @default(cuid())
+  userId                String               @unique
+  user                  User                 @relation("NotificationPreferences", fields: [userId], references: [id], onDelete: Cascade)
+
+  // إعدادات عامة
+  enableInApp           Boolean              @default(true)  // إشعارات داخل التطبيق
+  enableEmail           Boolean              @default(true)  // إشعارات البريد الإلكتروني
+  enablePush            Boolean              @default(false) // إشعارات الدفع (للمستقبل)
+
+  // إعدادات حسب نوع الإشعار
+  courseNotifications   Boolean              @default(true)  // إشعارات الدورات
+  quizNotifications     Boolean              @default(true)  // إشعارات الاختبارات
+  systemNotifications  Boolean              @default(true)  // إشعارات النظام
+  roleNotifications     Boolean              @default(true)  // إشعارات الأدوار
+  achievementNotifications Boolean           @default(true)  // إشعارات الإنجازات
+
+  // إعدادات التوقيت
+  quietHoursStart       String?              // بداية ساعات الهدوء (HH:mm)
+  quietHoursEnd         String?              // نهاية ساعات الهدوء (HH:mm)
+  weeklyDigest          Boolean              @default(false) // ملخص أسبوعي
+
+  // تواريخ
+  createdAt             DateTime             @default(now())
+  updatedAt             DateTime             @updatedAt
+
+  @@map("notification_preferences")
+}
+
+// أحداث التحليلات لتتبع نشاط المستخدمين
+model AnalyticsEvent {
+  id          String   @id @default(cuid())
+  eventName   String   // اسم الحدث (مثل: page_view, course_start, lesson_complete)
+  eventType   String   // نوع الحدث (مثل: user_action, system_event)
+
+  // معرف المستخدم (اختياري للأحداث العامة)
+  userId      String?
+  user        User?    @relation("UserAnalytics", fields: [userId], references: [id], onDelete: SetNull)
+
+  // بيانات الحدث (JSON مرن)
+  properties  Json?    // خصائص الحدث (مثل: course_id, lesson_id, duration, etc.)
+
+  // معلومات الجلسة
+  sessionId   String?  // معرف الجلسة
+  userAgent   String?  // معلومات المتصفح
+  ipAddress   String?  // عنوان IP (مشفر للخصوصية)
+
+  // معلومات الصفحة
+  pageUrl     String?  // رابط الصفحة
+  referrer    String?  // المصدر
+
+  // تاريخ الحدث
+  timestamp   DateTime @default(now())
+
+  @@index([eventName, timestamp]) // فهرس لتحسين الاستعلامات
+  @@index([userId, timestamp])    // فهرس للمستخدم والوقت
+  @@map("analytics_events")
+}
+
+// نشاط المستخدمين اليومي (ملخص)
+model UserActivity {
+  id              String   @id @default(cuid())
+  userId          String
+  user            User     @relation("UserDailyActivity", fields: [userId], references: [id], onDelete: Cascade)
+
+  // التاريخ (يوم واحد فقط)
+  date            DateTime @db.Date // تاريخ النشاط (بدون وقت)
+
+  // إحصائيات النشاط
+  sessionsCount   Int      @default(0) // عدد الجلسات
+  totalTimeSpent  Int      @default(0) // إجمالي الوقت بالدقائق
+  pagesVisited    Int      @default(0) // عدد الصفحات المزارة
+  lessonsViewed   Int      @default(0) // عدد الدروس المشاهدة
+  quizzesTaken    Int      @default(0) // عدد الاختبارات المأخوذة
+
+  // تفاعل مع المساعد الذكي
+  aiInteractions  Int      @default(0) // عدد التفاعلات مع AI
+
+  // آخر نشاط
+  lastActiveAt    DateTime @default(now())
+
+  // تواريخ
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@unique([userId, date]) // مستخدم واحد لكل يوم
+  @@map("user_activities")
+}
+
+// مقاييس النظام العامة
+model SystemMetrics {
+  id              String   @id @default(cuid())
+
+  // التاريخ
+  date            DateTime @db.Date @unique // تاريخ المقاييس
+
+  // إحصائيات المستخدمين
+  totalUsers      Int      @default(0) // إجمالي المستخدمين
+  activeUsers     Int      @default(0) // المستخدمين النشطين
+  newUsers        Int      @default(0) // مستخدمين جدد
+
+  // إحصائيات الدورات
+  totalCourses    Int      @default(0) // إجمالي الدورات
+  activeCourses   Int      @default(0) // الدورات النشطة
+  newEnrollments  Int      @default(0) // تسجيلات جديدة
+
+  // إحصائيات التفاعل
+  totalLessons    Int      @default(0) // إجمالي الدروس
+  lessonsCompleted Int     @default(0) // الدروس المكتملة
+  quizzesCompleted Int     @default(0) // الاختبارات المكتملة
+
+  // إحصائيات المساعد الذكي
+  aiInteractions  Int      @default(0) // تفاعلات AI
+  aiTokensUsed    Int      @default(0) // الرموز المستخدمة
+
+  // أداء النظام
+  avgResponseTime Float?   // متوسط وقت الاستجابة (بالميلي ثانية)
+  errorRate       Float?   // معدل الأخطاء (نسبة مئوية)
+
+  // تواريخ
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@map("system_metrics")
 }
