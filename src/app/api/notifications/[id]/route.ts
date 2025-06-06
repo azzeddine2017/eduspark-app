@@ -10,7 +10,7 @@ import { NotificationStatus } from '@prisma/client'
  */
 export async function GET(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // التحقق من المصادقة
@@ -22,7 +22,7 @@ export async function GET(
       )
     }
 
-    const notificationId = params.id
+    const { id: notificationId } = await params
 
     // جلب الإشعار
     const notification = await prisma.notification.findFirst({
@@ -53,13 +53,13 @@ export async function GET(
       await prisma.notification.update({
         where: { id: notificationId },
         data: {
-          status: 'read',
+          status: 'READ',
           readAt: new Date()
         }
       })
-      
+
       // تحديث الكائن المحلي
-      notification.status = 'read' as NotificationStatus
+      notification.status = 'READ' as NotificationStatus
       notification.readAt = new Date()
     }
 
@@ -80,7 +80,7 @@ export async function GET(
  */
 export async function PATCH(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // التحقق من المصادقة
@@ -92,7 +92,7 @@ export async function PATCH(
       )
     }
 
-    const notificationId = params.id
+    const { id: notificationId } = await params
 
     // التحقق من وجود الإشعار وملكية المستخدم له
     const existingNotification = await prisma.notification.findFirst({
@@ -114,7 +114,7 @@ export async function PATCH(
     const { status } = body
 
     // التحقق من صحة الحالة
-    if (!status || !['UNREAD', 'read', 'ARCHIVED'].includes(status)) {
+    if (!status || !['UNREAD', 'READ', 'ARCHIVED'].includes(status)) {
       return NextResponse.json(
         { error: 'حالة الإشعار غير صحيحة' },
         { status: 400 }
@@ -123,8 +123,8 @@ export async function PATCH(
 
     // بناء بيانات التحديث
     const updateData: any = { status }
-    
-    if (status === 'read' && existingNotification.status === 'UNREAD') {
+
+    if (status === 'READ' && existingNotification.status === 'UNREAD') {
       updateData.readAt = new Date()
     }
 
@@ -163,7 +163,7 @@ export async function PATCH(
  */
 export async function DELETE(
   request: NextRequest,
-  { params }: { params: { id: string } }
+  { params }: { params: Promise<{ id: string }> }
 ) {
   try {
     // التحقق من المصادقة
@@ -175,7 +175,7 @@ export async function DELETE(
       )
     }
 
-    const notificationId = params.id
+    const { id: notificationId } = await params
 
     // التحقق من وجود الإشعار وملكية المستخدم له
     const existingNotification = await prisma.notification.findFirst({

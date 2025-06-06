@@ -11,7 +11,7 @@ interface Notification {
   title: string
   message: string
   type: string
-  status: 'UNREAD' | 'read' | 'ARCHIVED'
+  status: 'UNREAD' | 'READ' | 'ARCHIVED'
   priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
   createdAt: string
   actionUrl?: string
@@ -118,13 +118,13 @@ export default function NotificationBell() {
 
     if (diffInMinutes < 1) return 'الآن'
     if (diffInMinutes < 60) return `منذ ${diffInMinutes} دقيقة`
-    
+
     const diffInHours = Math.floor(diffInMinutes / 60)
     if (diffInHours < 24) return `منذ ${diffInHours} ساعة`
-    
+
     const diffInDays = Math.floor(diffInHours / 24)
     if (diffInDays < 7) return `منذ ${diffInDays} يوم`
-    
+
     return date.toLocaleDateString('ar-SA')
   }
 
@@ -152,7 +152,7 @@ export default function NotificationBell() {
         ) : (
           <Bell className="h-6 w-6" />
         )}
-        
+
         {/* عداد الإشعارات غير المقروءة */}
         {unreadCount > 0 && (
           <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full h-5 w-5 flex items-center justify-center font-medium">
@@ -165,11 +165,11 @@ export default function NotificationBell() {
       {isOpen && (
         <>
           {/* خلفية شفافة لإغلاق القائمة */}
-          <div 
-            className="fixed inset-0 z-10" 
+          <div
+            className="fixed inset-0 z-10"
             onClick={() => setIsOpen(false)}
           />
-          
+
           {/* القائمة */}
           <div className="absolute left-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 z-20 max-h-96 overflow-hidden">
             {/* رأس القائمة */}
@@ -211,7 +211,7 @@ export default function NotificationBell() {
                           notification.priority === 'MEDIUM' ? 'bg-blue-500' :
                           'bg-gray-400'
                         }`} />
-                        
+
                         {/* محتوى الإشعار */}
                         <div className="flex-1 min-w-0">
                           <p className="text-sm font-medium text-gray-900 truncate">

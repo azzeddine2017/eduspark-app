@@ -1,12 +1,12 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { 
-  Bell, 
-  Check, 
-  Archive, 
-  Trash2, 
-  Filter, 
+import {
+  Bell,
+  Check,
+  Archive,
+  Trash2,
+  Filter,
   Search,
   ChevronLeft,
   ChevronRight,
@@ -23,7 +23,7 @@ interface Notification {
   title: string
   message: string
   type: string
-  status: 'UNREAD' | 'read' | 'ARCHIVED'
+  status: 'UNREAD' | 'READ' | 'ARCHIVED'
   priority: 'LOW' | 'MEDIUM' | 'HIGH' | 'URGENT'
   createdAt: string
   readAt?: string
@@ -61,7 +61,7 @@ export default function NotificationList() {
   const [unreadCount, setUnreadCount] = useState(0)
   const [loading, setLoading] = useState(true)
   const [selectedIds, setSelectedIds] = useState<string[]>([])
-  
+
   // فلاتر البحث
   const [filters, setFilters] = useState({
     status: '',
@@ -107,16 +107,16 @@ export default function NotificationList() {
       })
 
       if (response.ok) {
-        setNotifications(prev => 
-          prev.map(notif => 
-            notif.id === id 
-              ? { ...notif, status: status as any, readAt: status === 'read' ? new Date().toISOString() : notif.readAt }
+        setNotifications(prev =>
+          prev.map(notif =>
+            notif.id === id
+              ? { ...notif, status: status as any, readAt: status === 'READ' ? new Date().toISOString() : notif.readAt }
               : notif
           )
         )
-        
+
         // تحديث العداد
-        if (status === 'read') {
+        if (status === 'READ') {
           setUnreadCount(prev => Math.max(0, prev - 1))
         }
       }
@@ -137,19 +137,19 @@ export default function NotificationList() {
       })
 
       if (response.ok) {
-        setNotifications(prev => 
-          prev.map(notif => 
+        setNotifications(prev =>
+          prev.map(notif =>
             selectedIds.includes(notif.id)
-              ? { ...notif, status: status as any, readAt: status === 'read' ? new Date().toISOString() : notif.readAt }
+              ? { ...notif, status: status as any, readAt: status === 'READ' ? new Date().toISOString() : notif.readAt }
               : notif
           )
         )
-        
+
         setSelectedIds([])
-        
+
         // تحديث العداد للإشعارات المقروءة
-        if (status === 'read') {
-          const unreadSelected = notifications.filter(n => 
+        if (status === 'READ') {
+          const unreadSelected = notifications.filter(n =>
             selectedIds.includes(n.id) && n.status === 'UNREAD'
           ).length
           setUnreadCount(prev => Math.max(0, prev - unreadSelected))
@@ -172,9 +172,9 @@ export default function NotificationList() {
       if (response.ok) {
         setNotifications(prev => prev.filter(notif => !selectedIds.includes(notif.id)))
         setSelectedIds([])
-        
+
         // تحديث العداد
-        const unreadSelected = notifications.filter(n => 
+        const unreadSelected = notifications.filter(n =>
           selectedIds.includes(n.id) && n.status === 'UNREAD'
         ).length
         setUnreadCount(prev => Math.max(0, prev - unreadSelected))
@@ -195,8 +195,8 @@ export default function NotificationList() {
 
   // تحديد/إلغاء تحديد إشعار واحد
   const toggleSelectNotification = (id: string) => {
-    setSelectedIds(prev => 
-      prev.includes(id) 
+    setSelectedIds(prev =>
+      prev.includes(id)
         ? prev.filter(selectedId => selectedId !== id)
         : [...prev, id]
     )
@@ -220,9 +220,9 @@ export default function NotificationList() {
   // تنسيق الوقت
   const formatDateTime = (dateString: string) => {
     const date = new Date(dateString)
-    return date.toLocaleDateString('ar-SA') + ' ' + date.toLocaleTimeString('ar-SA', { 
-      hour: '2-digit', 
-      minute: '2-digit' 
+    return date.toLocaleDateString('ar-SA') + ' ' + date.toLocaleTimeString('ar-SA', {
+      hour: '2-digit',
+      minute: '2-digit'
     })
   }
 
@@ -266,7 +266,7 @@ export default function NotificationList() {
               لديك {unreadCount} إشعار غير مقروء
             </p>
           </div>
-          
+
           {/* أزرار الإجراءات السريعة */}
           {selectedIds.length > 0 && (
             <div className="flex items-center space-x-2 space-x-reverse">
@@ -319,7 +319,7 @@ export default function NotificationList() {
           >
             <option value="">جميع الحالات</option>
             <option value="UNREAD">غير مقروء</option>
-            <option value="read">مقروء</option>
+            <option value="READ">مقروء</option>
             <option value="ARCHIVED">مؤرشف</option>
           </select>
 
@@ -399,7 +399,7 @@ export default function NotificationList() {
                       <p className="text-sm text-gray-600 mt-1 line-clamp-2">
                         {notification.message}
                       </p>
-                      
+
                       {/* معلومات إضافية */}
                       <div className="flex items-center justify-between mt-3">
                         <div className="flex items-center space-x-4 space-x-reverse text-xs text-gray-500">
@@ -411,7 +411,7 @@ export default function NotificationList() {
                             <span>قُرئ: {formatDateTime(notification.readAt)}</span>
                           )}
                         </div>
-                        
+
                         {/* حالة الإشعار */}
                         <div className="flex items-center space-x-2 space-x-reverse">
                           {notification.status === 'UNREAD' && (
@@ -432,14 +432,14 @@ export default function NotificationList() {
                     <div className="flex items-center space-x-1 space-x-reverse mr-4">
                       {notification.status === 'UNREAD' && (
                         <button
-                          onClick={() => updateNotificationStatus(notification.id, 'read')}
+                          onClick={() => updateNotificationStatus(notification.id, 'READ')}
                           className="p-1 text-gray-400 hover:text-blue-600 rounded"
                           title="تحديد كمقروء"
                         >
                           <Check className="h-4 w-4" />
                         </button>
                       )}
-                      
+
                       {notification.status !== 'ARCHIVED' && (
                         <button
                           onClick={() => updateNotificationStatus(notification.id, 'ARCHIVED')}
@@ -481,7 +481,7 @@ export default function NotificationList() {
           <div className="text-sm text-gray-700">
             عرض {((pagination.page - 1) * pagination.limit) + 1} إلى {Math.min(pagination.page * pagination.limit, pagination.totalCount)} من {pagination.totalCount} إشعار
           </div>
-          
+
           <div className="flex items-center space-x-2 space-x-reverse">
             <button
               onClick={() => changePage(pagination.page - 1)}
@@ -491,11 +491,11 @@ export default function NotificationList() {
               <ChevronRight className="h-4 w-4 ml-1" />
               السابق
             </button>
-            
+
             <span className="px-3 py-2 text-sm">
               صفحة {pagination.page} من {pagination.totalPages}
             </span>
-            
+
             <button
               onClick={() => changePage(pagination.page + 1)}
               disabled={!pagination.hasNext}

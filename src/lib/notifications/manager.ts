@@ -329,7 +329,7 @@ export class NotificationManager {
           status: 'UNREAD'
         },
         data: {
-          status: 'read',
+          status: 'READ',
           readAt: new Date()
         }
       })

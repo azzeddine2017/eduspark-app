@@ -151,7 +151,7 @@ export async function POST(request: NextRequest) {
 
     // تحديد المستلمين
     let recipientIds: string[] = []
-    
+
     if (userId) {
       // إرسال لمستخدم واحد
       recipientIds = [userId]
@@ -257,7 +257,7 @@ export async function PATCH(request: NextRequest) {
 
     // تحديث الإشعارات المحددة
     const updateData: any = { status }
-    if (status === 'read') {
+    if (status === 'READ') {
       updateData.readAt = new Date()
     }
 
@@ -308,7 +308,7 @@ export async function DELETE(request: NextRequest) {
       const result = await prisma.notification.deleteMany({
         where: {
           userId: session.user.id,
-          status: { in: ['read', 'ARCHIVED'] }
+          status: { in: ['READ', 'ARCHIVED'] }
         }
       })
 

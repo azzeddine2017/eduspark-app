@@ -4,13 +4,13 @@ import { useState, useEffect } from "react"
 import { useSession } from "next-auth/react"
 import { useRouter } from "next/navigation"
 import Link from "next/link"
-import { 
-  User, 
-  Mail, 
-  Lock, 
-  Eye, 
-  EyeOff, 
-  Save, 
+import {
+  User,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  Save,
   ArrowLeft,
   Camera,
   Phone,
@@ -44,20 +44,39 @@ export default function EditProfilePage() {
     confirmPassword: ''
   })
 
+  // جلب بيانات المستخدم الكاملة
   useEffect(() => {
-    if (session?.user) {
-      setFormData(prev => ({
-        ...prev,
-        name: session.user.name || '',
-        email: session.user.email || '',
-        phone: session.user.phone || '',
-        location: session.user.location || '',
-        bio: session.user.bio || '',
-        website: session.user.website || '',
-        birthDate: session.user.birthDate || '',
-        occupation: session.user.occupation || ''
-      }))
+    const fetchUserData = async () => {
+      if (session?.user) {
+        try {
+          const response = await fetch('/api/user/profile')
+          if (response.ok) {
+            const userData = await response.json()
+            setFormData(prev => ({
+              ...prev,
+              name: userData.user.name || '',
+              email: userData.user.email || '',
+              phone: userData.user.phone || '',
+              location: userData.user.location || '',
+              bio: userData.user.bio || '',
+              website: userData.user.website || '',
+              birthDate: userData.user.birthDate ? userData.user.birthDate.split('T')[0] : '',
+              occupation: userData.user.occupation || ''
+            }))
+          }
+        } catch (error) {
+          console.error('Error fetching user data:', error)
+          // Fallback to session data
+          setFormData(prev => ({
+            ...prev,
+            name: session.user.name || '',
+            email: session.user.email || ''
+          }))
+        }
+      }
     }
+
+    fetchUserData()
   }, [session])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
@@ -118,7 +137,7 @@ export default function EditProfilePage() {
       })
 
       setSuccess('تم تحديث الملف الشخصي بنجاح!')
-      
+
       // مسح كلمات المرور
       setFormData(prev => ({
         ...prev,
@@ -153,7 +172,7 @@ export default function EditProfilePage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">

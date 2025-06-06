@@ -9,9 +9,6 @@ import {
   BookOpen,
   Save,
   ArrowLeft,
-  Upload,
-  Eye,
-  Settings,
   Plus,
   Trash2,
   AlertCircle,
@@ -72,7 +69,7 @@ export default function NewCoursePage() {
         const errorData = await response.json()
         setError(errorData.message || 'حدث خطأ أثناء إنشاء الدورة')
       }
-    } catch (error) {
+    } catch {
       setError('حدث خطأ في الاتصال')
     } finally {
       setLoading(false)
@@ -94,7 +91,7 @@ export default function NewCoursePage() {
   }
 
   const updateLesson = (id: number, field: string, value: string) => {
-    setLessons(lessons.map(lesson => 
+    setLessons(lessons.map(lesson =>
       lesson.id === id ? { ...lesson, [field]: value } : lesson
     ))
   }
@@ -122,7 +119,7 @@ export default function NewCoursePage() {
   return (
     <div className="min-h-screen bg-background">
       <Header />
-      
+
       <main className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Header */}
         <div className="mb-8">
@@ -171,7 +168,7 @@ export default function NewCoursePage() {
               <BookOpen className="w-5 h-5 ml-2" />
               معلومات الدورة الأساسية
             </h2>
-            
+
             <div className="grid md:grid-cols-2 gap-6">
               <div>
                 <label className="block text-sm font-medium text-text arabic-text mb-2">
@@ -352,7 +349,7 @@ export default function NewCoursePage() {
                 <Save className="w-4 h-4 ml-2" />
                 حفظ كمسودة
               </button>
-              
+
               <button
                 type="submit"
                 disabled={loading}

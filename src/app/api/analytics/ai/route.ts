@@ -92,7 +92,7 @@ export async function GET(request: NextRequest) {
 
       // أنواع التفاعلات
       prisma.lLMInteractionLog.groupBy({
-        by: ['interactionType'],
+        by: ['type'],
         where: whereClause,
         _count: { id: true },
         _avg: {
@@ -116,11 +116,11 @@ export async function GET(request: NextRequest) {
       prisma.lLMInteractionLog.findMany({
         where: {
           ...whereClause,
-          feedback: { not: null }
+          response: { not: null }
         },
         select: {
-          feedback: true,
-          interactionType: true,
+          response: true,
+          type: true,
           responseTime: true,
           tokens: true
         }
@@ -130,8 +130,8 @@ export async function GET(request: NextRequest) {
       prisma.lLMInteractionLog.findMany({
         where: whereClause,
         select: {
-          userMessage: true,
-          interactionType: true
+          prompt: true,
+          type: true
         },
         take: 1000 // عينة للتحليل
       }),
@@ -140,18 +140,18 @@ export async function GET(request: NextRequest) {
       prisma.lLMInteractionLog.findMany({
         where: {
           ...whereClause,
-          error: { not: null }
+          response: { contains: 'error' }
         },
         select: {
-          error: true,
-          interactionType: true,
+          response: true,
+          type: true,
           createdAt: true
         }
       }),
 
       // استخدام الرموز حسب النوع
       prisma.lLMInteractionLog.groupBy({
-        by: ['interactionType'],
+        by: ['type'],
         where: whereClause,
         _sum: { tokens: true },
         _avg: { tokens: true },
@@ -192,7 +192,7 @@ export async function GET(request: NextRequest) {
 
     // تحليل المواضيع الشائعة (تحليل بسيط للكلمات المفتاحية)
     const topicAnalysis = popularTopics.reduce((acc, interaction) => {
-      if (!interaction.userMessage) return acc
+      if (!interaction.prompt) return acc
 
       // كلمات مفتاحية شائعة في التعليم
       const keywords = [
@@ -200,7 +200,7 @@ export async function GET(request: NextRequest) {
         'دورة', 'تعلم', 'فهم', 'توضيح', 'سؤال', 'إجابة', 'مراجعة', 'ملخص'
       ]
 
-      const message = interaction.userMessage.toLowerCase()
+      const message = interaction.prompt.toLowerCase()
       keywords.forEach(keyword => {
         if (message.includes(keyword)) {
           acc[keyword] = (acc[keyword] || 0) + 1
@@ -212,7 +212,7 @@ export async function GET(request: NextRequest) {
 
     // تحليل الأخطاء
     const errorStats = errorAnalysis.reduce((acc, error) => {
-      const errorType = error.error || 'خطأ غير محدد'
+      const errorType = error.response.includes('error') ? 'خطأ في الاستجابة' : 'خطأ غير محدد'
       acc[errorType] = (acc[errorType] || 0) + 1
       return acc
     }, {} as Record<string, number>)
@@ -222,18 +222,19 @@ export async function GET(request: NextRequest) {
     const errorCount = errorAnalysis.length
     const successRate = totalInteractions > 0 ? ((totalInteractions - errorCount) / totalInteractions) * 100 : 0
 
-    // تحليل جودة الاستجابات
+    // تحليل جودة الاستجابات (بناءً على طول الاستجابة ووقت الاستجابة)
     const qualityStats = responseQuality.reduce((acc, response) => {
-      if (response.feedback) {
-        try {
-          const feedback = JSON.parse(response.feedback)
-          if (feedback.rating) {
-            acc.ratings.push(feedback.rating)
-          }
-        } catch (e) {
-          // تجاهل الأخطاء في تحليل JSON
-        }
-      }
+      // تقييم بسيط بناءً على طول الاستجابة ووقت الاستجابة
+      const responseLength = response.response?.length || 0
+      const responseTime = response.responseTime || 0
+
+      // تقييم بسيط: استجابة جيدة إذا كانت طويلة بما فيه الكفاية وسريعة
+      let rating = 3 // متوسط
+      if (responseLength > 100 && responseTime < 5000) rating = 5 // ممتاز
+      else if (responseLength > 50 && responseTime < 10000) rating = 4 // جيد
+      else if (responseLength < 20 || responseTime > 15000) rating = 2 // ضعيف
+
+      acc.ratings.push(rating)
       return acc
     }, { ratings: [] as number[] })
 
@@ -254,7 +255,7 @@ export async function GET(request: NextRequest) {
       usage: {
         topUsers: processedTopUsers,
         byType: interactionTypes.map(type => ({
-          type: type.interactionType,
+          type: type.type,
           count: type._count.id,
           averageTokens: Math.round((type._avg.tokens || 0) * 100) / 100,
           averageResponseTime: Math.round((type._avg.responseTime || 0) * 100) / 100
@@ -267,7 +268,7 @@ export async function GET(request: NextRequest) {
       },
       performance: {
         tokenUsage: tokenUsage.map(usage => ({
-          type: usage.interactionType,
+          type: usage.type,
           totalTokens: usage._sum.tokens || 0,
           averageTokens: Math.round((usage._avg.tokens || 0) * 100) / 100,
           interactionsCount: usage._count.id
@@ -299,7 +300,7 @@ export async function GET(request: NextRequest) {
 }
 
 // دالة مساعدة لحساب ساعة الذروة
-function calculatePeakUsageHour(dailyUsage: any[]): string {
+function calculatePeakUsageHour(dailyUsage: Array<{ createdAt: Date; _count: { id: number } }>): string {
   const hourlyStats = dailyUsage.reduce((acc, usage) => {
     const hour = new Date(usage.createdAt).getHours()
     acc[hour] = (acc[hour] || 0) + usage._count.id
@@ -307,7 +308,7 @@ function calculatePeakUsageHour(dailyUsage: any[]): string {
   }, {} as Record<number, number>)
 
   const peakHour = Object.entries(hourlyStats)
-    .sort(([,a], [,b]) => b - a)[0]?.[0]
+    .sort(([,a], [,b]) => (b as number) - (a as number))[0]?.[0]
 
   return peakHour ? `${peakHour}:00` : 'غير محدد'
 }

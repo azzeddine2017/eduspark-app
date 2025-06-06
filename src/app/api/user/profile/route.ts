@@ -127,7 +127,14 @@ export async function PUT(request: NextRequest) {
         select: { password: true }
       })
 
-      if (!currentUser || !await bcrypt.compare(currentPassword, currentUser.password)) {
+      if (!currentUser || !currentUser.password) {
+        return NextResponse.json(
+          { error: "هذا الحساب لا يستخدم كلمة مرور (تم إنشاؤه عبر OAuth)" },
+          { status: 400 }
+        )
+      }
+
+      if (!await bcrypt.compare(currentPassword, currentUser.password)) {
         return NextResponse.json(
           { error: "كلمة المرور الحالية غير صحيحة" },
           { status: 400 }

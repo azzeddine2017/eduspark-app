@@ -33,31 +33,31 @@ export async function GET(request: NextRequest) {
       prisma.notification.count({
         where: { userId }
       }),
-      
+
       // الإشعارات غير المقروءة
       prisma.notification.count({
-        where: { 
+        where: {
           userId,
           status: 'UNREAD'
         }
       }),
-      
+
       // الإشعارات المقروءة
       prisma.notification.count({
-        where: { 
+        where: {
           userId,
-          status: 'read'
+          status: 'READ'
         }
       }),
-      
+
       // الإشعارات المؤرشفة
       prisma.notification.count({
-        where: { 
+        where: {
           userId,
           status: 'ARCHIVED'
         }
       }),
-      
+
       // إشعارات اليوم
       prisma.notification.count({
         where: {
@@ -67,7 +67,7 @@ export async function GET(request: NextRequest) {
           }
         }
       }),
-      
+
       // إشعارات هذا الأسبوع
       prisma.notification.count({
         where: {
@@ -99,11 +99,11 @@ export async function GET(request: NextRequest) {
 
     // إحصائيات الإشعارات اليومية للأسبوع الماضي
     const dailyStats = await prisma.$queryRaw`
-      SELECT 
+      SELECT
         DATE(createdAt) as date,
         COUNT(*) as count,
         SUM(CASE WHEN status = 'UNREAD' THEN 1 ELSE 0 END) as unread_count
-      FROM notifications 
+      FROM notifications
       WHERE userId = ${userId}
         AND createdAt >= DATE_SUB(CURDATE(), INTERVAL 7 DAY)
       GROUP BY DATE(createdAt)
@@ -115,15 +115,15 @@ export async function GET(request: NextRequest) {
     }>
 
     // معدل القراءة (نسبة الإشعارات المقروءة)
-    const readRate = totalNotifications > 0 
-      ? Math.round((readNotifications / totalNotifications) * 100) 
+    const readRate = totalNotifications > 0
+      ? Math.round((readNotifications / totalNotifications) * 100)
       : 0
 
     // متوسط وقت القراءة (بالدقائق)
     const avgReadTime = await prisma.$queryRaw`
       SELECT AVG(TIMESTAMPDIFF(MINUTE, createdAt, readAt)) as avg_read_time
-      FROM notifications 
-      WHERE userId = ${userId} 
+      FROM notifications
+      WHERE userId = ${userId}
         AND readAt IS NOT NULL
         AND readAt > createdAt
     ` as Array<{ avg_read_time: number | null }>

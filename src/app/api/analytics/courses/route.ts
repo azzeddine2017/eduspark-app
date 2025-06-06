@@ -24,9 +24,9 @@ export async function GET(request: NextRequest) {
       select: { role: true }
     })
 
-    if (!user || !['ADMIN', 'ANALYTICS_SPECIALIST', 'INSTRUCTOR'].includes(user.role)) {
+    if (!user || !['ADMIN', 'ANALYTICS_SPECIALIST'].includes(user.role)) {
       return NextResponse.json(
-        { error: 'غير مصرح بعرض تحليلات الدورات' },
+        { error: 'غير مصرح بعرض التحليلات' },
         { status: 403 }
       )
     }
@@ -49,27 +49,23 @@ export async function GET(request: NextRequest) {
       whereClause.id = courseId
     }
     if (instructorId) {
-      whereClause.instructorId = instructorId
+      whereClause.authorId = instructorId
     }
 
-    // جلب إحصائيات الدورات
+    // جلب البيانات بشكل متوازي
     const [
       courseStats,
       topCourses,
       coursesByCategory,
       enrollmentTrends,
-      completionRates,
-      lessonProgress,
-      quizPerformance,
-      courseRatings
+      completionRates
     ] = await Promise.all([
       // إحصائيات عامة للدورات
       prisma.course.aggregate({
         where: whereClause,
         _count: { id: true },
-        _avg: { 
-          rating: true,
-          estimatedDuration: true
+        _avg: {
+          duration: true
         }
       }),
 
@@ -80,11 +76,10 @@ export async function GET(request: NextRequest) {
           id: true,
           title: true,
           description: true,
-          category: true,
-          rating: true,
-          estimatedDuration: true,
+          level: true,
+          duration: true,
           createdAt: true,
-          instructor: {
+          author: {
             select: {
               name: true
             }
@@ -114,12 +109,12 @@ export async function GET(request: NextRequest) {
         take: 20
       }),
 
-      // توزيع الدورات حسب الفئة
+      // توزيع الدورات حسب المستوى
       prisma.course.groupBy({
-        by: ['category'],
+        by: ['level'],
         where: whereClause,
         _count: { id: true },
-        _avg: { rating: true }
+        _avg: { duration: true }
       }),
 
       // اتجاهات التسجيل
@@ -150,71 +145,6 @@ export async function GET(request: NextRequest) {
             }
           }
         }
-      }),
-
-      // تقدم الدروس
-      prisma.lessonProgress.groupBy({
-        by: ['lessonId'],
-        where: {
-          lesson: {
-            course: whereClause
-          },
-          updatedAt: dateRange
-        },
-        _count: {
-          id: true
-        },
-        _sum: {
-          timeSpent: true
-        }
-      }),
-
-      // أداء الاختبارات
-      prisma.quizAttempt.findMany({
-        where: {
-          quiz: {
-            lesson: {
-              course: whereClause
-            }
-          },
-          createdAt: dateRange
-        },
-        select: {
-          score: true,
-          maxScore: true,
-          isCompleted: true,
-          quiz: {
-            select: {
-              lesson: {
-                select: {
-                  courseId: true,
-                  course: {
-                    select: {
-                      title: true
-                    }
-                  }
-                }
-              }
-            }
-          }
-        }
-      }),
-
-      // تقييمات الدورات
-      prisma.courseRating.findMany({
-        where: {
-          course: whereClause,
-          createdAt: dateRange
-        },
-        select: {
-          rating: true,
-          courseId: true,
-          course: {
-            select: {
-              title: true
-            }
-          }
-        }
       })
     ])
 
@@ -223,17 +153,16 @@ export async function GET(request: NextRequest) {
       const recentEnrollments = course.enrollments.length
       const completedEnrollments = course.enrollments.filter(e => e.completedAt).length
       const completionRate = recentEnrollments > 0 ? (completedEnrollments / recentEnrollments) * 100 : 0
-      const averageProgress = recentEnrollments > 0 
-        ? course.enrollments.reduce((sum, e) => sum + e.progress, 0) / recentEnrollments 
+      const averageProgress = recentEnrollments > 0
+        ? course.enrollments.reduce((sum, e) => sum + e.progress, 0) / recentEnrollments
         : 0
 
       return {
         id: course.id,
         title: course.title,
-        category: course.category,
-        instructor: course.instructor.name,
-        rating: course.rating,
-        duration: course.estimatedDuration,
+        level: course.level,
+        instructor: course.author.name,
+        duration: course.duration,
         totalEnrollments: course._count.enrollments,
         recentEnrollments,
         lessonsCount: course._count.lessons,
@@ -269,77 +198,17 @@ export async function GET(request: NextRequest) {
       data.averageProgress = data.total > 0 ? data.averageProgress / data.total : 0
     })
 
-    // معالجة أداء الاختبارات
-    const quizStats = quizPerformance.reduce((acc, attempt) => {
-      const courseId = attempt.quiz.lesson.courseId
-      if (!acc[courseId]) {
-        acc[courseId] = {
-          courseTitle: attempt.quiz.lesson.course.title,
-          totalAttempts: 0,
-          completedAttempts: 0,
-          totalScore: 0,
-          totalMaxScore: 0
-        }
-      }
-      acc[courseId].totalAttempts++
-      if (attempt.isCompleted) {
-        acc[courseId].completedAttempts++
-        acc[courseId].totalScore += attempt.score
-        acc[courseId].totalMaxScore += attempt.maxScore
-      }
-      return acc
-    }, {} as Record<string, any>)
-
-    // حساب متوسط النتائج
-    Object.keys(quizStats).forEach(courseId => {
-      const data = quizStats[courseId]
-      data.averageScore = data.totalMaxScore > 0 ? (data.totalScore / data.totalMaxScore) * 100 : 0
-      data.completionRate = data.totalAttempts > 0 ? (data.completedAttempts / data.totalAttempts) * 100 : 0
-    })
-
-    // معالجة اتجاهات التسجيل (تجميع يومي)
-    const dailyEnrollments = enrollmentTrends.reduce((acc, enrollment) => {
-      const date = new Date(enrollment.enrolledAt).toISOString().split('T')[0]
-      acc[date] = (acc[date] || 0) + enrollment._count.id
-      return acc
-    }, {} as Record<string, number>)
-
-    // معالجة تقييمات الدورات
-    const ratingStats = courseRatings.reduce((acc, rating) => {
-      const courseId = rating.courseId
-      if (!acc[courseId]) {
-        acc[courseId] = {
-          courseTitle: rating.course.title,
-          ratings: [],
-          average: 0,
-          count: 0
-        }
-      }
-      acc[courseId].ratings.push(rating.rating)
-      acc[courseId].count++
-      return acc
-    }, {} as Record<string, any>)
-
-    // حساب متوسط التقييمات
-    Object.keys(ratingStats).forEach(courseId => {
-      const data = ratingStats[courseId]
-      data.average = data.ratings.length > 0 
-        ? data.ratings.reduce((sum: number, r: number) => sum + r, 0) / data.ratings.length 
-        : 0
-    })
-
     return NextResponse.json({
       summary: {
         totalCourses: courseStats._count.id,
-        averageRating: Math.round((courseStats._avg.rating || 0) * 100) / 100,
-        averageDuration: Math.round((courseStats._avg.estimatedDuration || 0) * 100) / 100,
+        averageDuration: Math.round((courseStats._avg.duration || 0) * 100) / 100,
         totalEnrollments: enrollmentTrends.reduce((sum, e) => sum + e._count.id, 0)
       },
       topCourses: processedTopCourses,
-      categories: coursesByCategory.map(cat => ({
-        category: cat.category,
+      levels: coursesByCategory.map(cat => ({
+        level: cat.level,
         count: cat._count.id,
-        averageRating: Math.round((cat._avg.rating || 0) * 100) / 100
+        averageDuration: Math.round((cat._avg.duration || 0) * 100) / 100
       })),
       performance: {
         completionRates: Object.entries(courseCompletionRates).map(([courseId, data]: [string, any]) => ({
@@ -349,28 +218,8 @@ export async function GET(request: NextRequest) {
           completedEnrollments: data.completed,
           completionRate: Math.round(data.completionRate * 100) / 100,
           averageProgress: Math.round(data.averageProgress * 100) / 100
-        })),
-        quizPerformance: Object.entries(quizStats).map(([courseId, data]: [string, any]) => ({
-          courseId,
-          courseTitle: data.courseTitle,
-          totalAttempts: data.totalAttempts,
-          completedAttempts: data.completedAttempts,
-          averageScore: Math.round(data.averageScore * 100) / 100,
-          completionRate: Math.round(data.completionRate * 100) / 100
         }))
-      },
-      trends: {
-        dailyEnrollments: Object.entries(dailyEnrollments).map(([date, count]) => ({
-          date,
-          count
-        })).sort((a, b) => a.date.localeCompare(b.date))
-      },
-      ratings: Object.entries(ratingStats).map(([courseId, data]: [string, any]) => ({
-        courseId,
-        courseTitle: data.courseTitle,
-        averageRating: Math.round(data.average * 100) / 100,
-        ratingsCount: data.count
-      }))
+      }
     })
 
   } catch (error) {

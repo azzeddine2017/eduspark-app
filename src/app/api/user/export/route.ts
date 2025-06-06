@@ -83,11 +83,11 @@ export async function GET() {
           id: true,
           prompt: true,
           response: true,
-          timestamp: true,
+          createdAt: true,
           lessonId: true,
           cost: true
         },
-        orderBy: { timestamp: 'desc' },
+        orderBy: { createdAt: 'desc' },
         take: 1000 // آخر 1000 تفاعل
       }),
 
@@ -158,7 +158,7 @@ export async function GET() {
         id: interaction.id,
         prompt: interaction.prompt,
         response: interaction.response,
-        timestamp: interaction.timestamp,
+        timestamp: interaction.createdAt,
         lessonId: interaction.lessonId,
         cost: interaction.cost
       })),
@@ -167,7 +167,7 @@ export async function GET() {
         id: course.id,
         title: course.title,
         description: course.description,
-        published: course.published,
+        published: course.isPublished,
         createdAt: course.createdAt,
         updatedAt: course.updatedAt,
         studentsEnrolled: course._count.enrollments,
