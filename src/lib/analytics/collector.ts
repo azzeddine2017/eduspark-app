@@ -43,7 +43,7 @@ export class AnalyticsCollector {
           eventName: data.eventName,
           eventType: data.eventType,
           userId: data.userId || null,
-          properties: data.properties || null,
+          properties: data.properties === undefined ? undefined : data.properties,
           sessionId: data.sessionId || null,
           userAgent: data.userAgent || null,
           ipAddress: hashedIp,

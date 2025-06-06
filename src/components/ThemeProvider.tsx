@@ -1,10 +1,9 @@
 "use client"
 
 import { ThemeProvider as NextThemesProvider } from "next-themes"
-import { type ThemeProviderProps } from "next-themes/dist/types"
 import { useEffect, useState } from "react"
 
-export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
+export function ThemeProvider({ children, ...props }: { children: React.ReactNode; [key: string]: unknown }) {
   const [mounted, setMounted] = useState(false)
 
   useEffect(() => {
@@ -18,7 +17,6 @@ export function ThemeProvider({ children, ...props }: ThemeProviderProps) {
   return (
     <NextThemesProvider
       {...props}
-      suppressHydrationWarning={true}
     >
       {children}
     </NextThemesProvider>

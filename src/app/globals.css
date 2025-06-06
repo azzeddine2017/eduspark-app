@@ -23,6 +23,14 @@
   --shadow-sm: 0 1px 2px 0 rgb(0 0 0 / 0.05);
   --shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
   --shadow-lg: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+
+  /* إضافة متغيرات جديدة لتحسين التباين */
+  --color-title: #000000;
+  --color-heading: #111827;
+  --color-text-important: #1F2937;
+  --color-date: #374151;
+  --bg-warning-light: rgba(251, 191, 36, 0.15);
+  --text-warning-light: #92400E;
 }
 
 /* الوضع المظلم */
@@ -39,6 +47,14 @@
   --color-warning: #FBBF24;
   --color-error: #F87171;
   --color-info: #22D3EE;
+
+  /* تحديث متغيرات الوضع المظلم */
+  --color-title: #FFFFFF;
+  --color-heading: #F1F5F9;
+  --color-text-important: #E2E8F0;
+  --color-date: #CBD5E1;
+  --bg-warning-light: rgba(251, 191, 36, 0.2);
+  --text-warning-light: #FBBF24;
 }
 
 /* فئات CSS مخصصة */
@@ -89,29 +105,61 @@ body {
 /* تحسين التباين للنصوص */
 .text-high-contrast {
   color: var(--color-text);
-  font-weight: 500;
+  font-weight: 600;
 }
 
 .text-medium-contrast {
   color: var(--color-textSecondary);
-  font-weight: 400;
+  font-weight: 500;
 }
 
-/* تحسين الخطوط للعناوين */
-h1, h2, h3, h4, h5, h6 {
-  color: var(--color-text);
-  font-weight: 600;
-  line-height: 1.4;
-}
-
+/* تحسين التباين للعناوين */
 .arabic-text h1,
 .arabic-text h2,
 .arabic-text h3,
 .arabic-text h4,
 .arabic-text h5,
 .arabic-text h6 {
+  color: var(--color-text);
   font-family: 'Cairo', 'Tajawal', 'Noto Sans Arabic', sans-serif;
   font-weight: 700;
+  text-shadow: 0 0 1px rgba(0, 0, 0, 0.1);
+}
+
+/* تحسين تباين التواريخ */
+.date-text {
+  color: var(--color-text);
+  font-weight: 500;
+}
+
+/* تحسين تباين بطاقات التحذيرات */
+.warning-card {
+  background-color: var(--color-warning-bg);
+  color: var(--color-warning-text);
+  font-weight: 500;
+  border: 1px solid var(--color-warning-border);
+}
+
+/* تحسين التباين في الوضع المظلم */
+.dark .text-high-contrast {
+  color: #FFFFFF;
+  font-weight: 600;
+}
+
+.dark .text-medium-contrast {
+  color: #E2E8F0;
+  font-weight: 500;
+}
+
+.dark .date-text {
+  color: #E2E8F0;
+  font-weight: 500;
+}
+
+.dark .warning-card {
+  background-color: rgba(251, 191, 36, 0.1);
+  color: #FBBF24;
+  border-color: rgba(251, 191, 36, 0.3);
 }
 
 /* تحسين الأزرار */
@@ -506,4 +554,56 @@ h1, h2, h3, h4, h5, h6 {
 
 .bg-gradient-error {
   background: linear-gradient(135deg, var(--color-error), #dc2626);
+}
+
+/* ضمان وضوح النصوص في جميع الصفحات */
+html, body {
+  color: var(--color-text, #222) !important;
+  background: var(--color-background, #fff) !important;
+}
+
+/* ضمان وضوح الرموز والنصوص الخاصة */
+span, p, h1, h2, h3, h4, h5, h6, div {
+  color: var(--color-text, #222);
+}
+
+/* إذا كان هناك عناصر تستخدم كلاس مخصص للنصوص، يمكن إضافة التالي */
+.text-contrast, .text-clear, .text-visible {
+  color: var(--color-text, #222) !important;
+}
+
+/* تحسين تباين العناوين الرئيسية */
+.page-title {
+  color: var(--color-title);
+  font-weight: 700;
+  font-size: 2rem;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  letter-spacing: -0.025em;
+}
+
+.dark .page-title {
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* تحسين تباين التواريخ والأرقام */
+.date-display {
+  color: var(--color-date);
+  font-weight: 500;
+  font-family: 'IBM Plex Sans Arabic', 'Noto Sans Arabic', sans-serif;
+}
+
+/* تحسين تباين بطاقات التحذير والتنبيه */
+.alert-card {
+  background-color: var(--bg-warning-light);
+  color: var(--text-warning-light);
+  font-weight: 500;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  border: 1px solid var(--color-warning);
+}
+
+/* تحسين وضوح النصوص المهمة */
+.important-text {
+  color: var(--color-text-important);
+  font-weight: 600;
 }

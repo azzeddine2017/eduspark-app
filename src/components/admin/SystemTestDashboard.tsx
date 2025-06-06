@@ -15,6 +15,11 @@ import {
   RefreshCw
 } from 'lucide-react'
 
+// واجهة لحالة النظام (يمكنك تخصيصها حسب الحاجة)
+interface SystemStatus {
+  [key: string]: unknown;
+}
+
 // واجهة نتيجة الاختبار
 interface TestResult {
   test: string
@@ -22,7 +27,7 @@ interface TestResult {
   duration?: string
   message?: string
   error?: string
-  details?: any
+  details?: unknown // استخدم unknown بدلاً من any
 }
 
 // واجهة ملخص الاختبار
@@ -40,7 +45,7 @@ export default function SystemTestDashboard() {
   const [testResults, setTestResults] = useState<Record<string, TestResult[]>>({})
   const [testSummaries, setTestSummaries] = useState<Record<string, TestSummary>>({})
   const [runningTests, setRunningTests] = useState<Set<string>>(new Set())
-  const [systemStatus, setSystemStatus] = useState<any>(null)
+  const [systemStatus, setSystemStatus] = useState<SystemStatus | null>(null)
 
   // تشغيل اختبار
   const runTest = async (system: string, testType: string) => {
@@ -101,8 +106,8 @@ export default function SystemTestDashboard() {
       const response = await fetch(`/api/test/${system}`)
       if (response.ok) {
         const data = await response.json()
-        setSystemStatus(prev => ({
-          ...prev,
+        setSystemStatus((prev) => ({
+          ...(prev || {}),
           [system]: data
         }))
       }

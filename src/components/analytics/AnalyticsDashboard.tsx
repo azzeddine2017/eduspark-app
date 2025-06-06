@@ -199,16 +199,15 @@ export default function AnalyticsDashboard() {
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">نمو المستخدمين</h3>
               <LineChart
-                data={data.trends.userGrowth.map(item => ({
-                  name: item.date,
-                  إجمالي: item.total,
-                  نشط: item.active,
-                  جديد: item.new
-                }))}
+                data={data.trends.userGrowth.flatMap(item => ([
+                  { name: item.date + ' - إجمالي', value: item.total },
+                  { name: item.date + ' - نشط', value: item.active },
+                  { name: item.date + ' - جديد', value: item.new }
+                ]))}
                 lines={[
-                  { dataKey: 'إجمالي', stroke: '#3b82f6', name: 'إجمالي المستخدمين' },
-                  { dataKey: 'نشط', stroke: '#10b981', name: 'المستخدمين النشطين' },
-                  { dataKey: 'جديد', stroke: '#f59e0b', name: 'مستخدمين جدد' }
+                  { dataKey: 'value', stroke: '#3b82f6', name: 'إجمالي المستخدمين' },
+                  { dataKey: 'value', stroke: '#10b981', name: 'المستخدمين النشطين' },
+                  { dataKey: 'value', stroke: '#f59e0b', name: 'مستخدمين جدد' }
                 ]}
                 height={300}
               />
@@ -218,16 +217,15 @@ export default function AnalyticsDashboard() {
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">نشاط الدورات</h3>
               <AreaChart
-                data={data.trends.courseActivity.map(item => ({
-                  name: item.date,
-                  تسجيلات: item.enrollments,
-                  دروس: item.lessonsCompleted,
-                  اختبارات: item.quizzesCompleted
-                }))}
+                data={data.trends.courseActivity.flatMap(item => ([
+                  { name: item.date + ' - تسجيلات', value: item.enrollments },
+                  { name: item.date + ' - دروس', value: item.lessonsCompleted },
+                  { name: item.date + ' - اختبارات', value: item.quizzesCompleted }
+                ]))}
                 areas={[
-                  { dataKey: 'تسجيلات', stroke: '#8b5cf6', fill: '#8b5cf6', name: 'تسجيلات جديدة' },
-                  { dataKey: 'دروس', stroke: '#06b6d4', fill: '#06b6d4', name: 'دروس مكتملة' },
-                  { dataKey: 'اختبارات', stroke: '#84cc16', fill: '#84cc16', name: 'اختبارات مكتملة' }
+                  { dataKey: 'value', stroke: '#8b5cf6', fill: '#8b5cf6', name: 'تسجيلات جديدة' },
+                  { dataKey: 'value', stroke: '#06b6d4', fill: '#06b6d4', name: 'دروس مكتملة' },
+                  { dataKey: 'value', stroke: '#84cc16', fill: '#84cc16', name: 'اختبارات مكتملة' }
                 ]}
                 height={300}
                 stacked={true}
@@ -241,14 +239,13 @@ export default function AnalyticsDashboard() {
             <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
               <h3 className="text-lg font-semibold text-gray-900 mb-4">استخدام المساعد الذكي</h3>
               <BarChart
-                data={data.trends.aiUsage.map(item => ({
-                  name: item.date,
-                  تفاعلات: item.interactions,
-                  رموز: Math.round(item.tokens / 1000) // تحويل إلى آلاف
-                }))}
+                data={data.trends.aiUsage.flatMap(item => ([
+                  { name: item.date + ' - تفاعلات', value: item.interactions },
+                  { name: item.date + ' - رموز', value: Math.round(item.tokens / 1000) }
+                ]))}
                 bars={[
-                  { dataKey: 'تفاعلات', fill: '#ef4444', name: 'عدد التفاعلات' },
-                  { dataKey: 'رموز', fill: '#f97316', name: 'الرموز المستخدمة (بالآلاف)' }
+                  { dataKey: 'value', fill: '#ef4444', name: 'عدد التفاعلات' },
+                  { dataKey: 'value', fill: '#f97316', name: 'الرموز المستخدمة (بالآلاف)' }
                 ]}
                 height={300}
               />

@@ -31,6 +31,14 @@ export default async function ProfilePage() {
     redirect('/auth/signin')
   }
 
+  // جلب بيانات المستخدم الكاملة من قاعدة البيانات
+  const dbUser = await prisma.user.findUnique({
+    where: { id: user.id },
+    select: {
+      createdAt: true
+    }
+  })
+
   // جلب إحصائيات المستخدم
   const [enrollments, completedLessons, totalInteractions] = await Promise.all([
     prisma.enrollment.findMany({
@@ -91,7 +99,7 @@ export default async function ProfilePage() {
                   <div className="mt-2 flex items-center space-x-4 space-x-reverse">
                     <span className="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm flex items-center">
                       <Calendar className="w-4 h-4 ml-1" />
-                      انضم في {new Date(user.createdAt).toLocaleDateString('ar-SA')}
+                      انضم في {new Date(dbUser?.createdAt ?? Date.now()).toLocaleDateString('ar-SA')}
                     </span>
                     <span className="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">
                       {user.role === 'ADMIN' ? 'مسؤول' : 'طالب'}

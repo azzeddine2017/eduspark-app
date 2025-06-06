@@ -289,7 +289,7 @@ export class NotificationManager {
             lt: cutoffDate
           },
           status: {
-            in: ['read', 'ARCHIVED']
+            in: ['READ', 'ARCHIVED']
           }
         }
       })
