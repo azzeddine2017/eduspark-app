@@ -1,0 +1,1235 @@
+{
+  "users": [
+    {
+      "id": "cmbfsrjra0000eadpudge1312",
+      "email": "admin@fateh.com",
+      "name": "مدير المنصة",
+      "password": "$2b$12$Y5KjtfTkng2iNQZ55X4oW.G.g7d180xdE2oYLJ7WStV5BKwroBD2e",
+      "role": "ADMIN",
+      "isActive": true,
+      "avatar": null,
+      "phone": null,
+      "location": null,
+      "bio": null,
+      "website": null,
+      "birthDate": null,
+      "occupation": null,
+      "emailVerified": null,
+      "image": null,
+      "createdAt": "2025-06-03T00:45:22.983Z",
+      "updatedAt": "2025-06-03T00:45:22.983Z"
+    },
+    {
+      "id": "cmbfsrkqs0001eadp347zethd",
+      "email": "student@fateh.com",
+      "name": "طالب تجريبي",
+      "password": "$2b$12$TYzhi5B.NaLk5UCsixU1e.aJOknv.EIMInrPc97GGOF4L/WMUSpy6",
+      "role": "STUDENT",
+      "isActive": true,
+      "avatar": null,
+      "phone": null,
+      "location": null,
+      "bio": null,
+      "website": null,
+      "birthDate": null,
+      "occupation": null,
+      "emailVerified": null,
+      "image": null,
+      "createdAt": "2025-06-03T00:45:24.292Z",
+      "updatedAt": "2025-06-03T00:45:24.292Z"
+    },
+    {
+      "id": "cmbfu03lz000097afte0g4c1r",
+      "email": "azzeddine.remmal@gmail.com",
+      "name": "الشيخ نحناح",
+      "password": "$2b$12$.S.cPFKNO1BwkHSug7Z58uBCiUUcHhB0NXPM15Vgz38tXwsRctT8O",
+      "role": "INSTRUCTOR",
+      "isActive": true,
+      "avatar": null,
+      "phone": null,
+      "location": null,
+      "bio": null,
+      "website": null,
+      "birthDate": null,
+      "occupation": null,
+      "emailVerified": null,
+      "image": null,
+      "createdAt": "2025-06-03T01:20:01.607Z",
+      "updatedAt": "2025-06-05T10:28:19.393Z"
+    },
+    {
+      "id": "cmbfw8nnj0000rat9oxke8wd8",
+      "email": "mohamedl@gmail.com",
+      "name": "محمد أحمد",
+      "password": "$2b$12$pdN3nWOiJqN5a8yzk74Gn.JUwmDKOabMAGLyI6bJG/eHeyRvkxChW",
+      "role": "STUDENT",
+      "isActive": true,
+      "avatar": null,
+      "phone": null,
+      "location": null,
+      "bio": null,
+      "website": null,
+      "birthDate": null,
+      "occupation": null,
+      "emailVerified": null,
+      "image": null,
+      "createdAt": "2025-06-03T02:22:40.014Z",
+      "updatedAt": "2025-06-03T02:52:06.539Z"
+    },
+    {
+      "id": "cmbjoh3y20000zqc4gqiexttp",
+      "email": "ali@gmail.com",
+      "name": "علي علول",
+      "password": "$2b$12$LMJANAreTuakZuQE04vw2OwlVZayXI4/5BXijaSkgrNAnLdMtENBK",
+      "role": "STUDENT",
+      "isActive": true,
+      "avatar": null,
+      "phone": null,
+      "location": null,
+      "bio": null,
+      "website": null,
+      "birthDate": null,
+      "occupation": null,
+      "emailVerified": null,
+      "image": null,
+      "createdAt": "2025-06-05T17:56:22.202Z",
+      "updatedAt": "2025-06-05T17:56:22.202Z"
+    }
+  ],
+  "courses": [
+    {
+      "id": "cmbfsrl690005eadpspc80l2u",
+      "title": "مقدمة في البرمجة بـ JavaScript",
+      "description": "تعلم أساسيات البرمجة باستخدام لغة JavaScript من الصفر حتى الاحتراف. هذه الدورة مصممة للمبتدئين الذين يريدون دخول عالم البرمجة.",
+      "thumbnail": null,
+      "isPublished": true,
+      "level": "BEGINNER",
+      "duration": 480,
+      "authorId": "cmbfsrjra0000eadpudge1312",
+      "createdAt": "2025-06-03T00:45:24.764Z",
+      "updatedAt": "2025-06-03T00:45:24.764Z"
+    },
+    {
+      "id": "cmbfsrla60007eadpm93pmzkv",
+      "title": "أساسيات الذكاء الاصطناعي",
+      "description": "اكتشف عالم الذكاء الاصطناعي وتعلم المفاهيم الأساسية وتطبيقاتها في الحياة العملية.",
+      "thumbnail": null,
+      "isPublished": true,
+      "level": "INTERMEDIATE",
+      "duration": 600,
+      "authorId": "cmbfsrjra0000eadpudge1312",
+      "createdAt": "2025-06-03T00:45:24.990Z",
+      "updatedAt": "2025-06-03T00:45:24.990Z"
+    },
+    {
+      "id": "cmbiijbaq0005pq7yowmgszo6",
+      "title": "مقدمة في البرمجة بـ JavaScript",
+      "description": "تعلم أساسيات البرمجة باستخدام لغة JavaScript من الصفر حتى الاحتراف. هذه الدورة مصممة للمبتدئين الذين يريدون دخول عالم البرمجة.",
+      "thumbnail": null,
+      "isPublished": true,
+      "level": "BEGINNER",
+      "duration": 480,
+      "authorId": "cmbfsrjra0000eadpudge1312",
+      "createdAt": "2025-06-04T22:22:21.171Z",
+      "updatedAt": "2025-06-04T22:22:21.171Z"
+    },
+    {
+      "id": "cmbiijbfx0007pq7yh73nfh31",
+      "title": "أساسيات الذكاء الاصطناعي",
+      "description": "اكتشف عالم الذكاء الاصطناعي وتعلم المفاهيم الأساسية وتطبيقاتها في الحياة العملية.",
+      "thumbnail": null,
+      "isPublished": true,
+      "level": "INTERMEDIATE",
+      "duration": 600,
+      "authorId": "cmbfsrjra0000eadpudge1312",
+      "createdAt": "2025-06-04T22:22:21.357Z",
+      "updatedAt": "2025-06-04T22:22:21.357Z"
+    },
+    {
+      "id": "cmbiim2bn0005ptgs3invp876",
+      "title": "مقدمة في البرمجة بـ JavaScript",
+      "description": "تعلم أساسيات البرمجة باستخدام لغة JavaScript من الصفر حتى الاحتراف. هذه الدورة مصممة للمبتدئين الذين يريدون دخول عالم البرمجة.",
+      "thumbnail": null,
+      "isPublished": true,
+      "level": "BEGINNER",
+      "duration": 480,
+      "authorId": "cmbfsrjra0000eadpudge1312",
+      "createdAt": "2025-06-04T22:24:29.508Z",
+      "updatedAt": "2025-06-04T22:24:29.508Z"
+    },
+    {
+      "id": "cmbiim2eg0007ptgsu6gzjuh7",
+      "title": "أساسيات الذكاء الاصطناعي",
+      "description": "اكتشف عالم الذكاء الاصطناعي وتعلم المفاهيم الأساسية وتطبيقاتها في الحياة العملية.",
+      "thumbnail": null,
+      "isPublished": true,
+      "level": "INTERMEDIATE",
+      "duration": 600,
+      "authorId": "cmbfsrjra0000eadpudge1312",
+      "createdAt": "2025-06-04T22:24:29.609Z",
+      "updatedAt": "2025-06-04T22:24:29.609Z"
+    }
+  ],
+  "lessons": [
+    {
+      "id": "cmbfsrleq0009eadpegg3co8b",
+      "title": "مقدمة في البرمجة",
+      "content": {
+        "blocks": [
+          {
+            "type": "text",
+            "data": "<h2>مرحباً بك في عالم البرمجة!</h2><p>في هذا الدرس سنتعرف على أساسيات البرمجة ولماذا تعتبر JavaScript لغة ممتازة للمبتدئين.</p><p>البرمجة هي فن كتابة التعليمات للحاسوب لحل المشاكل وإنجاز المهام. وJavaScript هي لغة برمجة قوية ومرنة تستخدم في تطوير المواقع والتطبيقات.</p>"
+          }
+        ]
+      },
+      "order": 1,
+      "duration": 30,
+      "isPublished": true,
+      "courseId": "cmbfsrl690005eadpspc80l2u",
+      "createdAt": "2025-06-03T00:45:25.155Z",
+      "updatedAt": "2025-06-03T00:45:25.155Z"
+    },
+    {
+      "id": "cmbfsrlih000beadp520cqs06",
+      "title": "المتغيرات والأنواع",
+      "content": {
+        "blocks": [
+          {
+            "type": "text",
+            "data": "<h2>المتغيرات في JavaScript</h2><p>المتغيرات هي حاويات لتخزين البيانات. في JavaScript يمكننا إنشاء المتغيرات باستخدام let أو const أو var.</p><pre><code>let name = \"أحمد\";\nconst age = 25;\nvar city = \"الرياض\";</code></pre><p>الأنواع الأساسية في JavaScript تشمل: النصوص (String)، الأرقام (Number)، القيم المنطقية (Boolean).</p>"
+          }
+        ]
+      },
+      "order": 2,
+      "duration": 45,
+      "isPublished": true,
+      "courseId": "cmbfsrl690005eadpspc80l2u",
+      "createdAt": "2025-06-03T00:45:25.289Z",
+      "updatedAt": "2025-06-03T00:45:25.289Z"
+    },
+    {
+      "id": "cmbfsrlmg000deadpv5fm9u4e",
+      "title": "الدوال والتحكم",
+      "content": {
+        "blocks": [
+          {
+            "type": "text",
+            "data": "<h2>الدوال في JavaScript</h2><p>الدوال هي كتل من الكود يمكن إعادة استخدامها. تساعدنا في تنظيم الكود وتجنب التكرار.</p><pre><code>function greet(name) {\n  return \"مرحباً \" + name;\n}\n\nconsole.log(greet(\"فاطمة\"));</code></pre><p>كما يمكننا استخدام الشروط للتحكم في تدفق البرنامج:</p><pre><code>if (age >= 18) {\n  console.log(\"بالغ\");\n} else {\n  console.log(\"قاصر\");\n}</code></pre>"
+          }
+        ]
+      },
+      "order": 3,
+      "duration": 60,
+      "isPublished": true,
+      "courseId": "cmbfsrl690005eadpspc80l2u",
+      "createdAt": "2025-06-03T00:45:25.433Z",
+      "updatedAt": "2025-06-03T00:45:25.433Z"
+    },
+    {
+      "id": "cmbfsrlon000feadp2w8n61oi",
+      "title": "ما هو الذكاء الاصطناعي؟",
+      "content": {
+        "blocks": [
+          {
+            "type": "text",
+            "data": "<h2>مقدمة في الذكاء الاصطناعي</h2><p>الذكاء الاصطناعي (AI) هو مجال في علوم الحاسوب يهدف إلى إنشاء أنظمة قادرة على أداء مهام تتطلب ذكاءً بشرياً.</p><p>يشمل الذكاء الاصطناعي عدة مجالات فرعية مثل:</p><ul><li>تعلم الآلة (Machine Learning)</li><li>معالجة اللغات الطبيعية (NLP)</li><li>الرؤية الحاسوبية (Computer Vision)</li><li>الروبوتات (Robotics)</li></ul>"
+          }
+        ]
+      },
+      "order": 1,
+      "duration": 40,
+      "isPublished": true,
+      "courseId": "cmbfsrla60007eadpm93pmzkv",
+      "createdAt": "2025-06-03T00:45:25.512Z",
+      "updatedAt": "2025-06-03T00:45:25.512Z"
+    },
+    {
+      "id": "cmbfsrlpl000headp30jltfp1",
+      "title": "تعلم الآلة الأساسي",
+      "content": {
+        "blocks": [
+          {
+            "type": "text",
+            "data": "<h2>مقدمة في تعلم الآلة</h2><p>تعلم الآلة هو فرع من الذكاء الاصطناعي يمكّن الحاسوب من التعلم والتحسن من التجربة دون برمجة صريحة.</p><p>أنواع تعلم الآلة الرئيسية:</p><ul><li><strong>التعلم المُشرف عليه:</strong> التعلم من البيانات المُصنفة</li><li><strong>التعلم غير المُشرف عليه:</strong> اكتشاف الأنماط في البيانات</li><li><strong>التعلم المُعزز:</strong> التعلم من خلال التجربة والمكافآت</li></ul>"
+          }
+        ]
+      },
+      "order": 2,
+      "duration": 50,
+      "isPublished": true,
+      "courseId": "cmbfsrla60007eadpm93pmzkv",
+      "createdAt": "2025-06-03T00:45:25.545Z",
+      "updatedAt": "2025-06-03T00:45:25.545Z"
+    },
+    {
+      "id": "cmbiijbj10009pq7yhl90g5vj",
+      "title": "مقدمة في البرمجة",
+      "content": {
+        "blocks": [
+          {
+            "type": "text",
+            "data": "<h2>مرحباً بك في عالم البرمجة!</h2><p>في هذا الدرس سنتعرف على أساسيات البرمجة ولماذا تعتبر JavaScript لغة ممتازة للمبتدئين.</p><p>البرمجة هي فن كتابة التعليمات للحاسوب لحل المشاكل وإنجاز المهام. وJavaScript هي لغة برمجة قوية ومرنة تستخدم في تطوير المواقع والتطبيقات.</p>"
+          }
+        ]
+      },
+      "order": 1,
+      "duration": 30,
+      "isPublished": true,
+      "courseId": "cmbiijbaq0005pq7yowmgszo6",
+      "createdAt": "2025-06-04T22:22:21.469Z",
+      "updatedAt": "2025-06-04T22:22:21.469Z"
+    },
+    {
+      "id": "cmbiijbnm000bpq7yhw6k9pz8",
+      "title": "المتغيرات والأنواع",
+      "content": {
+        "blocks": [
+          {
+            "type": "text",
+            "data": "<h2>المتغيرات في JavaScript</h2><p>المتغيرات هي حاويات لتخزين البيانات. في JavaScript يمكننا إنشاء المتغيرات باستخدام let أو const أو var.</p><pre><code>let name = \"أحمد\";\nconst age = 25;\nvar city = \"الرياض\";</code></pre><p>الأنواع الأساسية في JavaScript تشمل: النصوص (String)، الأرقام (Number)، القيم المنطقية (Boolean).</p>"
+          }
+        ]
+      },
+      "order": 2,
+      "duration": 45,
+      "isPublished": true,
+      "courseId": "cmbiijbaq0005pq7yowmgszo6",
+      "createdAt": "2025-06-04T22:22:21.634Z",
+      "updatedAt": "2025-06-04T22:22:21.634Z"
+    },
+    {
+      "id": "cmbiijbrx000dpq7yqcndphp1",
+      "title": "الدوال والتحكم",
+      "content": {
+        "blocks": [
+          {
+            "type": "text",
+            "data": "<h2>الدوال في JavaScript</h2><p>الدوال هي كتل من الكود يمكن إعادة استخدامها. تساعدنا في تنظيم الكود وتجنب التكرار.</p><pre><code>function greet(name) {\n  return \"مرحباً \" + name;\n}\n\nconsole.log(greet(\"فاطمة\"));</code></pre><p>كما يمكننا استخدام الشروط للتحكم في تدفق البرنامج:</p><pre><code>if (age >= 18) {\n  console.log(\"بالغ\");\n} else {\n  console.log(\"قاصر\");\n}</code></pre>"
+          }
+        ]
+      },
+      "order": 3,
+      "duration": 60,
+      "isPublished": true,
+      "courseId": "cmbiijbaq0005pq7yowmgszo6",
+      "createdAt": "2025-06-04T22:22:21.789Z",
+      "updatedAt": "2025-06-04T22:22:21.789Z"
+    },
+    {
+      "id": "cmbiijbt0000fpq7yjegxuh9m",
+      "title": "ما هو الذكاء الاصطناعي؟",
+      "content": {
+        "blocks": [
+          {
+            "type": "text",
+            "data": "<h2>مقدمة في الذكاء الاصطناعي</h2><p>الذكاء الاصطناعي (AI) هو مجال في علوم الحاسوب يهدف إلى إنشاء أنظمة قادرة على أداء مهام تتطلب ذكاءً بشرياً.</p><p>يشمل الذكاء الاصطناعي عدة مجالات فرعية مثل:</p><ul><li>تعلم الآلة (Machine Learning)</li><li>معالجة اللغات الطبيعية (NLP)</li><li>الرؤية الحاسوبية (Computer Vision)</li><li>الروبوتات (Robotics)</li></ul>"
+          }
+        ]
+      },
+      "order": 1,
+      "duration": 40,
+      "isPublished": true,
+      "courseId": "cmbiijbfx0007pq7yh73nfh31",
+      "createdAt": "2025-06-04T22:22:21.828Z",
+      "updatedAt": "2025-06-04T22:22:21.828Z"
+    },
+    {
+      "id": "cmbiijbu2000hpq7ygqa7ktbs",
+      "title": "تعلم الآلة الأساسي",
+      "content": {
+        "blocks": [
+          {
+            "type": "text",
+            "data": "<h2>مقدمة في تعلم الآلة</h2><p>تعلم الآلة هو فرع من الذكاء الاصطناعي يمكّن الحاسوب من التعلم والتحسن من التجربة دون برمجة صريحة.</p><p>أنواع تعلم الآلة الرئيسية:</p><ul><li><strong>التعلم المُشرف عليه:</strong> التعلم من البيانات المُصنفة</li><li><strong>التعلم غير المُشرف عليه:</strong> اكتشاف الأنماط في البيانات</li><li><strong>التعلم المُعزز:</strong> التعلم من خلال التجربة والمكافآت</li></ul>"
+          }
+        ]
+      },
+      "order": 2,
+      "duration": 50,
+      "isPublished": true,
+      "courseId": "cmbiijbfx0007pq7yh73nfh31",
+      "createdAt": "2025-06-04T22:22:21.866Z",
+      "updatedAt": "2025-06-04T22:22:21.866Z"
+    },
+    {
+      "id": "cmbiim2ll0009ptgs0nesa19g",
+      "title": "مقدمة في البرمجة",
+      "content": {
+        "blocks": [
+          {
+            "type": "text",
+            "data": "<h2>مرحباً بك في عالم البرمجة!</h2><p>في هذا الدرس سنتعرف على أساسيات البرمجة ولماذا تعتبر JavaScript لغة ممتازة للمبتدئين.</p><p>البرمجة هي فن كتابة التعليمات للحاسوب لحل المشاكل وإنجاز المهام. وJavaScript هي لغة برمجة قوية ومرنة تستخدم في تطوير المواقع والتطبيقات.</p>"
+          }
+        ]
+      },
+      "order": 1,
+      "duration": 30,
+      "isPublished": true,
+      "courseId": "cmbiim2bn0005ptgs3invp876",
+      "createdAt": "2025-06-04T22:24:29.865Z",
+      "updatedAt": "2025-06-04T22:24:29.865Z"
+    },
+    {
+      "id": "cmbiim2nd000bptgs8aate7nz",
+      "title": "المتغيرات والأنواع",
+      "content": {
+        "blocks": [
+          {
+            "type": "text",
+            "data": "<h2>المتغيرات في JavaScript</h2><p>المتغيرات هي حاويات لتخزين البيانات. في JavaScript يمكننا إنشاء المتغيرات باستخدام let أو const أو var.</p><pre><code>let name = \"أحمد\";\nconst age = 25;\nvar city = \"الرياض\";</code></pre><p>الأنواع الأساسية في JavaScript تشمل: النصوص (String)، الأرقام (Number)، القيم المنطقية (Boolean).</p>"
+          }
+        ]
+      },
+      "order": 2,
+      "duration": 45,
+      "isPublished": true,
+      "courseId": "cmbiim2bn0005ptgs3invp876",
+      "createdAt": "2025-06-04T22:24:29.930Z",
+      "updatedAt": "2025-06-04T22:24:29.930Z"
+    },
+    {
+      "id": "cmbiim2og000dptgsfxktxczj",
+      "title": "الدوال والتحكم",
+      "content": {
+        "blocks": [
+          {
+            "type": "text",
+            "data": "<h2>الدوال في JavaScript</h2><p>الدوال هي كتل من الكود يمكن إعادة استخدامها. تساعدنا في تنظيم الكود وتجنب التكرار.</p><pre><code>function greet(name) {\n  return \"مرحباً \" + name;\n}\n\nconsole.log(greet(\"فاطمة\"));</code></pre><p>كما يمكننا استخدام الشروط للتحكم في تدفق البرنامج:</p><pre><code>if (age >= 18) {\n  console.log(\"بالغ\");\n} else {\n  console.log(\"قاصر\");\n}</code></pre>"
+          }
+        ]
+      },
+      "order": 3,
+      "duration": 60,
+      "isPublished": true,
+      "courseId": "cmbiim2bn0005ptgs3invp876",
+      "createdAt": "2025-06-04T22:24:29.968Z",
+      "updatedAt": "2025-06-04T22:24:29.968Z"
+    },
+    {
+      "id": "cmbiim2sg000fptgs4gwjat5o",
+      "title": "ما هو الذكاء الاصطناعي؟",
+      "content": {
+        "blocks": [
+          {
+            "type": "text",
+            "data": "<h2>مقدمة في الذكاء الاصطناعي</h2><p>الذكاء الاصطناعي (AI) هو مجال في علوم الحاسوب يهدف إلى إنشاء أنظمة قادرة على أداء مهام تتطلب ذكاءً بشرياً.</p><p>يشمل الذكاء الاصطناعي عدة مجالات فرعية مثل:</p><ul><li>تعلم الآلة (Machine Learning)</li><li>معالجة اللغات الطبيعية (NLP)</li><li>الرؤية الحاسوبية (Computer Vision)</li><li>الروبوتات (Robotics)</li></ul>"
+          }
+        ]
+      },
+      "order": 1,
+      "duration": 40,
+      "isPublished": true,
+      "courseId": "cmbiim2eg0007ptgsu6gzjuh7",
+      "createdAt": "2025-06-04T22:24:30.112Z",
+      "updatedAt": "2025-06-04T22:24:30.112Z"
+    },
+    {
+      "id": "cmbiim2tj000hptgsx9nufybr",
+      "title": "تعلم الآلة الأساسي",
+      "content": {
+        "blocks": [
+          {
+            "type": "text",
+            "data": "<h2>مقدمة في تعلم الآلة</h2><p>تعلم الآلة هو فرع من الذكاء الاصطناعي يمكّن الحاسوب من التعلم والتحسن من التجربة دون برمجة صريحة.</p><p>أنواع تعلم الآلة الرئيسية:</p><ul><li><strong>التعلم المُشرف عليه:</strong> التعلم من البيانات المُصنفة</li><li><strong>التعلم غير المُشرف عليه:</strong> اكتشاف الأنماط في البيانات</li><li><strong>التعلم المُعزز:</strong> التعلم من خلال التجربة والمكافآت</li></ul>"
+          }
+        ]
+      },
+      "order": 2,
+      "duration": 50,
+      "isPublished": true,
+      "courseId": "cmbiim2eg0007ptgsu6gzjuh7",
+      "createdAt": "2025-06-04T22:24:30.151Z",
+      "updatedAt": "2025-06-04T22:24:30.151Z"
+    }
+  ],
+  "enrollments": [
+    {
+      "id": "cmbfsrlrb000jeadp36628pdw",
+      "progress": 33.33,
+      "isCompleted": false,
+      "completedAt": null,
+      "lastAccessed": null,
+      "userId": "cmbfsrkqs0001eadp347zethd",
+      "courseId": "cmbfsrl690005eadpspc80l2u",
+      "enrolledAt": "2025-06-03T00:45:25.608Z",
+      "updatedAt": "2025-06-03T00:45:25.608Z"
+    },
+    {
+      "id": "cmbfu7tbg000297afgq8wpldw",
+      "progress": 0,
+      "isCompleted": false,
+      "completedAt": null,
+      "lastAccessed": null,
+      "userId": "cmbfu03lz000097afte0g4c1r",
+      "courseId": "cmbfsrl690005eadpspc80l2u",
+      "enrolledAt": "2025-06-03T01:26:01.223Z",
+      "updatedAt": "2025-06-03T01:26:01.223Z"
+    },
+    {
+      "id": "cmbh0orp00001ws5ogvglw9r3",
+      "progress": 0,
+      "isCompleted": false,
+      "completedAt": null,
+      "lastAccessed": null,
+      "userId": "cmbfsrjra0000eadpudge1312",
+      "courseId": "cmbfsrla60007eadpm93pmzkv",
+      "enrolledAt": "2025-06-03T21:14:56.397Z",
+      "updatedAt": "2025-06-03T21:14:56.397Z"
+    },
+    {
+      "id": "cmbiijbva000jpq7yh8dm3wp2",
+      "progress": 33.33,
+      "isCompleted": false,
+      "completedAt": null,
+      "lastAccessed": null,
+      "userId": "cmbfsrkqs0001eadp347zethd",
+      "courseId": "cmbiijbaq0005pq7yowmgszo6",
+      "enrolledAt": "2025-06-04T22:22:21.911Z",
+      "updatedAt": "2025-06-04T22:22:21.911Z"
+    },
+    {
+      "id": "cmbiim2un000jptgs2lrmw9a6",
+      "progress": 33.33,
+      "isCompleted": false,
+      "completedAt": null,
+      "lastAccessed": null,
+      "userId": "cmbfsrkqs0001eadp347zethd",
+      "courseId": "cmbiim2bn0005ptgs3invp876",
+      "enrolledAt": "2025-06-04T22:24:30.191Z",
+      "updatedAt": "2025-06-04T22:24:30.191Z"
+    },
+    {
+      "id": "cmbj6kxt90001tvovpvxlh2qm",
+      "progress": 0,
+      "isCompleted": false,
+      "completedAt": null,
+      "lastAccessed": null,
+      "userId": "cmbfu03lz000097afte0g4c1r",
+      "courseId": "cmbiim2eg0007ptgsu6gzjuh7",
+      "enrolledAt": "2025-06-05T09:35:27.765Z",
+      "updatedAt": "2025-06-05T09:35:27.765Z"
+    }
+  ],
+  "lessonProgress": [],
+  "userSettings": [
+    {
+      "id": "cmbijcjfv0007mozp4dr2m2vo",
+      "userId": "cmbfsrjra0000eadpudge1312",
+      "settings": {
+        "emailNotifications": true,
+        "pushNotifications": true,
+        "courseUpdates": true,
+        "achievementNotifications": true,
+        "communityNotifications": false,
+        "weeklyDigest": true,
+        "profileVisibility": "public",
+        "showProgress": true,
+        "showAchievements": true,
+        "allowMessages": true,
+        "autoplay": false,
+        "subtitles": true,
+        "playbackSpeed": 1,
+        "language": "ar",
+        "aiAssistant": true,
+        "aiSuggestions": true,
+        "aiReminders": false
+      },
+      "createdAt": "2025-06-04T22:45:04.745Z",
+      "updatedAt": "2025-06-04T22:45:04.745Z"
+    }
+  ],
+  "userApiKeys": [
+    {
+      "id": "cmbijapri0005mozp35nqoria",
+      "userId": "cmbfsrjra0000eadpudge1312",
+      "geminiKey": "787260b8ae2b4d9a93f4c171e2472de8:1a4445033b82a4f2f5dc3e27ac3f291b5b8ea8449e5e6faebd9a077d95626d43d7092b645a76c6b5cb867a0433c461b5",
+      "openaiKey": null,
+      "isActive": true,
+      "createdAt": "2025-06-04T22:43:39.630Z",
+      "updatedAt": "2025-06-04T22:43:39.630Z"
+    }
+  ],
+  "llmInteractionLogs": [
+    {
+      "id": "cmbhmhy9b0001aexqavc346nd",
+      "type": "QUESTION_ANSWER",
+      "prompt": "اشرح لي هذا الموضوع بطريقة أبسط",
+      "response": "مرحباً!  أفهم أنك تريد شرحًا أبسط للموضوع.  للأسف، لم تحدد لي أي موضوع تريد شرحه!  لتتمكن من الحصول على المساعدة التي تحتاجها،  أخبرني  باسم الموضوع أو  المفهوم الذي تريد فهمه.  كلما زادت تفا",
+      "model": "gemini-pro",
+      "tokens": 8,
+      "cost": 0.000008,
+      "responseTime": 2941,
+      "userId": "cmbfu03lz000097afte0g4c1r",
+      "lessonId": null,
+      "createdAt": "2025-06-04T07:25:29.903Z"
+    },
+    {
+      "id": "cmbiiw4a30001mozp4pn87rct",
+      "type": "QUESTION_ANSWER",
+      "prompt": "مرحبا",
+      "response": "مرحباً بك في منصة فتح للتعلّم الذكي!  يسعدني أن أراك هنا.  أنا مساعدك الشخصي، جاهز لمساعدتك في رحلتك التعليمية.  \n\nهل لديك أي سؤال محدد حول منصة فتح أو أي موضوع ترغب في دراسته؟  يمكنني مساعدت",
+      "model": "gemini-pro",
+      "tokens": 2,
+      "cost": 0.000002,
+      "responseTime": 2767,
+      "userId": "cmbfsrjra0000eadpudge1312",
+      "lessonId": null,
+      "createdAt": "2025-06-04T22:32:18.603Z"
+    },
+    {
+      "id": "cmbij95lh0003mozp6sx4rjoa",
+      "type": "QUESTION_ANSWER",
+      "prompt": "اشرح لي هذا الموضوع بطريقة أبسط",
+      "response": "مرحباً!  أفهم أنك تريد شرحاً أبسط للموضوع.  للأسف، لم تحدد لي أي موضوع تريد شرحه!  لأتمكن من مساعدتك بشكل فعال،  أحتاج إلى معرفة الموضوع الذي يصعب عليك فهمه.  \n\nهل يمكنك من فضلك كتابة اسم الم",
+      "model": "gemini-pro",
+      "tokens": 8,
+      "cost": 0.000008,
+      "responseTime": 2422,
+      "userId": "cmbfsrjra0000eadpudge1312",
+      "lessonId": null,
+      "createdAt": "2025-06-04T22:42:26.837Z"
+    },
+    {
+      "id": "cmbj6m7d20003tvovny8kkbsu",
+      "type": "QUESTION_ANSWER",
+      "prompt": "اشرح لي هذا الموضوع بطريقة أبسط",
+      "response": "مرحباً!  سعيد بمساعدتك في فهم أساسيات الذكاء الاصطناعي.  دعني أشرح لك الموضوع بطريقة أبسط.\n\nتخيل أنك تريد أن تجعل جهاز كمبيوتر يقوم بمهام تحتاج عادةً إلى ذكاء بشري، مثل:  فهم كلامك،  أو التعر",
+      "model": "gemini-pro",
+      "tokens": 8,
+      "cost": 0.000008,
+      "responseTime": 4882,
+      "userId": "cmbfu03lz000097afte0g4c1r",
+      "lessonId": "cmbiim2sg000fptgs4gwjat5o",
+      "createdAt": "2025-06-05T09:36:26.822Z"
+    },
+    {
+      "id": "cmbj6nm3n0005tvov10m7jb13",
+      "type": "TEXT_SUMMARY",
+      "prompt": "مرحباً! سعيد بمساعدتك في فهم أساسيات الذكاء الاصطناعي. دعني أشرح لك الموضوع بطريقة أبسط. تخيل أنك تريد أن تجعل جهاز كمبيوتر يقوم بمهام تحتاج عادةً إلى ذكاء بشري، مثل: فهم كلامك، أو التعرف على",
+      "response": "الذكاء الاصطناعي (AI) هو مجالٌ يُعنى بجعل الحواسيب قادرة على أداء مهام تتطلب عادةً ذكاءً بشرياً، مثل فهم اللغة، والتعرف على الصور، واتخاذ القرارات.  بدلاً من برمجة الحاسوب بتعليمات دقيقة لكل ",
+      "model": "gemini-pro",
+      "tokens": 399,
+      "cost": 0.000399,
+      "responseTime": 3040,
+      "userId": "cmbfu03lz000097afte0g4c1r",
+      "lessonId": "cmbiim2sg000fptgs4gwjat5o",
+      "createdAt": "2025-06-05T09:37:32.569Z"
+    },
+    {
+      "id": "cmbkhkeoh0001l9rxxurohy40",
+      "type": "QUESTION_ANSWER",
+      "prompt": "مرحبا",
+      "response": "مرحباً بك في منصة فتح!  يسعدني أن أراك هنا.  أنا مساعدك الذكي، جاهز لمساعدتك في رحلتك التعليمية.  \n\nما هو الموضوع الذي ترغب في التعرف عليه اليوم؟  هل لديك أي أسئلة محددة أو موضوع معين تريد ال",
+      "model": "gemini-pro",
+      "tokens": 2,
+      "cost": 0.000002,
+      "responseTime": 2894,
+      "userId": "cmbfsrjra0000eadpudge1312",
+      "lessonId": null,
+      "createdAt": "2025-06-06T07:30:44.922Z"
+    },
+    {
+      "id": "cmbkhlg5c0003l9rxqdktbywc",
+      "type": "QUESTION_ANSWER",
+      "prompt": "هل يمكنك شرح كيف تعمل منصة فتح",
+      "response": "مرحباً بك في منصة فتح!  سأشرح لك كيف تعمل ببساطة ووضوح.  تخيل منصة فتح كـ\"مكتبة رقمية ذكية\" و\"معلم شخصي\" في آن واحد.\n\n**أولاً: المكتبة الرقمية:**  تحتوي منصة فتح على الكثير من الدروس والمعلوم",
+      "model": "gemini-pro",
+      "tokens": 8,
+      "cost": 0.000008,
+      "responseTime": 4666,
+      "userId": "cmbfsrjra0000eadpudge1312",
+      "lessonId": null,
+      "createdAt": "2025-06-06T07:31:33.504Z"
+    }
+  ],
+  "circles": [
+    {
+      "id": "cmbfuup1e0000zd1r2ke6htf4",
+      "name": "الدائرة العامة",
+      "purpose": "تحقيق رؤية منصة فتح للتعلّم الذكي وتوفير تجربة تعليمية متميزة",
+      "domain": "الإشراف العام على جميع عمليات المنصة والتوجه الاستراتيجي",
+      "parentId": null,
+      "isActive": true,
+      "createdAt": "2025-06-03T01:43:49.037Z",
+      "updatedAt": "2025-06-03T01:43:49.037Z"
+    },
+    {
+      "id": "cmbfuupm40002zd1rheztdbbd",
+      "name": "دائرة المحتوى التعليمي",
+      "purpose": "إنتاج وإدارة محتوى تعليمي عالي الجودة",
+      "domain": "المحتوى التعليمي، المناهج، الدورات، الدروس",
+      "parentId": "cmbfuup1e0000zd1r2ke6htf4",
+      "isActive": true,
+      "createdAt": "2025-06-03T01:43:49.715Z",
+      "updatedAt": "2025-06-03T01:43:49.715Z"
+    },
+    {
+      "id": "cmbfuupqk0004zd1rck2lx3kn",
+      "name": "دائرة التقنية والذكاء الاصطناعي",
+      "purpose": "تطوير وصيانة المنصة التقنية وتحسين تجربة المستخدم",
+      "domain": "التطوير التقني، الذكاء الاصطناعي، الأمان، الأداء",
+      "parentId": "cmbfuup1e0000zd1r2ke6htf4",
+      "isActive": true,
+      "createdAt": "2025-06-03T01:43:49.964Z",
+      "updatedAt": "2025-06-03T01:43:49.964Z"
+    },
+    {
+      "id": "cmbfuupvw0006zd1ry0rpfans",
+      "name": "دائرة المجتمع والدعم",
+      "purpose": "بناء مجتمع تعليمي نشط وتقديم الدعم للمتعلمين",
+      "domain": "المجتمع، الدعم الفني، تجربة المستخدم، التواصل",
+      "parentId": "cmbfuup1e0000zd1r2ke6htf4",
+      "isActive": true,
+      "createdAt": "2025-06-03T01:43:50.156Z",
+      "updatedAt": "2025-06-03T01:43:50.156Z"
+    },
+    {
+      "id": "cmbfuupz70008zd1rciyyh7du",
+      "name": "دائرة الجودة والتحليلات",
+      "purpose": "ضمان جودة المحتوى والخدمات وتحليل الأداء",
+      "domain": "ضمان الجودة، التحليلات، التقييم، التحسين المستمر",
+      "parentId": "cmbfuup1e0000zd1r2ke6htf4",
+      "isActive": true,
+      "createdAt": "2025-06-03T01:43:50.276Z",
+      "updatedAt": "2025-06-03T01:43:50.276Z"
+    },
+    {
+      "id": "cmbfuxeic0000g0d32vwzr9a1",
+      "name": "الدائرة العامة",
+      "purpose": "تحقيق رؤية منصة فتح للتعلّم الذكي وتوفير تجربة تعليمية متميزة",
+      "domain": "الإشراف العام على جميع عمليات المنصة والتوجه الاستراتيجي",
+      "parentId": null,
+      "isActive": true,
+      "createdAt": "2025-06-03T01:45:55.380Z",
+      "updatedAt": "2025-06-03T01:45:55.380Z"
+    },
+    {
+      "id": "cmbfuxek00002g0d380pxzvi1",
+      "name": "دائرة المحتوى التعليمي",
+      "purpose": "إنتاج وإدارة محتوى تعليمي عالي الجودة",
+      "domain": "المحتوى التعليمي، المناهج، الدورات، الدروس",
+      "parentId": "cmbfuxeic0000g0d32vwzr9a1",
+      "isActive": true,
+      "createdAt": "2025-06-03T01:45:55.440Z",
+      "updatedAt": "2025-06-03T01:45:55.440Z"
+    },
+    {
+      "id": "cmbfuxeov0004g0d3kf8ov8hn",
+      "name": "دائرة التقنية والذكاء الاصطناعي",
+      "purpose": "تطوير وصيانة المنصة التقنية وتحسين تجربة المستخدم",
+      "domain": "التطوير التقني، الذكاء الاصطناعي، الأمان، الأداء",
+      "parentId": "cmbfuxeic0000g0d32vwzr9a1",
+      "isActive": true,
+      "createdAt": "2025-06-03T01:45:55.616Z",
+      "updatedAt": "2025-06-03T01:45:55.616Z"
+    },
+    {
+      "id": "cmbfuxepv0006g0d3mdykt1ru",
+      "name": "دائرة المجتمع والدعم",
+      "purpose": "بناء مجتمع تعليمي نشط وتقديم الدعم للمتعلمين",
+      "domain": "المجتمع، الدعم الفني، تجربة المستخدم، التواصل",
+      "parentId": "cmbfuxeic0000g0d32vwzr9a1",
+      "isActive": true,
+      "createdAt": "2025-06-03T01:45:55.652Z",
+      "updatedAt": "2025-06-03T01:45:55.652Z"
+    },
+    {
+      "id": "cmbfuxeqr0008g0d3nashhppw",
+      "name": "دائرة الجودة والتحليلات",
+      "purpose": "ضمان جودة المحتوى والخدمات وتحليل الأداء",
+      "domain": "ضمان الجودة، التحليلات، التقييم، التحسين المستمر",
+      "parentId": "cmbfuxeic0000g0d32vwzr9a1",
+      "isActive": true,
+      "createdAt": "2025-06-03T01:45:55.683Z",
+      "updatedAt": "2025-06-03T01:45:55.683Z"
+    },
+    {
+      "id": "cmbiijdci00002ybsunrcp84e",
+      "name": "الدائرة العامة",
+      "purpose": "تحقيق رؤية منصة فتح للتعلّم الذكي وتوفير تجربة تعليمية متميزة",
+      "domain": "الإشراف العام على جميع عمليات المنصة والتوجه الاستراتيجي",
+      "parentId": null,
+      "isActive": true,
+      "createdAt": "2025-06-04T22:22:23.826Z",
+      "updatedAt": "2025-06-04T22:22:23.826Z"
+    },
+    {
+      "id": "cmbiijdeo00022ybsqa3d78uc",
+      "name": "دائرة المحتوى التعليمي",
+      "purpose": "إنتاج وإدارة محتوى تعليمي عالي الجودة",
+      "domain": "المحتوى التعليمي، المناهج، الدورات، الدروس",
+      "parentId": "cmbiijdci00002ybsunrcp84e",
+      "isActive": true,
+      "createdAt": "2025-06-04T22:22:23.904Z",
+      "updatedAt": "2025-06-04T22:22:23.904Z"
+    },
+    {
+      "id": "cmbiijdg600042ybstbj79w3j",
+      "name": "دائرة التقنية والذكاء الاصطناعي",
+      "purpose": "تطوير وصيانة المنصة التقنية وتحسين تجربة المستخدم",
+      "domain": "التطوير التقني، الذكاء الاصطناعي، الأمان، الأداء",
+      "parentId": "cmbiijdci00002ybsunrcp84e",
+      "isActive": true,
+      "createdAt": "2025-06-04T22:22:23.958Z",
+      "updatedAt": "2025-06-04T22:22:23.958Z"
+    },
+    {
+      "id": "cmbiijdkn00062ybspduf33jc",
+      "name": "دائرة المجتمع والدعم",
+      "purpose": "بناء مجتمع تعليمي نشط وتقديم الدعم للمتعلمين",
+      "domain": "المجتمع، الدعم الفني، تجربة المستخدم، التواصل",
+      "parentId": "cmbiijdci00002ybsunrcp84e",
+      "isActive": true,
+      "createdAt": "2025-06-04T22:22:24.119Z",
+      "updatedAt": "2025-06-04T22:22:24.119Z"
+    },
+    {
+      "id": "cmbiijdm600082ybsnv0cbqkw",
+      "name": "دائرة الجودة والتحليلات",
+      "purpose": "ضمان جودة المحتوى والخدمات وتحليل الأداء",
+      "domain": "ضمان الجودة، التحليلات، التقييم، التحسين المستمر",
+      "parentId": "cmbiijdci00002ybsunrcp84e",
+      "isActive": true,
+      "createdAt": "2025-06-04T22:22:24.175Z",
+      "updatedAt": "2025-06-04T22:22:24.175Z"
+    },
+    {
+      "id": "cmbiim4ny0000pocs0ssn2b1q",
+      "name": "الدائرة العامة",
+      "purpose": "تحقيق رؤية منصة فتح للتعلّم الذكي وتوفير تجربة تعليمية متميزة",
+      "domain": "الإشراف العام على جميع عمليات المنصة والتوجه الاستراتيجي",
+      "parentId": null,
+      "isActive": true,
+      "createdAt": "2025-06-04T22:24:32.543Z",
+      "updatedAt": "2025-06-04T22:24:32.543Z"
+    },
+    {
+      "id": "cmbiim4pt0002pocscx0p4vcg",
+      "name": "دائرة المحتوى التعليمي",
+      "purpose": "إنتاج وإدارة محتوى تعليمي عالي الجودة",
+      "domain": "المحتوى التعليمي، المناهج، الدورات، الدروس",
+      "parentId": "cmbiim4ny0000pocs0ssn2b1q",
+      "isActive": true,
+      "createdAt": "2025-06-04T22:24:32.610Z",
+      "updatedAt": "2025-06-04T22:24:32.610Z"
+    },
+    {
+      "id": "cmbiim4r60004pocsyyok4q8i",
+      "name": "دائرة التقنية والذكاء الاصطناعي",
+      "purpose": "تطوير وصيانة المنصة التقنية وتحسين تجربة المستخدم",
+      "domain": "التطوير التقني، الذكاء الاصطناعي، الأمان، الأداء",
+      "parentId": "cmbiim4ny0000pocs0ssn2b1q",
+      "isActive": true,
+      "createdAt": "2025-06-04T22:24:32.658Z",
+      "updatedAt": "2025-06-04T22:24:32.658Z"
+    },
+    {
+      "id": "cmbiim4yq0006pocs2f0wnhxl",
+      "name": "دائرة المجتمع والدعم",
+      "purpose": "بناء مجتمع تعليمي نشط وتقديم الدعم للمتعلمين",
+      "domain": "المجتمع، الدعم الفني، تجربة المستخدم، التواصل",
+      "parentId": "cmbiim4ny0000pocs0ssn2b1q",
+      "isActive": true,
+      "createdAt": "2025-06-04T22:24:32.930Z",
+      "updatedAt": "2025-06-04T22:24:32.930Z"
+    },
+    {
+      "id": "cmbiim5030008pocse030a4iq",
+      "name": "دائرة الجودة والتحليلات",
+      "purpose": "ضمان جودة المحتوى والخدمات وتحليل الأداء",
+      "domain": "ضمان الجودة، التحليلات، التقييم، التحسين المستمر",
+      "parentId": "cmbiim4ny0000pocs0ssn2b1q",
+      "isActive": true,
+      "createdAt": "2025-06-04T22:24:32.979Z",
+      "updatedAt": "2025-06-04T22:24:32.979Z"
+    }
+  ],
+  "roles": [
+    {
+      "id": "cmbfuuq1m000azd1ryb86t1nw",
+      "name": "منشئ المحتوى",
+      "purpose": "إنتاج محتوى تعليمي عالي الجودة ومناسب للمتعلمين",
+      "domain": "إنشاء الدورات والدروس، كتابة المحتوى، تصميم التمارين",
+      "circleId": "cmbfuupm40002zd1rheztdbbd",
+      "isActive": true,
+      "createdAt": "2025-06-03T01:43:50.362Z",
+      "updatedAt": "2025-06-03T01:43:50.362Z"
+    },
+    {
+      "id": "cmbfuuq51000czd1r4pn1qwyl",
+      "name": "مصمم المناهج",
+      "purpose": "تصميم مسارات تعليمية متكاملة ومترابطة",
+      "domain": "تصميم المناهج، تسلسل التعلم، أهداف التعلم",
+      "circleId": "cmbfuupm40002zd1rheztdbbd",
+      "isActive": true,
+      "createdAt": "2025-06-03T01:43:50.485Z",
+      "updatedAt": "2025-06-03T01:43:50.485Z"
+    },
+    {
+      "id": "cmbfuuq8q000ezd1r5mtg6b33",
+      "name": "أخصائي الذكاء الاصطناعي",
+      "purpose": "تطوير وتحسين ميزات الذكاء الاصطناعي في المنصة",
+      "domain": "تكامل LLM، تحسين الأداء، تطوير ميزات ذكية",
+      "circleId": "cmbfuupqk0004zd1rck2lx3kn",
+      "isActive": true,
+      "createdAt": "2025-06-03T01:43:50.618Z",
+      "updatedAt": "2025-06-03T01:43:50.618Z"
+    },
+    {
+      "id": "cmbfuuqcs000gzd1r87cdjdqw",
+      "name": "مطور المنصة",
+      "purpose": "تطوير وصيانة الجوانب التقنية للمنصة",
+      "domain": "البرمجة، قواعد البيانات، الأمان، الأداء",
+      "circleId": "cmbfuupqk0004zd1rck2lx3kn",
+      "isActive": true,
+      "createdAt": "2025-06-03T01:43:50.764Z",
+      "updatedAt": "2025-06-03T01:43:50.764Z"
+    },
+    {
+      "id": "cmbfuuqiq000izd1rd8f0wjhp",
+      "name": "موجه تعليمي",
+      "purpose": "توجيه ومساعدة المتعلمين في رحلتهم التعليمية",
+      "domain": "التوجيه، الإرشاد، حل المشاكل التعليمية",
+      "circleId": "cmbfuupvw0006zd1ry0rpfans",
+      "isActive": true,
+      "createdAt": "2025-06-03T01:43:50.978Z",
+      "updatedAt": "2025-06-03T01:43:50.978Z"
+    },
+    {
+      "id": "cmbfuuqk2000kzd1rhwyqfjzj",
+      "name": "أخصائي الدعم",
+      "purpose": "تقديم الدعم الفني والتعليمي للمستخدمين",
+      "domain": "الدعم الفني، حل المشاكل، التواصل مع المستخدمين",
+      "circleId": "cmbfuupvw0006zd1ry0rpfans",
+      "isActive": true,
+      "createdAt": "2025-06-03T01:43:51.026Z",
+      "updatedAt": "2025-06-03T01:43:51.026Z"
+    },
+    {
+      "id": "cmbfuuql6000mzd1rts3ps2os",
+      "name": "مراجع الجودة",
+      "purpose": "مراجعة وضمان جودة المحتوى والخدمات",
+      "domain": "مراجعة المحتوى، اختبار الجودة، التقييم",
+      "circleId": "cmbfuupz70008zd1rciyyh7du",
+      "isActive": true,
+      "createdAt": "2025-06-03T01:43:51.066Z",
+      "updatedAt": "2025-06-03T01:43:51.066Z"
+    },
+    {
+      "id": "cmbfuuqm6000ozd1rmacpmm3p",
+      "name": "أخصائي التحليلات",
+      "purpose": "تحليل البيانات وتقديم رؤى لتحسين المنصة",
+      "domain": "تحليل البيانات، التقارير، مؤشرات الأداء",
+      "circleId": "cmbfuupz70008zd1rciyyh7du",
+      "isActive": true,
+      "createdAt": "2025-06-03T01:43:51.103Z",
+      "updatedAt": "2025-06-03T01:43:51.103Z"
+    },
+    {
+      "id": "cmbfuxerr000ag0d3q3nr248l",
+      "name": "منشئ المحتوى",
+      "purpose": "إنتاج محتوى تعليمي عالي الجودة ومناسب للمتعلمين",
+      "domain": "إنشاء الدورات والدروس، كتابة المحتوى، تصميم التمارين",
+      "circleId": "cmbfuxek00002g0d380pxzvi1",
+      "isActive": true,
+      "createdAt": "2025-06-03T01:45:55.719Z",
+      "updatedAt": "2025-06-03T01:45:55.719Z"
+    },
+    {
+      "id": "cmbfuxev0000cg0d3z6k92615",
+      "name": "مصمم المناهج",
+      "purpose": "تصميم مسارات تعليمية متكاملة ومترابطة",
+      "domain": "تصميم المناهج، تسلسل التعلم، أهداف التعلم",
+      "circleId": "cmbfuxek00002g0d380pxzvi1",
+      "isActive": true,
+      "createdAt": "2025-06-03T01:45:55.837Z",
+      "updatedAt": "2025-06-03T01:45:55.837Z"
+    },
+    {
+      "id": "cmbfuxex6000eg0d3fj26cfix",
+      "name": "أخصائي الذكاء الاصطناعي",
+      "purpose": "تطوير وتحسين ميزات الذكاء الاصطناعي في المنصة",
+      "domain": "تكامل LLM، تحسين الأداء، تطوير ميزات ذكية",
+      "circleId": "cmbfuxeov0004g0d3kf8ov8hn",
+      "isActive": true,
+      "createdAt": "2025-06-03T01:45:55.915Z",
+      "updatedAt": "2025-06-03T01:45:55.915Z"
+    },
+    {
+      "id": "cmbfuxez1000gg0d3oujalfni",
+      "name": "مطور المنصة",
+      "purpose": "تطوير وصيانة الجوانب التقنية للمنصة",
+      "domain": "البرمجة، قواعد البيانات، الأمان، الأداء",
+      "circleId": "cmbfuxeov0004g0d3kf8ov8hn",
+      "isActive": true,
+      "createdAt": "2025-06-03T01:45:55.981Z",
+      "updatedAt": "2025-06-03T01:45:55.981Z"
+    },
+    {
+      "id": "cmbfuxf0p000ig0d3q5vkgh1q",
+      "name": "موجه تعليمي",
+      "purpose": "توجيه ومساعدة المتعلمين في رحلتهم التعليمية",
+      "domain": "التوجيه، الإرشاد، حل المشاكل التعليمية",
+      "circleId": "cmbfuxepv0006g0d3mdykt1ru",
+      "isActive": true,
+      "createdAt": "2025-06-03T01:45:56.041Z",
+      "updatedAt": "2025-06-03T01:45:56.041Z"
+    },
+    {
+      "id": "cmbfuxf1s000kg0d34t7nztg7",
+      "name": "أخصائي الدعم",
+      "purpose": "تقديم الدعم الفني والتعليمي للمستخدمين",
+      "domain": "الدعم الفني، حل المشاكل، التواصل مع المستخدمين",
+      "circleId": "cmbfuxepv0006g0d3mdykt1ru",
+      "isActive": true,
+      "createdAt": "2025-06-03T01:45:56.080Z",
+      "updatedAt": "2025-06-03T01:45:56.080Z"
+    },
+    {
+      "id": "cmbfuxf30000mg0d3sby55tff",
+      "name": "مراجع الجودة",
+      "purpose": "مراجعة وضمان جودة المحتوى والخدمات",
+      "domain": "مراجعة المحتوى، اختبار الجودة، التقييم",
+      "circleId": "cmbfuxeqr0008g0d3nashhppw",
+      "isActive": true,
+      "createdAt": "2025-06-03T01:45:56.124Z",
+      "updatedAt": "2025-06-03T01:45:56.124Z"
+    },
+    {
+      "id": "cmbfuxf4f000og0d3d15t7xhx",
+      "name": "أخصائي التحليلات",
+      "purpose": "تحليل البيانات وتقديم رؤى لتحسين المنصة",
+      "domain": "تحليل البيانات، التقارير، مؤشرات الأداء",
+      "circleId": "cmbfuxeqr0008g0d3nashhppw",
+      "isActive": true,
+      "createdAt": "2025-06-03T01:45:56.175Z",
+      "updatedAt": "2025-06-03T01:45:56.175Z"
+    },
+    {
+      "id": "cmbiijdp6000a2ybse6etvw88",
+      "name": "منشئ المحتوى",
+      "purpose": "إنتاج محتوى تعليمي عالي الجودة ومناسب للمتعلمين",
+      "domain": "إنشاء الدورات والدروس، كتابة المحتوى، تصميم التمارين",
+      "circleId": "cmbiijdeo00022ybsqa3d78uc",
+      "isActive": true,
+      "createdAt": "2025-06-04T22:22:24.282Z",
+      "updatedAt": "2025-06-04T22:22:24.282Z"
+    },
+    {
+      "id": "cmbiijdrq000c2ybsxby6lwxd",
+      "name": "مصمم المناهج",
+      "purpose": "تصميم مسارات تعليمية متكاملة ومترابطة",
+      "domain": "تصميم المناهج، تسلسل التعلم، أهداف التعلم",
+      "circleId": "cmbiijdeo00022ybsqa3d78uc",
+      "isActive": true,
+      "createdAt": "2025-06-04T22:22:24.374Z",
+      "updatedAt": "2025-06-04T22:22:24.374Z"
+    },
+    {
+      "id": "cmbiijdt4000e2ybsxg9h0gpn",
+      "name": "أخصائي الذكاء الاصطناعي",
+      "purpose": "تطوير وتحسين ميزات الذكاء الاصطناعي في المنصة",
+      "domain": "تكامل LLM، تحسين الأداء، تطوير ميزات ذكية",
+      "circleId": "cmbiijdg600042ybstbj79w3j",
+      "isActive": true,
+      "createdAt": "2025-06-04T22:22:24.424Z",
+      "updatedAt": "2025-06-04T22:22:24.424Z"
+    },
+    {
+      "id": "cmbiijdv4000g2ybsm5zees3j",
+      "name": "مطور المنصة",
+      "purpose": "تطوير وصيانة الجوانب التقنية للمنصة",
+      "domain": "البرمجة، قواعد البيانات، الأمان، الأداء",
+      "circleId": "cmbiijdg600042ybstbj79w3j",
+      "isActive": true,
+      "createdAt": "2025-06-04T22:22:24.496Z",
+      "updatedAt": "2025-06-04T22:22:24.496Z"
+    },
+    {
+      "id": "cmbiijdyx000i2ybsm4nxqcvx",
+      "name": "موجه تعليمي",
+      "purpose": "توجيه ومساعدة المتعلمين في رحلتهم التعليمية",
+      "domain": "التوجيه، الإرشاد، حل المشاكل التعليمية",
+      "circleId": "cmbiijdkn00062ybspduf33jc",
+      "isActive": true,
+      "createdAt": "2025-06-04T22:22:24.634Z",
+      "updatedAt": "2025-06-04T22:22:24.634Z"
+    },
+    {
+      "id": "cmbiije01000k2ybs7s01g7vu",
+      "name": "أخصائي الدعم",
+      "purpose": "تقديم الدعم الفني والتعليمي للمستخدمين",
+      "domain": "الدعم الفني، حل المشاكل، التواصل مع المستخدمين",
+      "circleId": "cmbiijdkn00062ybspduf33jc",
+      "isActive": true,
+      "createdAt": "2025-06-04T22:22:24.673Z",
+      "updatedAt": "2025-06-04T22:22:24.673Z"
+    },
+    {
+      "id": "cmbiije12000m2ybsyoac6jgk",
+      "name": "مراجع الجودة",
+      "purpose": "مراجعة وضمان جودة المحتوى والخدمات",
+      "domain": "مراجعة المحتوى، اختبار الجودة، التقييم",
+      "circleId": "cmbiijdm600082ybsnv0cbqkw",
+      "isActive": true,
+      "createdAt": "2025-06-04T22:22:24.711Z",
+      "updatedAt": "2025-06-04T22:22:24.711Z"
+    },
+    {
+      "id": "cmbiije39000o2ybsmkjzt4t2",
+      "name": "أخصائي التحليلات",
+      "purpose": "تحليل البيانات وتقديم رؤى لتحسين المنصة",
+      "domain": "تحليل البيانات، التقارير، مؤشرات الأداء",
+      "circleId": "cmbiijdm600082ybsnv0cbqkw",
+      "isActive": true,
+      "createdAt": "2025-06-04T22:22:24.789Z",
+      "updatedAt": "2025-06-04T22:22:24.789Z"
+    },
+    {
+      "id": "cmbiim51j000apocscobkv6o4",
+      "name": "منشئ المحتوى",
+      "purpose": "إنتاج محتوى تعليمي عالي الجودة ومناسب للمتعلمين",
+      "domain": "إنشاء الدورات والدروس، كتابة المحتوى، تصميم التمارين",
+      "circleId": "cmbiim4pt0002pocscx0p4vcg",
+      "isActive": true,
+      "createdAt": "2025-06-04T22:24:33.031Z",
+      "updatedAt": "2025-06-04T22:24:33.031Z"
+    },
+    {
+      "id": "cmbiim52j000cpocsdi9e50zo",
+      "name": "مصمم المناهج",
+      "purpose": "تصميم مسارات تعليمية متكاملة ومترابطة",
+      "domain": "تصميم المناهج، تسلسل التعلم، أهداف التعلم",
+      "circleId": "cmbiim4pt0002pocscx0p4vcg",
+      "isActive": true,
+      "createdAt": "2025-06-04T22:24:33.068Z",
+      "updatedAt": "2025-06-04T22:24:33.068Z"
+    },
+    {
+      "id": "cmbiim543000epocsc3plt0dr",
+      "name": "أخصائي الذكاء الاصطناعي",
+      "purpose": "تطوير وتحسين ميزات الذكاء الاصطناعي في المنصة",
+      "domain": "تكامل LLM، تحسين الأداء، تطوير ميزات ذكية",
+      "circleId": "cmbiim4r60004pocsyyok4q8i",
+      "isActive": true,
+      "createdAt": "2025-06-04T22:24:33.123Z",
+      "updatedAt": "2025-06-04T22:24:33.123Z"
+    },
+    {
+      "id": "cmbiim56e000gpocsx3b1acc5",
+      "name": "مطور المنصة",
+      "purpose": "تطوير وصيانة الجوانب التقنية للمنصة",
+      "domain": "البرمجة، قواعد البيانات، الأمان، الأداء",
+      "circleId": "cmbiim4r60004pocsyyok4q8i",
+      "isActive": true,
+      "createdAt": "2025-06-04T22:24:33.207Z",
+      "updatedAt": "2025-06-04T22:24:33.207Z"
+    },
+    {
+      "id": "cmbiim5ar000ipocssf7xkh4s",
+      "name": "موجه تعليمي",
+      "purpose": "توجيه ومساعدة المتعلمين في رحلتهم التعليمية",
+      "domain": "التوجيه، الإرشاد، حل المشاكل التعليمية",
+      "circleId": "cmbiim4yq0006pocs2f0wnhxl",
+      "isActive": true,
+      "createdAt": "2025-06-04T22:24:33.363Z",
+      "updatedAt": "2025-06-04T22:24:33.363Z"
+    },
+    {
+      "id": "cmbiim5ce000kpocs8l1gmlgu",
+      "name": "أخصائي الدعم",
+      "purpose": "تقديم الدعم الفني والتعليمي للمستخدمين",
+      "domain": "الدعم الفني، حل المشاكل، التواصل مع المستخدمين",
+      "circleId": "cmbiim4yq0006pocs2f0wnhxl",
+      "isActive": true,
+      "createdAt": "2025-06-04T22:24:33.422Z",
+      "updatedAt": "2025-06-04T22:24:33.422Z"
+    },
+    {
+      "id": "cmbiim5dx000mpocsebasg0sa",
+      "name": "مراجع الجودة",
+      "purpose": "مراجعة وضمان جودة المحتوى والخدمات",
+      "domain": "مراجعة المحتوى، اختبار الجودة، التقييم",
+      "circleId": "cmbiim5030008pocse030a4iq",
+      "isActive": true,
+      "createdAt": "2025-06-04T22:24:33.477Z",
+      "updatedAt": "2025-06-04T22:24:33.477Z"
+    },
+    {
+      "id": "cmbiim5f0000opocss5gmyqun",
+      "name": "أخصائي التحليلات",
+      "purpose": "تحليل البيانات وتقديم رؤى لتحسين المنصة",
+      "domain": "تحليل البيانات، التقارير، مؤشرات الأداء",
+      "circleId": "cmbiim5030008pocse030a4iq",
+      "isActive": true,
+      "createdAt": "2025-06-04T22:24:33.516Z",
+      "updatedAt": "2025-06-04T22:24:33.516Z"
+    }
+  ],
+  "roleAssignments": [
+    {
+      "id": "cmbfuus4i0024zd1r8jas7083",
+      "userId": "cmbfsrjra0000eadpudge1312",
+      "roleId": "cmbfuuq8q000ezd1r5mtg6b33",
+      "startDate": "2025-06-03T01:43:53.059Z",
+      "endDate": null,
+      "isActive": true,
+      "createdAt": "2025-06-03T01:43:53.059Z"
+    },
+    {
+      "id": "cmbfuxg3x0024g0d379ezswqf",
+      "userId": "cmbfsrjra0000eadpudge1312",
+      "roleId": "cmbfuxex6000eg0d3fj26cfix",
+      "startDate": "2025-06-03T01:45:57.453Z",
+      "endDate": null,
+      "isActive": true,
+      "createdAt": "2025-06-03T01:45:57.453Z"
+    },
+    {
+      "id": "cmbiijfgx00242ybshlznuqfi",
+      "userId": "cmbfsrjra0000eadpudge1312",
+      "roleId": "cmbiijdt4000e2ybsxg9h0gpn",
+      "startDate": "2025-06-04T22:22:26.577Z",
+      "endDate": null,
+      "isActive": true,
+      "createdAt": "2025-06-04T22:22:26.577Z"
+    },
+    {
+      "id": "cmbiim6s80024pocs0f93utzj",
+      "userId": "cmbfsrjra0000eadpudge1312",
+      "roleId": "cmbiim543000epocsc3plt0dr",
+      "startDate": "2025-06-04T22:24:35.288Z",
+      "endDate": null,
+      "isActive": true,
+      "createdAt": "2025-06-04T22:24:35.288Z"
+    }
+  ],
+  "decisions": [
+    {
+      "id": "cmbfxaja10001pztd1l2u55ja",
+      "title": "تعيين دور جديد للمستخدم محمد أحمد",
+      "description": "تم تغيير دور المستخدم محمد أحمد (mohamedl@gmail.com) من STUDENT إلى STUDENT",
+      "proposerId": "cmbfsrjra0000eadpudge1312",
+      "circleId": null,
+      "status": "IMPLEMENTED",
+      "decidedAt": "2025-06-03T02:52:07.205Z",
+      "createdAt": "2025-06-03T02:52:07.236Z",
+      "updatedAt": "2025-06-03T02:52:07.236Z"
+    },
+    {
+      "id": "cmbj8gx800001b5eahgr3e7ds",
+      "title": "تعيين دور جديد للمستخدم الشيخ نحناح",
+      "description": "تم تغيير دور المستخدم الشيخ نحناح (azzeddine.remmal@gmail.com) من STUDENT إلى INSTRUCTOR",
+      "proposerId": "cmbfsrjra0000eadpudge1312",
+      "circleId": null,
+      "status": "IMPLEMENTED",
+      "decidedAt": "2025-06-05T10:28:19.630Z",
+      "createdAt": "2025-06-05T10:28:19.632Z",
+      "updatedAt": "2025-06-05T10:28:19.632Z"
+    }
+  ],
+  "notifications": [],
+  "analyticsEvents": [],
+  "userActivities": [],
+  "systemMetrics": []
+}
