@@ -93,6 +93,15 @@ model User {
   analyticsEvents   AnalyticsEvent[] @relation("UserAnalytics")
   dailyActivities   UserActivity[]   @relation("UserDailyActivity")
 
+  // Distributed Platform Relations
+  nodePartnerships  NodePartner[]
+  nodeSubscriptions NodeSubscription[]
+
+  // Content Management Relations
+  contentReviews    ContentReview[]
+  localContentReviews LocalContentReview[]
+  translations      Translation[]
+
   @@map("users")
 }
 
@@ -738,4 +747,379 @@ model SystemMetrics {
   updatedAt       DateTime @updatedAt
 
   @@map("system_metrics")
+}
+
+// Distributed Platform System Models
+enum NodeStatus {
+  ACTIVE
+  INACTIVE
+  PENDING
+  SUSPENDED
+  MAINTENANCE
+}
+
+enum PartnerRole {
+  OWNER
+  MANAGER
+  INSTRUCTOR
+  SUPPORT
+  CONTENT_CREATOR
+}
+
+enum RevenueType {
+  SUBSCRIPTION
+  COURSE
+  CONSULTING
+  WORKSHOP
+  CERTIFICATION
+  PARTNERSHIP
+}
+
+enum ContentTier {
+  FREE
+  PREMIUM
+  ENTERPRISE
+}
+
+enum SubscriptionType {
+  BASIC
+  ADVANCED
+  PREMIUM
+  ENTERPRISE
+}
+
+enum GlobalContentType {
+  ACADEMIC_COURSE
+  PROFESSIONAL_COURSE
+  LESSON
+  QUIZ
+  RESOURCE
+  TEMPLATE
+}
+
+enum ContentCategory {
+  MATHEMATICS
+  SCIENCES
+  LANGUAGES
+  ISLAMIC_STUDIES
+  TECHNOLOGY
+  BUSINESS
+  ARTS
+  LIFE_SKILLS
+}
+
+enum ContentLevel {
+  BEGINNER
+  INTERMEDIATE
+  ADVANCED
+  EXPERT
+}
+
+enum AgeGroup {
+  CHILDREN_6_12
+  TEENS_13_17
+  ADULTS_18_PLUS
+  SENIORS_50_PLUS
+}
+
+enum ReviewStatus {
+  PENDING
+  APPROVED
+  NEEDS_REVISION
+  REJECTED
+}
+
+enum TranslationStatus {
+  NOT_STARTED
+  IN_PROGRESS
+  REVIEW
+  COMPLETED
+  NEEDS_REVISION
+}
+
+model LocalNode {
+  id            String     @id @default(cuid())
+  name          String
+  slug          String     @unique
+  region        String
+  country       String
+  language      String     @default("ar")
+  currency      String     @default("USD")
+  timezone      String     @default("UTC")
+  status        NodeStatus @default(PENDING)
+  databaseUrl   String?    // URL for local database
+  apiEndpoint   String?    // API endpoint for the node
+  settings      Json       @default("{}")
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+
+  // Relations
+  partners      NodePartner[]
+  revenues      NodeRevenue[]
+  localContent  LocalContent[]
+  nodeSettings  NodeSetting[]
+  subscriptions NodeSubscription[]
+
+  @@map("local_nodes")
+}
+
+model NodePartner {
+  id                String      @id @default(cuid())
+  nodeId            String
+  userId            String
+  role              PartnerRole
+  revenueShare      Decimal     @default(0.00) @db.Decimal(5,2)
+  status            NodeStatus  @default(PENDING)
+  contractStartDate DateTime?
+  contractEndDate   DateTime?
+  contractData      Json        @default("{}")
+  createdAt         DateTime    @default(now())
+  updatedAt         DateTime    @updatedAt
+
+  // Relations
+  node              LocalNode   @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  user              User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([nodeId, userId])
+  @@map("node_partners")
+}
+
+model NodeRevenue {
+  id              String      @id @default(cuid())
+  nodeId          String
+  revenueType     RevenueType
+  amount          Decimal     @db.Decimal(10,2)
+  currency        String
+  platformFee     Decimal     @db.Decimal(10,2)
+  netAmount       Decimal     @db.Decimal(10,2)
+  transactionDate DateTime
+  description     String?
+  metadata        Json        @default("{}")
+  syncedToGlobal  Boolean     @default(false)
+  createdAt       DateTime    @default(now())
+  updatedAt       DateTime    @updatedAt
+
+  // Relations
+  node            LocalNode   @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+
+  @@map("node_revenues")
+}
+
+model NodeSubscription {
+  id              String           @id @default(cuid())
+  nodeId          String
+  userId          String
+  subscriptionType SubscriptionType
+  tier            ContentTier
+  amount          Decimal          @db.Decimal(10,2)
+  currency        String           @default("USD")
+  startDate       DateTime
+  endDate         DateTime
+  isActive        Boolean          @default(true)
+  autoRenew       Boolean          @default(true)
+  metadata        Json             @default("{}")
+  createdAt       DateTime         @default(now())
+  updatedAt       DateTime         @updatedAt
+
+  // Relations
+  node            LocalNode        @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  user            User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([nodeId, userId])
+  @@map("node_subscriptions")
+}
+
+model LocalContent {
+  id                String         @id @default(cuid())
+  nodeId            String
+  globalContentId   String?        // Reference to global content
+  title             String
+  description       String?        @db.Text
+  contentType       String         // course, lesson, quiz, resource
+  contentData       Json
+  language          String
+  isCustomized      Boolean        @default(false)
+  customizationData Json           @default("{}")
+  status            String         @default("draft") // draft, published, archived
+  version           String         @default("1.0")
+  translationStatus TranslationStatus @default(NOT_STARTED)
+  localizedBy       String?        // معرف المترجم/المحرر المحلي
+  reviewedBy        String?        // معرف المراجع
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  // Relations
+  node              LocalNode      @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  globalContent     GlobalContent? @relation(fields: [globalContentId], references: [id], onDelete: SetNull)
+  translations      Translation[]
+  localReviews      LocalContentReview[]
+
+  @@map("local_content")
+}
+
+model NodeSetting {
+  id           String    @id @default(cuid())
+  nodeId       String
+  settingKey   String
+  settingValue String    @db.Text
+  settingType  String    @default("string") // string, number, boolean, json
+  isPublic     Boolean   @default(false)
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+
+  // Relations
+  node         LocalNode @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+
+  @@unique([nodeId, settingKey])
+  @@map("node_settings")
+}
+
+// Global Content Management System
+model GlobalContent {
+  id                  String              @id @default(cuid())
+  title               String
+  description         String?             @db.Text
+  type                GlobalContentType
+  category            ContentCategory
+  level               ContentLevel
+  ageGroup            AgeGroup
+  tier                ContentTier
+  estimatedDuration   Int?                // بالدقائق
+  prerequisites       Json                @default("[]") // قائمة المتطلبات المسبقة
+  learningObjectives  Json                @default("[]") // أهداف التعلم
+  contentData         Json                // البيانات الأساسية للمحتوى
+  metadata            Json                @default("{}")  // معلومات إضافية
+  version             String              @default("1.0.0")
+  isPublished         Boolean             @default(false)
+  publishedAt         DateTime?
+  reviewStatus        ReviewStatus        @default(PENDING)
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+
+  // Relations
+  localizations       LocalContent[]
+  reviews             ContentReview[]
+  versions            ContentVersion[]
+  distributions       ContentDistribution[]
+
+  @@map("global_content")
+}
+
+model ContentVersion {
+  id                String              @id @default(cuid())
+  globalContentId   String
+  version           String              // مثل "1.2.3"
+  changeType        String              // major, minor, patch
+  changes           Json                @default("[]") // قائمة التغييرات
+  contentData       Json                // بيانات هذا الإصدار
+  isStable          Boolean             @default(false)
+  publishedAt       DateTime            @default(now())
+  createdAt         DateTime            @default(now())
+
+  // Relations
+  globalContent     GlobalContent       @relation(fields: [globalContentId], references: [id], onDelete: Cascade)
+
+  @@map("content_versions")
+}
+
+model ContentReview {
+  id                String              @id @default(cuid())
+  globalContentId   String
+  reviewerId        String
+  reviewType        String              // technical, educational, cultural
+  score             Int                 // 1-10
+  feedback          String              @db.Text
+  recommendations   Json                @default("[]")
+  status            ReviewStatus
+  reviewedAt        DateTime            @default(now())
+
+  // Relations
+  globalContent     GlobalContent       @relation(fields: [globalContentId], references: [id], onDelete: Cascade)
+  reviewer          User                @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
+
+  @@map("content_reviews")
+}
+
+model ContentDistribution {
+  id                String              @id @default(cuid())
+  globalContentId   String
+  targetNodes       Json                @default("[]") // قائمة العقد المستهدفة
+  distributionType  String              // push_all, selective, on_demand
+  status            String              @default("pending") // pending, in_progress, completed, failed
+  startedAt         DateTime            @default(now())
+  completedAt       DateTime?
+  successfulNodes   Int                 @default(0)
+  failedNodes       Int                 @default(0)
+  errors            Json                @default("[]") // قائمة الأخطاء
+  metadata          Json                @default("{}")
+
+  // Relations
+  globalContent     GlobalContent       @relation(fields: [globalContentId], references: [id], onDelete: Cascade)
+
+  @@map("content_distributions")
+}
+
+// Translation Management System
+model Translation {
+  id                String              @id @default(cuid())
+  localContentId    String
+  translatorId      String
+  sourceLanguage    String
+  targetLanguage    String
+  sourceText        String              @db.Text
+  translatedText    String              @db.Text
+  translationType   String              // automatic, human, hybrid
+  quality           Json                @default("{}") // accuracy, fluency, cultural_fit
+  status            TranslationStatus   @default(NOT_STARTED)
+  feedback          String?             @db.Text
+  completedAt       DateTime?
+  createdAt         DateTime            @default(now())
+  updatedAt         DateTime            @updatedAt
+
+  // Relations
+  localContent      LocalContent        @relation(fields: [localContentId], references: [id], onDelete: Cascade)
+  translator        User                @relation(fields: [translatorId], references: [id], onDelete: Cascade)
+
+  @@map("translations")
+}
+
+model LocalContentReview {
+  id                String              @id @default(cuid())
+  localContentId    String
+  reviewerId        String
+  languageQuality   Int                 // 1-10
+  culturalRelevance Int                 // 1-10
+  educationalValue  Int                 // 1-10
+  technicalAccuracy Int                 // 1-10
+  overallScore      Int                 // 1-10
+  feedback          String              @db.Text
+  recommendations   Json                @default("[]")
+  status            ReviewStatus        @default(PENDING)
+  reviewedAt        DateTime            @default(now())
+
+  // Relations
+  localContent      LocalContent        @relation(fields: [localContentId], references: [id], onDelete: Cascade)
+  reviewer          User                @relation(fields: [reviewerId], references: [id], onDelete: Cascade)
+
+  @@map("local_content_reviews")
+}
+
+// Content Analytics and Performance
+model ContentAnalytics {
+  id                String              @id @default(cuid())
+  contentId         String              // يمكن أن يكون global أو local
+  contentType       String              // global, local
+  nodeId            String?             // للمحتوى المحلي
+  viewCount         Int                 @default(0)
+  completionCount   Int                 @default(0)
+  averageRating     Decimal             @default(0) @db.Decimal(3,2)
+  totalRatings      Int                 @default(0)
+  averageTime       Int                 @default(0) // متوسط الوقت المستغرق بالدقائق
+  bounceRate        Decimal             @default(0) @db.Decimal(5,2) // معدل الارتداد
+  engagementScore   Decimal             @default(0) @db.Decimal(5,2)
+  lastUpdated       DateTime            @default(now())
+  createdAt         DateTime            @default(now())
+
+  @@unique([contentId, contentType, nodeId])
+  @@map("content_analytics")
 }
