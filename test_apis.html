@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار APIs العقدة التجريبية</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 20px;
+            background-color: #f5f5f5;
+        }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+        }
+        .test-section {
+            margin: 20px 0;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .test-button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #2563eb;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            white-space: pre-wrap;
+            font-family: monospace;
+        }
+        .success {
+            background: #d1fae5;
+            border: 1px solid #10b981;
+        }
+        .error {
+            background: #fee2e2;
+            border: 1px solid #ef4444;
+        }
+        .loading {
+            background: #fef3c7;
+            border: 1px solid #f59e0b;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🧪 اختبار APIs العقدة التجريبية</h1>
+        
+        <div class="test-section">
+            <h2>📊 اختبار API مؤشرات الأداء</h2>
+            <button class="test-button" onclick="testMetricsAPI()">اختبار /api/admin/pilot/metrics</button>
+            <div id="metrics-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>⚠️ اختبار API التحديات</h2>
+            <button class="test-button" onclick="testChallengesAPI()">اختبار /api/admin/pilot/challenges</button>
+            <button class="test-button" onclick="createTestChallenge()">إنشاء تحدي تجريبي</button>
+            <div id="challenges-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>🔄 اختبار تحديث حالة العقدة</h2>
+            <button class="test-button" onclick="updateNodeStatus()">تحديث حالة العقدة</button>
+            <div id="status-result" class="result"></div>
+        </div>
+
+        <div class="test-section">
+            <h2>📈 اختبار إضافة مؤشر جديد</h2>
+            <button class="test-button" onclick="addMetric()">إضافة مؤشر تجريبي</button>
+            <div id="metric-result" class="result"></div>
+        </div>
+    </div>
+
+    <script>
+        const baseURL = 'http://localhost:3000';
+
+        function showLoading(elementId) {
+            const element = document.getElementById(elementId);
+            element.className = 'result loading';
+            element.textContent = 'جاري التحميل...';
+        }
+
+        function showResult(elementId, data, isError = false) {
+            const element = document.getElementById(elementId);
+            element.className = isError ? 'result error' : 'result success';
+            element.textContent = JSON.stringify(data, null, 2);
+        }
+
+        async function testMetricsAPI() {
+            showLoading('metrics-result');
+            try {
+                const response = await fetch(`${baseURL}/api/admin/pilot/metrics?nodeId=pilot-riyadh-001&timeframe=7d`);
+                const data = await response.json();
+                showResult('metrics-result', data);
+            } catch (error) {
+                showResult('metrics-result', { error: error.message }, true);
+            }
+        }
+
+        async function testChallengesAPI() {
+            showLoading('challenges-result');
+            try {
+                const response = await fetch(`${baseURL}/api/admin/pilot/challenges?nodeId=pilot-riyadh-001`);
+                const data = await response.json();
+                showResult('challenges-result', data);
+            } catch (error) {
+                showResult('challenges-result', { error: error.message }, true);
+            }
+        }
+
+        async function createTestChallenge() {
+            showLoading('challenges-result');
+            try {
+                const challengeData = {
+                    nodeId: 'pilot-riyadh-001',
+                    title: 'تحدي تجريبي - بطء في التحميل',
+                    description: 'تم ملاحظة بطء في تحميل الصفحات خلال ساعات الذروة',
+                    severity: 'medium',
+                    assignee: 'محمد القحطاني',
+                    dueDate: '2025-01-20',
+                    tags: ['performance', 'urgent']
+                };
+
+                const response = await fetch(`${baseURL}/api/admin/pilot/challenges`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(challengeData)
+                });
+                const data = await response.json();
+                showResult('challenges-result', data);
+            } catch (error) {
+                showResult('challenges-result', { error: error.message }, true);
+            }
+        }
+
+        async function updateNodeStatus() {
+            showLoading('status-result');
+            try {
+                const statusData = {
+                    nodeId: 'pilot-riyadh-001',
+                    status: 'ACTIVE',
+                    notes: 'تحديث حالة العقدة إلى نشطة بعد الاختبار'
+                };
+
+                const response = await fetch(`${baseURL}/api/admin/pilot/metrics`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(statusData)
+                });
+                const data = await response.json();
+                showResult('status-result', data);
+            } catch (error) {
+                showResult('status-result', { error: error.message }, true);
+            }
+        }
+
+        async function addMetric() {
+            showLoading('metric-result');
+            try {
+                const metricData = {
+                    nodeId: 'pilot-riyadh-001',
+                    metricType: 'test_metric',
+                    value: Math.floor(Math.random() * 100),
+                    metadata: {
+                        source: 'manual_test',
+                        timestamp: new Date().toISOString()
+                    }
+                };
+
+                const response = await fetch(`${baseURL}/api/admin/pilot/metrics`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(metricData)
+                });
+                const data = await response.json();
+                showResult('metric-result', data);
+            } catch (error) {
+                showResult('metric-result', { error: error.message }, true);
+            }
+        }
+
+        // اختبار تلقائي عند تحميل الصفحة
+        window.onload = function() {
+            console.log('🧪 صفحة اختبار APIs جاهزة');
+            console.log('💡 نصيحة: افتح Developer Tools لرؤية تفاصيل أكثر');
+        };
+    </script>
+</body>
+</html>

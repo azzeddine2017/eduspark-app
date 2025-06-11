@@ -17,7 +17,13 @@ import {
   Rocket,
   Infinity,
   Clock,
-  CheckCircle
+  CheckCircle,
+  Handshake,
+  Vote,
+  Crown,
+  MessageCircle,
+  Globe,
+  ArrowRight
 } from "lucide-react"
 
 export default async function Home() {
@@ -247,6 +253,111 @@ export default async function Home() {
                 </div>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* Distributed Platform Section */}
+        <div className="mt-20">
+          <div className="text-center mb-12">
+            <span className="inline-block px-4 py-2 bg-gradient-to-r from-purple-100 to-blue-100 text-purple-700 rounded-full text-sm font-medium mb-4">
+              🌐 جديد: منصة فتح الموزعة
+            </span>
+            <h3 className="text-3xl font-bold text-high-contrast arabic-text mb-4">
+              شبكة عالمية موزعة للتعليم
+            </h3>
+            <p className="text-medium-contrast arabic-text max-w-3xl mx-auto">
+              انضم لثورة التعليم العالمية مع نظام الحوكمة الموزعة والشراكات المحلية
+            </p>
+          </div>
+
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+            <Link href="/partnerships" className="card p-6 hover:shadow-lg transition-all duration-300 group">
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  <div className="w-12 h-12 bg-gradient-to-r from-blue-500 to-purple-500 rounded-lg flex items-center justify-center">
+                    <Handshake className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <div className="mr-4">
+                  <h3 className="text-lg font-semibold text-high-contrast arabic-text mb-2 group-hover:text-primary transition-colors">
+                    الشراكات العالمية
+                  </h3>
+                  <p className="text-medium-contrast arabic-text text-sm leading-relaxed">
+                    كن شريكاً محلياً وأطلق عقدتك التعليمية
+                  </p>
+                  <div className="mt-3 flex items-center text-primary text-sm font-medium">
+                    اكتشف الفرص
+                    <ArrowRight className="w-4 h-4 mr-1 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            <Link href="/governance" className="card p-6 hover:shadow-lg transition-all duration-300 group">
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  <div className="w-12 h-12 bg-gradient-to-r from-green-500 to-blue-500 rounded-lg flex items-center justify-center">
+                    <Vote className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <div className="mr-4">
+                  <h3 className="text-lg font-semibold text-high-contrast arabic-text mb-2 group-hover:text-primary transition-colors">
+                    الحوكمة الديمقراطية
+                  </h3>
+                  <p className="text-medium-contrast arabic-text text-sm leading-relaxed">
+                    شارك في صنع القرارات المهمة للمنصة
+                  </p>
+                  <div className="mt-3 flex items-center text-primary text-sm font-medium">
+                    شارك في التصويت
+                    <ArrowRight className="w-4 h-4 mr-1 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            <Link href="/roles" className="card p-6 hover:shadow-lg transition-all duration-300 group">
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  <div className="w-12 h-12 bg-gradient-to-r from-purple-500 to-pink-500 rounded-lg flex items-center justify-center">
+                    <Crown className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <div className="mr-4">
+                  <h3 className="text-lg font-semibold text-high-contrast arabic-text mb-2 group-hover:text-primary transition-colors">
+                    الأدوار الموزعة
+                  </h3>
+                  <p className="text-medium-contrast arabic-text text-sm leading-relaxed">
+                    اكتشف الفرص المهنية في الشبكة العالمية
+                  </p>
+                  <div className="mt-3 flex items-center text-primary text-sm font-medium">
+                    استكشف الأدوار
+                    <ArrowRight className="w-4 h-4 mr-1 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            <Link href="/communication" className="card p-6 hover:shadow-lg transition-all duration-300 group">
+              <div className="flex items-start">
+                <div className="flex-shrink-0">
+                  <div className="w-12 h-12 bg-gradient-to-r from-orange-500 to-red-500 rounded-lg flex items-center justify-center">
+                    <MessageCircle className="w-6 h-6 text-white" />
+                  </div>
+                </div>
+                <div className="mr-4">
+                  <h3 className="text-lg font-semibold text-high-contrast arabic-text mb-2 group-hover:text-primary transition-colors">
+                    منصة التواصل
+                  </h3>
+                  <p className="text-medium-contrast arabic-text text-sm leading-relaxed">
+                    تواصل مع الشبكة العالمية بـ 20+ لغة
+                  </p>
+                  <div className="mt-3 flex items-center text-primary text-sm font-medium">
+                    ابدأ التواصل
+                    <ArrowRight className="w-4 h-4 mr-1 group-hover:translate-x-1 transition-transform" />
+                  </div>
+                </div>
+              </div>
+            </Link>
           </div>
         </div>
 

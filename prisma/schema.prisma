@@ -102,6 +102,11 @@ model User {
   localContentReviews LocalContentReview[]
   translations      Translation[]
 
+  // Pilot Program Relations
+  localNodeId       String?
+  localNode         LocalNode? @relation(fields: [localNodeId], references: [id])
+  subscriptions     Subscription[]
+
   @@map("users")
 }
 
@@ -859,6 +864,8 @@ model LocalNode {
   localContent  LocalContent[]
   nodeSettings  NodeSetting[]
   subscriptions NodeSubscription[]
+  users         User[]
+  challenges    PilotChallenge[]
 
   @@map("local_nodes")
 }
@@ -1123,3 +1130,81 @@ model ContentAnalytics {
   @@unique([contentId, contentType, nodeId])
   @@map("content_analytics")
 }
+
+// Pilot Program Additional Models
+enum SubscriptionStatus {
+  ACTIVE
+  CANCELLED
+  EXPIRED
+  PENDING
+}
+
+enum ChallengeStatus {
+  OPEN
+  IN_PROGRESS
+  RESOLVED
+  CLOSED
+}
+
+enum ChallengeSeverity {
+  LOW
+  MEDIUM
+  HIGH
+  CRITICAL
+}
+
+model Subscription {
+  id            String              @id @default(cuid())
+  userId        String
+  planName      String
+  amount        Decimal             @db.Decimal(10,2)
+  currency      String              @default("USD")
+  status        SubscriptionStatus  @default(PENDING)
+  startDate     DateTime            @default(now())
+  endDate       DateTime?
+  metadata      Json                @default("{}")
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  // Relations
+  user          User                @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("subscriptions")
+}
+
+model PilotChallenge {
+  id            String              @id @default(cuid())
+  nodeId        String
+  title         String
+  description   String              @db.Text
+  severity      ChallengeSeverity
+  status        ChallengeStatus     @default(OPEN)
+  assignee      String?
+  dueDate       DateTime?
+  resolvedAt    DateTime?
+  tags          Json                @default("[]")
+  metadata      Json                @default("{}")
+  createdAt     DateTime            @default(now())
+  updatedAt     DateTime            @updatedAt
+
+  // Relations
+  node          LocalNode           @relation(fields: [nodeId], references: [id], onDelete: Cascade)
+  comments      ChallengeComment[]
+
+  @@map("pilot_challenges")
+}
+
+model ChallengeComment {
+  id            String          @id @default(cuid())
+  challengeId   String
+  author        String
+  content       String          @db.Text
+  type          String          @default("comment") // comment, update, system
+  createdAt     DateTime        @default(now())
+
+  // Relations
+  challenge     PilotChallenge  @relation(fields: [challengeId], references: [id], onDelete: Cascade)
+
+  @@map("challenge_comments")
+}
+

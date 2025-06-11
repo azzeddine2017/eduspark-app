@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useSession, signOut } from "next-auth/react"
 import SimpleThemeToggle from "./SimpleThemeToggle"
-import { Settings, BookOpen, LogIn, UserPlus, LogOut, User, Menu, X, ChevronDown, Info, Users, Heart, Shield, FileText } from "lucide-react"
+import { Settings, BookOpen, LogIn, UserPlus, LogOut, User, Menu, X, ChevronDown, Info, Users, Heart, Shield, FileText, Handshake, Vote, Crown, MessageCircle } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 
 interface HeaderProps {
@@ -113,6 +113,42 @@ export default function Header({
                   >
                     <Users className="w-4 h-4 ml-2" />
                     المجتمع
+                  </Link>
+
+                  <Link
+                    href="/partnerships"
+                    className="flex items-center px-4 py-2 text-sm text-text hover:bg-background transition-colors arabic-text"
+                    onClick={() => setIsPagesMenuOpen(false)}
+                  >
+                    <Handshake className="w-4 h-4 ml-2" />
+                    الشراكات
+                  </Link>
+
+                  <Link
+                    href="/governance"
+                    className="flex items-center px-4 py-2 text-sm text-text hover:bg-background transition-colors arabic-text"
+                    onClick={() => setIsPagesMenuOpen(false)}
+                  >
+                    <Vote className="w-4 h-4 ml-2" />
+                    الحوكمة
+                  </Link>
+
+                  <Link
+                    href="/roles"
+                    className="flex items-center px-4 py-2 text-sm text-text hover:bg-background transition-colors arabic-text"
+                    onClick={() => setIsPagesMenuOpen(false)}
+                  >
+                    <Crown className="w-4 h-4 ml-2" />
+                    الأدوار
+                  </Link>
+
+                  <Link
+                    href="/communication"
+                    className="flex items-center px-4 py-2 text-sm text-text hover:bg-background transition-colors arabic-text"
+                    onClick={() => setIsPagesMenuOpen(false)}
+                  >
+                    <MessageCircle className="w-4 h-4 ml-2" />
+                    التواصل
                   </Link>
 
                   <Link
@@ -373,6 +409,42 @@ export default function Header({
               </Link>
 
               <Link
+                href="/partnerships"
+                className="flex items-center w-full text-right py-2 px-3 rounded-lg hover:bg-background transition-colors text-text arabic-text"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Handshake className="w-4 h-4 ml-2" />
+                الشراكات
+              </Link>
+
+              <Link
+                href="/governance"
+                className="flex items-center w-full text-right py-2 px-3 rounded-lg hover:bg-background transition-colors text-text arabic-text"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Vote className="w-4 h-4 ml-2" />
+                الحوكمة
+              </Link>
+
+              <Link
+                href="/roles"
+                className="flex items-center w-full text-right py-2 px-3 rounded-lg hover:bg-background transition-colors text-text arabic-text"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Crown className="w-4 h-4 ml-2" />
+                الأدوار
+              </Link>
+
+              <Link
+                href="/communication"
+                className="flex items-center w-full text-right py-2 px-3 rounded-lg hover:bg-background transition-colors text-text arabic-text"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <MessageCircle className="w-4 h-4 ml-2" />
+                التواصل
+              </Link>
+
+              <Link
                 href="/volunteer"
                 className="flex items-center w-full text-right py-2 px-3 rounded-lg hover:bg-background transition-colors text-text arabic-text"
                 onClick={() => setIsMobileMenuOpen(false)}
@@ -431,6 +503,42 @@ export default function Header({
             >
               <Users className="w-4 h-4 ml-2" />
               المجتمع
+            </Link>
+
+            <Link
+              href="/partnerships"
+              className="flex items-center w-full text-right py-2 px-3 rounded-lg hover:bg-background transition-colors text-text arabic-text"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <Handshake className="w-4 h-4 ml-2" />
+              الشراكات
+            </Link>
+
+            <Link
+              href="/governance"
+              className="flex items-center w-full text-right py-2 px-3 rounded-lg hover:bg-background transition-colors text-text arabic-text"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <Vote className="w-4 h-4 ml-2" />
+              الحوكمة
+            </Link>
+
+            <Link
+              href="/roles"
+              className="flex items-center w-full text-right py-2 px-3 rounded-lg hover:bg-background transition-colors text-text arabic-text"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <Crown className="w-4 h-4 ml-2" />
+              الأدوار
+            </Link>
+
+            <Link
+              href="/communication"
+              className="flex items-center w-full text-right py-2 px-3 rounded-lg hover:bg-background transition-colors text-text arabic-text"
+              onClick={() => setIsMobileMenuOpen(false)}
+            >
+              <MessageCircle className="w-4 h-4 ml-2" />
+              التواصل
             </Link>
 
             <Link
