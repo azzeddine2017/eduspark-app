@@ -196,10 +196,51 @@ async function main() {
 
   console.log('✅ تم تسجيل الطالب في الدورة الأولى')
 
+  // إنشاء البيانات التجريبية للعقدة
+  console.log('🏗️ إنشاء بيانات العقدة التجريبية...')
+
+  // إنشاء العقدة المحلية
+  const localNode = await prisma.localNode.upsert({
+    where: { id: 'pilot-riyadh-001' },
+    update: {},
+    create: {
+      id: 'pilot-riyadh-001',
+      name: 'العقدة التجريبية - الرياض',
+      slug: 'pilot-riyadh-001',
+      region: 'الرياض',
+      country: 'SA',
+      language: 'ar',
+      currency: 'SAR',
+      timezone: 'Asia/Riyadh',
+      status: 'ACTIVE',
+      databaseUrl: 'mysql://localhost:3306/pilot_riyadh_db',
+      apiEndpoint: 'https://riyadh.fateh.edu/api',
+      settings: {
+        launchDate: new Date().toISOString(),
+        targetUsers: 50,
+        currentPhase: 'pilot',
+        teamSize: 5
+      }
+    }
+  })
+
+  console.log('✅ تم إنشاء العقدة المحلية')
+
+  // ربط المدير بالعقدة
+  await prisma.user.update({
+    where: { id: admin.id },
+    data: { localNodeId: localNode.id }
+  })
+
+  console.log('✅ تم ربط المدير بالعقدة التجريبية')
+
   console.log('🎉 تم إنشاء جميع البيانات التجريبية بنجاح!')
   console.log('\n📋 بيانات تسجيل الدخول:')
   console.log('المدير: admin@fateh.com / admin123')
   console.log('الطالب: student@fateh.com / student123')
+  console.log('\n🏢 العقدة التجريبية:')
+  console.log('المعرف: pilot-riyadh-001')
+  console.log('الاسم: العقدة التجريبية - الرياض')
 }
 
 main()

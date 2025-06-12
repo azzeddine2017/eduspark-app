@@ -1,5 +1,693 @@
 @import "tailwindcss";
 
+/* إصلاح سريع للوضع المظلم والخطوط العربية */
+
+/* ضمان وضوح النصوص في جميع الصفحات */
+* {
+  color: var(--color-text, #1F2937) !important;
+}
+
+.dark * {
+  color: var(--color-text, #F8FAFC) !important;
+}
+
+/* إصلاح الخلفيات - منع الخلفيات البيضاء في الوضع المظلم */
+.bg-gray-50 {
+  background-color: var(--color-background) !important;
+}
+
+.bg-white {
+  background-color: var(--color-surface) !important;
+}
+
+.bg-gray-100 {
+  background-color: var(--color-surface) !important;
+}
+
+.bg-gray-200 {
+  background-color: var(--color-border) !important;
+}
+
+/* إصلاح شامل للخلفيات البيضاء في الوضع المظلم */
+.dark .bg-white {
+  background-color: var(--color-surface) !important;
+}
+
+.dark .bg-gray-50 {
+  background-color: var(--color-background) !important;
+}
+
+.dark .bg-gray-100 {
+  background-color: var(--color-surface) !important;
+}
+
+.dark .bg-gray-200 {
+  background-color: #334155 !important;
+}
+
+.dark .bg-gray-300 {
+  background-color: #475569 !important;
+}
+
+/* منع أي خلفية بيضاء في الوضع المظلم */
+.dark [style*="background-color: white"],
+.dark [style*="background-color: #fff"],
+.dark [style*="background-color: #ffffff"],
+.dark [style*="background: white"],
+.dark [style*="background: #fff"],
+.dark [style*="background: #ffffff"] {
+  background-color: var(--color-surface) !important;
+}
+
+/* إصلاح الخلفيات في العناصر المختلفة */
+.dark .card {
+  background-color: var(--color-surface) !important;
+}
+
+.dark .modal {
+  background-color: var(--color-surface) !important;
+}
+
+.dark .dropdown {
+  background-color: var(--color-surface) !important;
+}
+
+.dark .popup {
+  background-color: var(--color-surface) !important;
+}
+
+.dark .panel {
+  background-color: var(--color-surface) !important;
+}
+
+.dark .sidebar {
+  background-color: var(--color-surface) !important;
+}
+
+.dark .header {
+  background-color: var(--color-surface) !important;
+}
+
+.dark .footer {
+  background-color: var(--color-surface) !important;
+}
+
+.dark .content {
+  background-color: var(--color-background) !important;
+}
+
+.dark .wrapper {
+  background-color: var(--color-background) !important;
+}
+
+.dark .container {
+  background-color: var(--color-background) !important;
+}
+
+/* إصلاح شامل لمنع أي خلفية بيضاء في التطبيق */
+.dark * {
+  background-color: inherit !important;
+}
+
+/* إعادة تعيين الخلفيات للعناصر الأساسية */
+.dark html {
+  background-color: var(--color-background) !important;
+}
+
+.dark body {
+  background-color: var(--color-background) !important;
+}
+
+.dark #__next {
+  background-color: var(--color-background) !important;
+}
+
+.dark main {
+  background-color: var(--color-background) !important;
+}
+
+/* إصلاح جميع فئات الخلفيات البيضاء */
+.dark .bg-white,
+.dark .bg-gray-50,
+.dark .bg-gray-100,
+.dark .bg-slate-50,
+.dark .bg-slate-100,
+.dark .bg-zinc-50,
+.dark .bg-zinc-100,
+.dark .bg-neutral-50,
+.dark .bg-neutral-100,
+.dark .bg-stone-50,
+.dark .bg-stone-100 {
+  background-color: var(--color-surface) !important;
+}
+
+/* إصلاح الخلفيات في العناصر التفاعلية */
+.dark button:not([class*="bg-"]):not([class*="gradient"]) {
+  background-color: var(--color-surface) !important;
+}
+
+.dark input:not([class*="bg-"]) {
+  background-color: var(--color-background) !important;
+}
+
+.dark select:not([class*="bg-"]) {
+  background-color: var(--color-background) !important;
+}
+
+.dark textarea:not([class*="bg-"]) {
+  background-color: var(--color-background) !important;
+}
+
+/* إصلاح الخلفيات في الجداول */
+.dark table {
+  background-color: var(--color-surface) !important;
+}
+
+.dark th {
+  background-color: var(--color-background) !important;
+}
+
+.dark td {
+  background-color: transparent !important;
+}
+
+/* إصلاح الخلفيات في القوائم */
+.dark ul {
+  background-color: transparent !important;
+}
+
+.dark li {
+  background-color: transparent !important;
+}
+
+/* إصلاح الخلفيات في النوافذ المنبثقة */
+.dark .modal-content {
+  background-color: var(--color-surface) !important;
+}
+
+.dark .dropdown-menu {
+  background-color: var(--color-surface) !important;
+}
+
+.dark .tooltip {
+  background-color: var(--color-surface) !important;
+}
+
+/* إصلاح الخلفيات في التنقل */
+.dark .nav {
+  background-color: var(--color-surface) !important;
+}
+
+.dark .navbar {
+  background-color: var(--color-surface) !important;
+}
+
+.dark .menu {
+  background-color: var(--color-surface) !important;
+}
+
+/* إصلاح الخلفيات في المحتوى */
+.dark .page {
+  background-color: var(--color-background) !important;
+}
+
+.dark .section {
+  background-color: transparent !important;
+}
+
+.dark .article {
+  background-color: var(--color-surface) !important;
+}
+
+/* إصلاح الخلفيات في النماذج */
+.dark .form {
+  background-color: var(--color-surface) !important;
+}
+
+.dark .form-group {
+  background-color: transparent !important;
+}
+
+.dark .form-control {
+  background-color: var(--color-background) !important;
+}
+
+/* إصلاح الخلفيات في البطاقات */
+.dark .card-header {
+  background-color: var(--color-background) !important;
+}
+
+.dark .card-body {
+  background-color: transparent !important;
+}
+
+.dark .card-footer {
+  background-color: var(--color-background) !important;
+}
+
+/* إصلاح الخلفيات في التبويبات */
+.dark .tab-content {
+  background-color: var(--color-surface) !important;
+}
+
+.dark .tab-pane {
+  background-color: transparent !important;
+}
+
+/* إصلاح الخلفيات في الشريط الجانبي */
+.dark .sidebar-content {
+  background-color: var(--color-surface) !important;
+}
+
+/* إصلاح الخلفيات في الهيدر */
+.dark .header-content {
+  background-color: var(--color-surface) !important;
+}
+
+/* إصلاح الخلفيات في الفوتر */
+.dark .footer-content {
+  background-color: var(--color-surface) !important;
+}
+
+/* قاعدة نهائية قوية لمنع أي خلفية بيضاء في التطبيق */
+.dark *:not([class*="bg-gradient"]):not([class*="bg-blue"]):not([class*="bg-green"]):not([class*="bg-red"]):not([class*="bg-yellow"]):not([class*="bg-purple"]):not([class*="bg-indigo"]):not([class*="bg-pink"]):not([class*="bg-orange"]):not([class*="bg-teal"]):not([class*="bg-cyan"]):not([class*="bg-emerald"]):not([class*="bg-lime"]):not([class*="bg-amber"]):not([class*="bg-rose"]):not([class*="bg-fuchsia"]):not([class*="bg-violet"]):not([class*="bg-sky"]) {
+  background-color: inherit !important;
+}
+
+/* إعادة تعيين شاملة للخلفيات */
+.dark {
+  background-color: var(--color-background) !important;
+}
+
+.dark html {
+  background-color: var(--color-background) !important;
+}
+
+.dark body {
+  background-color: var(--color-background) !important;
+}
+
+/* منع أي خلفية بيضاء بغض النظر عن المصدر */
+.dark [style*="background-color: white"] {
+  background-color: var(--color-surface) !important;
+}
+
+.dark [style*="background-color: #fff"] {
+  background-color: var(--color-surface) !important;
+}
+
+.dark [style*="background-color: #ffffff"] {
+  background-color: var(--color-surface) !important;
+}
+
+.dark [style*="background-color: rgb(255, 255, 255)"] {
+  background-color: var(--color-surface) !important;
+}
+
+.dark [style*="background-color: rgba(255, 255, 255"] {
+  background-color: var(--color-surface) !important;
+}
+
+.dark [style*="background: white"] {
+  background-color: var(--color-surface) !important;
+}
+
+.dark [style*="background: #fff"] {
+  background-color: var(--color-surface) !important;
+}
+
+.dark [style*="background: #ffffff"] {
+  background-color: var(--color-surface) !important;
+}
+
+.dark [style*="background: rgb(255, 255, 255)"] {
+  background-color: var(--color-surface) !important;
+}
+
+.dark [style*="background: rgba(255, 255, 255"] {
+  background-color: var(--color-surface) !important;
+}
+
+/* إصلاح خاص للعناصر التي قد تحتوي على خلفيات بيضاء */
+.dark .bg-white,
+.dark .bg-gray-50,
+.dark .bg-gray-100,
+.dark .bg-slate-50,
+.dark .bg-slate-100,
+.dark .bg-zinc-50,
+.dark .bg-zinc-100,
+.dark .bg-neutral-50,
+.dark .bg-neutral-100,
+.dark .bg-stone-50,
+.dark .bg-stone-100 {
+  background-color: var(--color-surface) !important;
+}
+
+/* إصلاح للعناصر التي تستخدم خلفيات فاتحة أخرى */
+.dark .bg-gray-200,
+.dark .bg-slate-200,
+.dark .bg-zinc-200,
+.dark .bg-neutral-200,
+.dark .bg-stone-200 {
+  background-color: #334155 !important;
+}
+
+.dark .bg-gray-300,
+.dark .bg-slate-300,
+.dark .bg-zinc-300,
+.dark .bg-neutral-300,
+.dark .bg-stone-300 {
+  background-color: #475569 !important;
+}
+
+/* إصلاح للعناصر التي تستخدم hover مع خلفيات فاتحة */
+.dark .hover\:bg-white:hover,
+.dark .hover\:bg-gray-50:hover,
+.dark .hover\:bg-gray-100:hover {
+  background-color: var(--color-border) !important;
+}
+
+/* إصلاح للعناصر التي تستخدم focus مع خلفيات فاتحة */
+.dark .focus\:bg-white:focus,
+.dark .focus\:bg-gray-50:focus,
+.dark .focus\:bg-gray-100:focus {
+  background-color: var(--color-border) !important;
+}
+
+/* إصلاح النصوص */
+.text-gray-900 {
+  color: var(--color-text) !important;
+}
+
+.text-gray-800 {
+  color: var(--color-text) !important;
+}
+
+.text-gray-700 {
+  color: var(--color-text) !important;
+}
+
+.text-gray-600 {
+  color: var(--color-textSecondary) !important;
+}
+
+.text-gray-500 {
+  color: var(--color-textSecondary) !important;
+}
+
+/* إصلاح الحدود */
+.border-gray-200 {
+  border-color: var(--color-border) !important;
+}
+
+.border-gray-300 {
+  border-color: var(--color-border) !important;
+}
+
+.border-b {
+  border-color: var(--color-border) !important;
+}
+
+/* إصلاح الخطوط العربية */
+body, html, * {
+  font-family: 'Cairo', 'Tajawal', 'Noto Sans Arabic', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif !important;
+  direction: rtl !important;
+  text-align: right !important;
+}
+
+/* إصلاحات إضافية للوضع المظلم */
+.dark .text-gray-400 {
+  color: #CBD5E1 !important;
+}
+
+.dark .text-gray-300 {
+  color: #E2E8F0 !important;
+}
+
+.dark .text-gray-200 {
+  color: #F1F5F9 !important;
+}
+
+.dark .text-gray-100 {
+  color: #F8FAFC !important;
+}
+
+/* إصلاح النصوص في البطاقات */
+.dark .bg-gray-800 {
+  background-color: var(--color-surface) !important;
+}
+
+.dark .bg-gray-900 {
+  background-color: var(--color-background) !important;
+}
+
+/* إصلاح النصوص الفاتحة في الوضع المظلم */
+.dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+  color: #F8FAFC !important;
+}
+
+.dark p, .dark span, .dark div {
+  color: #E2E8F0 !important;
+}
+
+.dark label {
+  color: #CBD5E1 !important;
+}
+
+/* إصلاح خاص للنصوص الثانوية */
+.dark .text-muted {
+  color: #94A3B8 !important;
+}
+
+.dark .text-secondary {
+  color: #CBD5E1 !important;
+}
+
+/* إصلاح الأيقونات */
+.dark svg {
+  color: #E2E8F0 !important;
+}
+
+/* إصلاح النصوص في الأزرار */
+.dark button {
+  color: inherit !important;
+}
+
+.dark .btn-primary {
+  color: white !important;
+}
+
+.dark .btn-secondary {
+  color: #E2E8F0 !important;
+}
+
+/* إصلاح النصوص في النماذج */
+.dark input::placeholder {
+  color: #64748B !important;
+}
+
+.dark select option {
+  background-color: var(--color-surface) !important;
+  color: #E2E8F0 !important;
+}
+
+/* إصلاح النصوص في الجداول */
+.dark table {
+  color: #E2E8F0 !important;
+}
+
+.dark th {
+  color: #CBD5E1 !important;
+}
+
+.dark td {
+  color: #E2E8F0 !important;
+}
+
+/* إصلاح النصوص في القوائم */
+.dark ul li, .dark ol li {
+  color: #E2E8F0 !important;
+}
+
+/* إصلاح النصوص في الروابط */
+.dark a {
+  color: var(--color-primary) !important;
+}
+
+.dark a:hover {
+  color: var(--color-secondary) !important;
+}
+
+/* إصلاح خاص للنصوص الصغيرة */
+.dark .text-xs, .dark .text-sm {
+  color: #CBD5E1 !important;
+}
+
+/* إصلاح النصوص في الإشعارات */
+.dark .alert {
+  color: inherit !important;
+}
+
+/* إصلاح النصوص في البطاقات المتخصصة */
+.dark .card-title {
+  color: #F8FAFC !important;
+}
+
+.dark .card-text {
+  color: #E2E8F0 !important;
+}
+
+.dark .card-subtitle {
+  color: #CBD5E1 !important;
+}
+
+/* قاعدة شاملة لضمان وضوح جميع النصوص في الوضع المظلم */
+.dark * {
+  color: #E2E8F0 !important;
+}
+
+/* استثناءات للعناصر التي تحتاج ألوان خاصة */
+.dark .text-white {
+  color: #FFFFFF !important;
+}
+
+.dark .text-black {
+  color: #000000 !important;
+}
+
+.dark .bg-primary, .dark .bg-primary * {
+  color: white !important;
+}
+
+.dark .bg-success, .dark .bg-success * {
+  color: white !important;
+}
+
+.dark .bg-warning, .dark .bg-warning * {
+  color: white !important;
+}
+
+.dark .bg-error, .dark .bg-error * {
+  color: white !important;
+}
+
+.dark .bg-info, .dark .bg-info * {
+  color: white !important;
+}
+
+/* إصلاح خاص للنصوص في الأزرار الملونة */
+.dark .bg-gradient-to-r * {
+  color: white !important;
+}
+
+/* إصلاح النصوص في العناصر التفاعلية */
+.dark button:not(.bg-transparent) {
+  color: white !important;
+}
+
+.dark .btn-primary, .dark .btn-primary * {
+  color: white !important;
+}
+
+/* إصلاح النصوص في الحالات الخاصة */
+.dark .text-green-600, .dark .text-green-700, .dark .text-green-800 {
+  color: #4ADE80 !important;
+}
+
+.dark .text-red-600, .dark .text-red-700, .dark .text-red-800 {
+  color: #F87171 !important;
+}
+
+.dark .text-blue-600, .dark .text-blue-700, .dark .text-blue-800 {
+  color: #60A5FA !important;
+}
+
+.dark .text-yellow-600, .dark .text-yellow-700, .dark .text-yellow-800 {
+  color: #FACC15 !important;
+}
+
+/* إصلاح النصوص في الإشعارات الملونة */
+.dark .text-green-300 {
+  color: #86EFAC !important;
+}
+
+.dark .text-red-300 {
+  color: #FCA5A5 !important;
+}
+
+.dark .text-blue-300 {
+  color: #93C5FD !important;
+}
+
+.dark .text-yellow-300 {
+  color: #FDE047 !important;
+}
+
+/* إصلاح خاص للبطاقات المظلمة */
+.dark .bg-gray-800, .dark .bg-gray-900 {
+  background-color: var(--color-surface) !important;
+}
+
+.dark .bg-gray-800 *, .dark .bg-gray-900 * {
+  color: #E2E8F0 !important;
+}
+
+/* إصلاح النصوص في العناصر ذات الخلفية المظلمة */
+.dark [class*="bg-gray"] * {
+  color: #E2E8F0 !important;
+}
+
+/* إصلاح خاص للنصوص الصغيرة والثانوية */
+.dark .text-xs, .dark .text-sm, .dark .text-base {
+  color: #CBD5E1 !important;
+}
+
+.dark .text-lg, .dark .text-xl, .dark .text-2xl {
+  color: #F1F5F9 !important;
+}
+
+/* إصلاح النصوص في العناصر التفاعلية */
+.dark .hover\:text-gray-900:hover {
+  color: #F8FAFC !important;
+}
+
+.dark .hover\:text-gray-700:hover {
+  color: #E2E8F0 !important;
+}
+
+/* إصلاح النصوص في الحالات النشطة */
+.dark .active {
+  color: var(--color-primary) !important;
+}
+
+/* إصلاح النصوص في القوائم المنسدلة */
+.dark .dropdown-menu * {
+  color: #E2E8F0 !important;
+}
+
+/* إصلاح النصوص في النوافذ المنبثقة */
+.dark .modal * {
+  color: #E2E8F0 !important;
+}
+
+/* إصلاح النصوص في التبويبات */
+.dark .tab * {
+  color: #CBD5E1 !important;
+}
+
+.dark .tab.active * {
+  color: #F8FAFC !important;
+}
+
+/* إصلاح نهائي شامل */
+.dark {
+  color-scheme: dark;
+}
+
+.dark *:not([class*="bg-"]):not([class*="text-"]) {
+  color: #E2E8F0 !important;
+}
+
 /* متغيرات الألوان الافتراضية */
 :root {
   /* الألوان الأساسية */

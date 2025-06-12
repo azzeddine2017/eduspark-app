@@ -131,11 +131,11 @@ export default function APITestPage() {
   };
 
   const getResultColor = (testName: string) => {
-    if (loading[testName]) return 'border-blue-200 bg-blue-50';
-    if (!results[testName]) return 'border-gray-200 bg-gray-50';
-    return results[testName].success ? 
-      'border-green-200 bg-green-50' : 
-      'border-red-200 bg-red-50';
+    if (loading[testName]) return 'border-blue-200 dark:border-blue-800 bg-blue-50 dark:bg-blue-900/20';
+    if (!results[testName]) return 'border-border';
+    return results[testName].success ?
+      'border-green-200 dark:border-green-800 bg-green-50 dark:bg-green-900/20' :
+      'border-red-200 dark:border-red-800 bg-red-50 dark:bg-red-900/20';
   };
 
   const tests = [
@@ -182,9 +182,50 @@ export default function APITestPage() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
-      {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+    <>
+      <style jsx global>{`
+        .dark * {
+          color: #E2E8F0 !important;
+        }
+        .dark h1, .dark h2, .dark h3, .dark h4, .dark h5, .dark h6 {
+          color: #F8FAFC !important;
+        }
+        .dark .test-title {
+          color: #F8FAFC !important;
+        }
+        .dark .test-description {
+          color: #CBD5E1 !important;
+        }
+        .dark .test-endpoint {
+          color: #E2E8F0 !important;
+        }
+        .dark .stat-number {
+          color: #F8FAFC !important;
+        }
+        .dark .stat-label {
+          color: #CBD5E1 !important;
+        }
+        /* منع جميع الخلفيات البيضاء */
+        .dark .bg-white {
+          background-color: var(--color-surface) !important;
+        }
+        .dark .bg-gray-50 {
+          background-color: var(--color-background) !important;
+        }
+        .dark .bg-gray-100 {
+          background-color: var(--color-surface) !important;
+        }
+        .dark [style*="background-color: white"],
+        .dark [style*="background: white"] {
+          background-color: var(--color-surface) !important;
+        }
+        .dark div:not([class*="bg-gradient"]):not([class*="bg-blue"]):not([class*="bg-green"]):not([class*="bg-red"]):not([class*="bg-yellow"]) {
+          background-color: inherit !important;
+        }
+      `}</style>
+      <div className="min-h-screen bg-background" style={{ color: 'var(--color-text)' }}>
+        {/* Header */}
+      <div className="bg-surface shadow-sm border-b border-border">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-6">
             <div className="flex items-center justify-between">
@@ -193,10 +234,10 @@ export default function APITestPage() {
                   <Code className="w-6 h-6 text-white" />
                 </div>
                 <div className="mr-4">
-                  <h1 className="text-2xl font-bold text-gray-900">
+                  <h1 className="text-2xl font-bold text-text arabic-text">
                     🧪 اختبار APIs العقدة التجريبية
                   </h1>
-                  <p className="text-gray-600">
+                  <p className="text-textSecondary arabic-text">
                     اختبار شامل لجميع APIs النظام
                   </p>
                 </div>
@@ -206,7 +247,7 @@ export default function APITestPage() {
                 whileTap={{ scale: 0.95 }}
                 onClick={runAllTests}
                 disabled={Object.values(loading).some(Boolean)}
-                className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 disabled:opacity-50"
+                className="bg-gradient-to-r from-purple-600 to-blue-600 text-white px-6 py-3 rounded-lg font-semibold hover:shadow-lg transition-all duration-300 disabled:opacity-50 arabic-text"
               >
                 🚀 تشغيل جميع الاختبارات
               </motion.button>
@@ -224,21 +265,21 @@ export default function APITestPage() {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.6 }}
-              className={`border-2 rounded-xl p-6 transition-all duration-300 ${getResultColor(test.id)}`}
+              className={`border-2 rounded-xl p-6 transition-all duration-300 bg-surface test-card ${getResultColor(test.id)}`}
             >
               <div className="flex items-center justify-between">
                 <div className="flex items-center space-x-4 space-x-reverse">
-                  <div className="bg-white p-3 rounded-lg shadow-sm">
-                    <test.icon className="w-6 h-6 text-gray-700" />
+                  <div className="bg-background p-3 rounded-lg shadow-sm border border-border">
+                    <test.icon className="w-6 h-6 text-text dark:text-gray-200" />
                   </div>
                   <div>
-                    <h3 className="text-lg font-semibold text-gray-900">
+                    <h3 className="text-lg font-semibold text-text dark:text-gray-100 arabic-text test-title">
                       {test.title}
                     </h3>
-                    <p className="text-gray-600 mb-2">
+                    <p className="text-textSecondary dark:text-gray-300 mb-2 arabic-text test-description">
                       {test.description}
                     </p>
-                    <code className="text-sm bg-gray-100 px-2 py-1 rounded text-gray-700">
+                    <code className="text-sm bg-surface px-2 py-1 rounded text-text dark:text-gray-200 border border-border test-endpoint">
                       {test.endpoint}
                     </code>
                   </div>
@@ -250,7 +291,7 @@ export default function APITestPage() {
                     whileTap={{ scale: 0.95 }}
                     onClick={test.action}
                     disabled={loading[test.id]}
-                    className="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded-lg font-medium hover:bg-gray-50 transition-colors disabled:opacity-50"
+                    className="bg-background border border-border text-text dark:text-gray-200 px-4 py-2 rounded-lg font-medium hover:bg-surface transition-colors disabled:opacity-50 arabic-text"
                   >
                     {loading[test.id] ? 'جاري الاختبار...' : 'تشغيل الاختبار'}
                   </motion.button>
@@ -263,12 +304,12 @@ export default function APITestPage() {
                   initial={{ opacity: 0, height: 0 }}
                   animate={{ opacity: 1, height: 'auto' }}
                   transition={{ duration: 0.3 }}
-                  className="mt-4 p-4 bg-white rounded-lg border"
+                  className="mt-4 p-4 bg-background rounded-lg border border-border"
                 >
-                  <h4 className="font-semibold mb-2">
+                  <h4 className="font-semibold mb-2 text-text dark:text-gray-100 arabic-text">
                     {results[test.id].success ? '✅ نجح الاختبار' : '❌ فشل الاختبار'}
                   </h4>
-                  <pre className="text-sm bg-gray-100 p-3 rounded overflow-auto max-h-40">
+                  <pre className="text-sm bg-surface p-3 rounded overflow-auto max-h-40 text-text dark:text-gray-200 border border-border">
                     {JSON.stringify(
                       results[test.id].success ? results[test.id].data : results[test.id].error, 
                       null, 
@@ -282,32 +323,33 @@ export default function APITestPage() {
         </div>
 
         {/* Summary */}
-        <div className="mt-8 bg-white rounded-xl p-6 shadow-sm">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">
+        <div className="mt-8 bg-surface rounded-xl p-6 shadow-sm border border-border">
+          <h3 className="text-lg font-semibold text-text dark:text-gray-100 mb-4 arabic-text">
             📊 ملخص نتائج الاختبار
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="text-center p-4 bg-green-50 rounded-lg">
-              <div className="text-2xl font-bold text-green-600">
+            <div className="text-center p-4 bg-green-50 dark:bg-green-900/20 rounded-lg border border-green-200 dark:border-green-800">
+              <div className="text-2xl font-bold text-green-600 dark:text-green-400">
                 {Object.values(results).filter(r => r?.success).length}
               </div>
-              <div className="text-sm text-green-700">اختبارات ناجحة</div>
+              <div className="text-sm text-green-700 dark:text-green-300 arabic-text">اختبارات ناجحة</div>
             </div>
-            <div className="text-center p-4 bg-red-50 rounded-lg">
-              <div className="text-2xl font-bold text-red-600">
+            <div className="text-center p-4 bg-red-50 dark:bg-red-900/20 rounded-lg border border-red-200 dark:border-red-800">
+              <div className="text-2xl font-bold text-red-600 dark:text-red-400">
                 {Object.values(results).filter(r => r && !r.success).length}
               </div>
-              <div className="text-sm text-red-700">اختبارات فاشلة</div>
+              <div className="text-sm text-red-700 dark:text-red-300 arabic-text">اختبارات فاشلة</div>
             </div>
-            <div className="text-center p-4 bg-gray-50 rounded-lg">
-              <div className="text-2xl font-bold text-gray-600">
+            <div className="text-center p-4 bg-background rounded-lg border border-border">
+              <div className="text-2xl font-bold text-textSecondary dark:text-gray-300">
                 {tests.length - Object.keys(results).length}
               </div>
-              <div className="text-sm text-gray-700">لم يتم اختبارها</div>
+              <div className="text-sm text-textSecondary dark:text-gray-400 arabic-text">لم يتم اختبارها</div>
             </div>
           </div>
         </div>
       </div>
     </div>
+    </>
   );
 }

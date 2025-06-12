@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
+import DarkModeWrapper, { Card, Header, Title, Text, Button, Badge } from '@/components/ui/DarkModeWrapper';
 import { 
   Rocket, 
   Users, 
@@ -149,9 +150,9 @@ export default function PilotManagementPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <DarkModeWrapper className="min-h-screen">
       {/* Header */}
-      <div className="bg-white shadow-sm border-b">
+      <Header>
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="py-6">
             <div className="flex items-center justify-between">
@@ -160,12 +161,12 @@ export default function PilotManagementPage() {
                   <Rocket className="w-6 h-6 text-white" />
                 </div>
                 <div className="mr-4">
-                  <h1 className="text-2xl font-bold text-gray-900">
+                  <Title level={1}>
                     إدارة العقدة التجريبية
-                  </h1>
-                  <p className="text-gray-600">
+                  </Title>
+                  <Text secondary>
                     الرياض، المملكة العربية السعودية
-                  </p>
+                  </Text>
                 </div>
               </div>
               <div className="flex items-center space-x-4 space-x-reverse">
@@ -179,7 +180,7 @@ export default function PilotManagementPage() {
             </div>
           </div>
         </div>
-      </div>
+      </Header>
 
       {/* Navigation Tabs */}
       <div className="bg-white border-b">
@@ -473,6 +474,6 @@ export default function PilotManagementPage() {
           </motion.div>
         )}
       </div>
-    </div>
+    </DarkModeWrapper>
   );
 }
