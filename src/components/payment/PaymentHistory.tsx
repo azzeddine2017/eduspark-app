@@ -1,52 +1,53 @@
 'use client';
 
-import { useState } from 'react';
+// import { useState } from 'react'; // غير مستخدم حالياً
 import { Calendar, DollarSign, CheckCircle, XCircle, Clock, Download } from 'lucide-react';
+import { Payment, Subscription } from '@/types/payment';
 
-interface Payment {
-  id: string;
-  date: string;
-  amount: number;
-  currency: string;
-  status: 'completed' | 'pending' | 'failed';
-  description: string;
-  method: string;
-  transactionId: string;
+interface PaymentHistoryProps {
+  payments?: Payment[];
+  subscriptions?: Subscription[];
 }
 
-export default function PaymentHistory() {
-  const [payments] = useState<Payment[]>([
+export default function PaymentHistory({
+  payments: propPayments = [],
+  subscriptions: propSubscriptions = []
+}: PaymentHistoryProps) {
+  // استخدام البيانات الممررة أو البيانات الافتراضية
+  const defaultPayments: Payment[] = [
     {
       id: '1',
-      date: '2025-01-15',
       amount: 0,
       currency: 'SAR',
       status: 'completed',
+      provider: 'local',
       description: 'اشتراك منصة فتح الموزعة - مجاني',
-      method: 'مجاني',
-      transactionId: 'FREE-001'
+      createdAt: '2025-01-15',
+      completedAt: '2025-01-15'
     },
     {
       id: '2',
-      date: '2025-01-10',
       amount: 0,
       currency: 'SAR',
       status: 'completed',
+      provider: 'local',
       description: 'دورة البرمجة المتقدمة - مجانية',
-      method: 'مجاني',
-      transactionId: 'FREE-002'
+      createdAt: '2025-01-10',
+      completedAt: '2025-01-10'
     },
     {
       id: '3',
-      date: '2025-01-05',
       amount: 0,
       currency: 'SAR',
       status: 'completed',
+      provider: 'local',
       description: 'شهادة إنجاز - مجانية',
-      method: 'مجاني',
-      transactionId: 'FREE-003'
+      createdAt: '2025-01-05',
+      completedAt: '2025-01-05'
     }
-  ]);
+  ];
+
+  const payments = propPayments.length > 0 ? propPayments : defaultPayments;
 
   const getStatusIcon = (status: string) => {
     switch (status) {
@@ -171,10 +172,10 @@ export default function PaymentHistory() {
               {payments.map((payment) => (
                 <tr key={payment.id} className="border-b border-border hover:bg-surface">
                   <td className="py-3 px-4">
-                    <span className="text-text">{payment.date}</span>
+                    <span className="text-text">{payment.createdAt}</span>
                   </td>
                   <td className="py-3 px-4">
-                    <span className="text-text arabic-text">{payment.description}</span>
+                    <span className="text-text arabic-text">{payment.description || 'معاملة مالية'}</span>
                   </td>
                   <td className="py-3 px-4">
                     <span className="font-medium text-text">
@@ -182,7 +183,7 @@ export default function PaymentHistory() {
                     </span>
                   </td>
                   <td className="py-3 px-4">
-                    <span className="text-textSecondary arabic-text">{payment.method}</span>
+                    <span className="text-textSecondary arabic-text">{payment.provider || 'محلي'}</span>
                   </td>
                   <td className="py-3 px-4">
                     <div className="flex items-center space-x-2 space-x-reverse">
@@ -194,7 +195,7 @@ export default function PaymentHistory() {
                   </td>
                   <td className="py-3 px-4">
                     <span className="text-textSecondary font-mono text-sm">
-                      {payment.transactionId}
+                      {payment.id}
                     </span>
                   </td>
                 </tr>

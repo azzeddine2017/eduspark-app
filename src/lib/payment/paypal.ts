@@ -46,9 +46,13 @@ export class PayPalService {
   private tokenExpiry: number = 0;
 
   constructor() {
+    if (!process.env.PAYPAL_CLIENT_ID || !process.env.PAYPAL_CLIENT_SECRET) {
+      throw new Error('PayPal is not configured. Please set PAYPAL_CLIENT_ID and PAYPAL_CLIENT_SECRET environment variables.');
+    }
+
     this.config = {
-      clientId: process.env.PAYPAL_CLIENT_ID!,
-      clientSecret: process.env.PAYPAL_CLIENT_SECRET!,
+      clientId: process.env.PAYPAL_CLIENT_ID,
+      clientSecret: process.env.PAYPAL_CLIENT_SECRET,
       environment: (process.env.PAYPAL_ENVIRONMENT as 'sandbox' | 'production') || 'sandbox',
     };
 
@@ -83,6 +87,10 @@ export class PayPalService {
       const data = await response.json();
       this.accessToken = data.access_token;
       this.tokenExpiry = Date.now() + (data.expires_in * 1000) - 60000; // تقليل دقيقة للأمان
+
+      if (!this.accessToken) {
+        throw new Error('لم يتم الحصول على access token صالح');
+      }
 
       return this.accessToken;
     } catch (error) {

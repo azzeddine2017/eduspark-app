@@ -1,27 +1,29 @@
 'use client';
 
-import { useState } from 'react';
+// import { useState } from 'react'; // غير مستخدم حالياً
 import { Crown, Gift, Calendar, CheckCircle, Star, Zap, Users, Globe } from 'lucide-react';
+import { Subscription } from '@/types/payment';
 
-interface Subscription {
-  id: string;
-  plan: string;
-  status: 'active' | 'inactive' | 'free';
-  startDate: string;
-  endDate?: string;
-  price: number;
-  currency: string;
-  features: string[];
+interface CurrentSubscriptionProps {
+  subscription?: Subscription | null;
+  onSubscriptionCancelled?: () => void;
 }
 
-export default function CurrentSubscription() {
-  const [subscription] = useState<Subscription>({
+export default function CurrentSubscription({
+  subscription: propSubscription,
+  onSubscriptionCancelled
+}: CurrentSubscriptionProps) {
+  // استخدام البيانات الممررة أو البيانات الافتراضية
+  const defaultSubscription: Subscription = {
     id: 'free-plan',
-    plan: 'منصة فتح المجانية',
+    planId: 'free',
     status: 'active',
+    amount: 0,
+    currency: 'SAR',
+    interval: 'lifetime',
+    createdAt: '2025-01-01',
     startDate: '2025-01-01',
     price: 0,
-    currency: 'SAR',
     features: [
       'وصول كامل لجميع الدورات',
       'مساعد ذكي متطور مخصص ثقافياً',
@@ -33,8 +35,25 @@ export default function CurrentSubscription() {
       'بدون إعلانات',
       'تخزين غير محدود',
       'وصول من جميع الأجهزة'
-    ]
-  });
+    ],
+    plan: {
+      id: 'free',
+      name: 'منصة فتح المجانية',
+      description: 'وصول مجاني لجميع المحتويات',
+      amount: 0,
+      currency: 'SAR',
+      interval: 'lifetime',
+      features: [
+        'وصول كامل لجميع الدورات',
+        'مساعد ذكي متطور مخصص ثقافياً',
+        'شهادات إنجاز مجانية'
+      ],
+      provider: 'local',
+      providerPlanId: 'free-plan'
+    }
+  };
+
+  const subscription = propSubscription || defaultSubscription;
 
   const getStatusColor = (status: string) => {
     switch (status) {
@@ -80,7 +99,7 @@ export default function CurrentSubscription() {
               <Gift className="w-8 h-8 text-white" />
             </div>
             <div>
-              <h4 className="text-2xl font-bold text-text arabic-text">{subscription.plan}</h4>
+              <h4 className="text-2xl font-bold text-text arabic-text">{subscription.plan?.name || 'منصة فتح المجانية'}</h4>
               <div className="flex items-center space-x-2 space-x-reverse mt-1">
                 <span className={`px-3 py-1 text-sm font-medium rounded-full ${getStatusColor(subscription.status)}`}>
                   {getStatusText(subscription.status)}
@@ -93,14 +112,26 @@ export default function CurrentSubscription() {
           </div>
           
           <div className="text-left">
-            <div className="text-3xl font-bold text-emerald-600">مجاني</div>
-            <div className="text-sm text-textSecondary">إلى الأبد</div>
+            <div className="text-3xl font-bold text-emerald-600">
+              {(subscription.price || subscription.amount) > 0 ? `${subscription.price || subscription.amount} ${subscription.currency}` : 'مجاني'}
+            </div>
+            <div className="text-sm text-textSecondary">
+              {(subscription.price || subscription.amount) > 0 ? (subscription.endDate ? `حتى ${subscription.endDate}` : 'شهرياً') : 'إلى الأبد'}
+            </div>
+            {(subscription.price || subscription.amount) > 0 && onSubscriptionCancelled && (
+              <button
+                onClick={onSubscriptionCancelled}
+                className="mt-2 text-xs text-red-600 hover:text-red-800 underline"
+              >
+                إلغاء الاشتراك
+              </button>
+            )}
           </div>
         </div>
 
         {/* Plan Features */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-          {subscription.features.map((feature, index) => (
+          {(subscription.features || subscription.plan?.features || []).map((feature, index) => (
             <div key={index} className="flex items-center space-x-2 space-x-reverse">
               <CheckCircle className="w-4 h-4 text-emerald-600 flex-shrink-0" />
               <span className="text-text arabic-text text-sm">{feature}</span>

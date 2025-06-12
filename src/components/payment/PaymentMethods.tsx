@@ -12,7 +12,13 @@ interface PaymentMethod {
   icon: React.ComponentType<any>;
 }
 
-export default function PaymentMethods() {
+interface PaymentMethodsProps {
+  userId: string;
+}
+
+export default function PaymentMethods({ userId }: PaymentMethodsProps) {
+  // يمكن استخدام userId لجلب طرق الدفع الخاصة بالمستخدم
+  console.log('User ID:', userId);
   const [paymentMethods] = useState<PaymentMethod[]>([
     {
       id: '1',

@@ -1,10 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { stripeService } from '@/lib/payment/stripe';
 import { prisma } from '@/lib/prisma';
 import { headers } from 'next/headers';
 
 export async function POST(request: NextRequest) {
   try {
+    // التحقق من إعداد Stripe
+    if (!process.env.STRIPE_SECRET_KEY || !process.env.STRIPE_WEBHOOK_SECRET) {
+      console.warn('Stripe not configured, webhook ignored');
+      return NextResponse.json(
+        { error: 'Stripe not configured' },
+        { status: 503 }
+      );
+    }
+
+    // استيراد Stripe service فقط عند الحاجة
+    const { stripeService } = await import('@/lib/payment/stripe');
+
     // قراءة البيانات الخام
     const body = await request.text();
     const headersList = await headers();

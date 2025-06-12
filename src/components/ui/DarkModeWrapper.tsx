@@ -1,6 +1,6 @@
 'use client';
 
-import { ReactNode } from 'react';
+import { ReactNode, createElement } from 'react';
 
 interface DarkModeWrapperProps {
   children: ReactNode;
@@ -58,19 +58,19 @@ export function Title({ children, className = '', level = 1 }: TitleProps) {
   const baseClasses = 'text-text arabic-text font-bold';
   const sizeClasses = {
     1: 'text-3xl',
-    2: 'text-2xl', 
+    2: 'text-2xl',
     3: 'text-xl',
     4: 'text-lg',
     5: 'text-base',
     6: 'text-sm'
   };
 
-  const Tag = `h${level}` as keyof JSX.IntrinsicElements;
+  const tagName = `h${level}`;
 
-  return (
-    <Tag className={`${baseClasses} ${sizeClasses[level]} ${className}`}>
-      {children}
-    </Tag>
+  return createElement(
+    tagName,
+    { className: `${baseClasses} ${sizeClasses[level]} ${className}` },
+    children
   );
 }
 

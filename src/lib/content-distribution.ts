@@ -234,7 +234,7 @@ export class ContentDistributionService {
               title: globalContent.title,
               description: globalContent.description,
               contentType: globalContent.type,
-              contentData: globalContent.contentData,
+              contentData: JSON.parse(JSON.stringify(globalContent.contentData)),
               language: 'ar', // اللغة الافتراضية
               version: globalContent.version,
               status: 'published'
@@ -247,7 +247,7 @@ export class ContentDistributionService {
             data: {
               title: globalContent.title,
               description: globalContent.description,
-              contentData: globalContent.contentData,
+              contentData: JSON.parse(JSON.stringify(globalContent.contentData)),
               version: globalContent.version,
               updatedAt: new Date()
             }
@@ -309,11 +309,11 @@ export class ContentDistributionService {
 
       const customizationData = {
         localizationType: localizationData.localizationType,
-        culturalAdaptations: localizationData.culturalAdaptations || [],
-        localExamples: localizationData.localExamples || [],
-        additionalResources: localizationData.additionalResources || [],
+        culturalAdaptations: JSON.parse(JSON.stringify(localizationData.culturalAdaptations || [])),
+        localExamples: JSON.parse(JSON.stringify(localizationData.localExamples || [])),
+        additionalResources: JSON.parse(JSON.stringify(localizationData.additionalResources || [])),
         localizedBy: localizerId,
-        localizedAt: new Date()
+        localizedAt: new Date().toISOString()
       };
 
       if (existingLocalContent) {
@@ -336,7 +336,7 @@ export class ContentDistributionService {
             title: globalContent.title,
             description: globalContent.description,
             contentType: globalContent.type,
-            contentData: globalContent.contentData,
+            contentData: JSON.parse(JSON.stringify(globalContent.contentData)),
             language: localizationData.targetLanguage,
             isCustomized: true,
             customizationData,

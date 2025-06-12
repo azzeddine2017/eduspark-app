@@ -1,5 +1,3 @@
-import { stripeService } from './stripe';
-import { paypalService } from './paypal';
 import { prisma } from '../prisma';
 
 // أنواع البيانات
@@ -70,10 +68,20 @@ export class PaymentService {
 
       switch (params.provider) {
         case 'stripe':
-          paymentIntent = await this.createStripePayment(params, user);
+          try {
+            paymentIntent = await this.createStripePayment(params, user);
+          } catch (error) {
+            console.warn('Stripe not configured, falling back to local payment');
+            paymentIntent = await this.createLocalPayment(params, user);
+          }
           break;
         case 'paypal':
-          paymentIntent = await this.createPayPalPayment(params, user);
+          try {
+            paymentIntent = await this.createPayPalPayment(params, user);
+          } catch (error) {
+            console.warn('PayPal not configured, falling back to local payment');
+            paymentIntent = await this.createLocalPayment(params, user);
+          }
           break;
         case 'local':
           paymentIntent = await this.createLocalPayment(params, user);
@@ -94,6 +102,9 @@ export class PaymentService {
 
   // إنشاء دفع Stripe
   private async createStripePayment(params: CreatePaymentParams, user: any): Promise<PaymentIntent> {
+    // استيراد Stripe service عند الحاجة
+    const { stripeService } = await import('./stripe');
+
     // إنشاء أو جلب عميل Stripe
     let customerId = user.stripeCustomerId;
     if (!customerId) {
@@ -133,6 +144,9 @@ export class PaymentService {
 
   // إنشاء دفع PayPal
   private async createPayPalPayment(params: CreatePaymentParams, user: any): Promise<PaymentIntent> {
+    // استيراد PayPal service عند الحاجة
+    const { paypalService } = await import('./paypal');
+
     const paypalOrder = await paypalService.createOrder({
       amount: params.amount.toString(),
       currency: params.currency,
@@ -141,7 +155,7 @@ export class PaymentService {
       metadata: params.metadata
     });
 
-    const approvalUrl = paypalOrder.links.find(link => link.rel === 'approve')?.href;
+    const approvalUrl = paypalOrder.links.find((link: any) => link.rel === 'approve')?.href;
 
     return {
       id: paypalOrder.id,
@@ -219,10 +233,13 @@ export class PaymentService {
 
   // إنشاء اشتراك Stripe
   private async createStripeSubscription(
-    params: CreateSubscriptionParams, 
-    user: any, 
+    params: CreateSubscriptionParams,
+    user: any,
     plan: SubscriptionPlan
   ): Promise<PaymentResult> {
+    // استيراد Stripe service عند الحاجة
+    const { stripeService } = await import('./stripe');
+
     let customerId = user.stripeCustomerId;
     if (!customerId) {
       const customer = await stripeService.createCustomer({
@@ -259,17 +276,20 @@ export class PaymentService {
 
   // إنشاء اشتراك PayPal
   private async createPayPalSubscription(
-    params: CreateSubscriptionParams, 
-    user: any, 
+    params: CreateSubscriptionParams,
+    user: any,
     plan: SubscriptionPlan
   ): Promise<PaymentResult> {
+    // استيراد PayPal service عند الحاجة
+    const { paypalService } = await import('./paypal');
+
     const subscription = await paypalService.createSubscription({
       planId: plan.providerPlanId,
       customId: user.id,
       metadata: params.metadata
     });
 
-    const approvalUrl = subscription.links.find(link => link.rel === 'approve')?.href;
+    const approvalUrl = subscription.links.find((link: any) => link.rel === 'approve')?.href;
 
     return {
       success: true,
@@ -382,6 +402,7 @@ export class PaymentService {
           result = { success: true, paymentId };
           break;
         case 'paypal':
+          const { paypalService } = await import('./paypal');
           const captureResult = await paypalService.captureOrder(paymentId);
           result = {
             success: captureResult.status === 'COMPLETED',

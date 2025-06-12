@@ -2,12 +2,12 @@
 
 import { useState } from 'react';
 import { motion } from 'framer-motion';
-import { 
-  Crown, 
-  Users, 
-  Globe, 
-  Briefcase, 
-  MapPin, 
+import {
+  Crown,
+  Users,
+  Globe,
+  Briefcase,
+  MapPin,
   Star,
   TrendingUp,
   Award,
@@ -18,13 +18,30 @@ import {
   Filter,
   ChevronRight,
   Badge,
-  Zap
+  Zap,
+  LucideIcon
 } from 'lucide-react';
+
+// تعريف نوع الدور
+interface Role {
+  id: number;
+  title: string;
+  category: string;
+  level: string;
+  duration: string;
+  requirements: string;
+  description: string;
+  applicants: number;
+  status: string;
+  deadline: string;
+  icon: LucideIcon;
+  color: string;
+}
 
 export default function RolesPage() {
   const [selectedCategory, setSelectedCategory] = useState('all');
   const [searchTerm, setSearchTerm] = useState('');
-  const [selectedRole, setSelectedRole] = useState(null);
+  const [selectedRole, setSelectedRole] = useState<Role | null>(null);
 
   const roleCategories = [
     { id: 'all', name: 'جميع الأدوار', count: 275, color: 'bg-gray-500' },
@@ -121,7 +138,7 @@ export default function RolesPage() {
     }
   ];
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'مفتوح للترشيح':
         return 'bg-green-100 text-green-800';
@@ -134,7 +151,7 @@ export default function RolesPage() {
     }
   };
 
-  const getLevelColor = (level) => {
+  const getLevelColor = (level: string) => {
     switch (level) {
       case 'قيادي':
         return 'bg-purple-100 text-purple-800';

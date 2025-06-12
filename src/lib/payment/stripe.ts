@@ -1,10 +1,10 @@
 import Stripe from 'stripe';
 
-// إعداد Stripe
-const stripe = new Stripe(process.env.STRIPE_SECRET_KEY!, {
-  apiVersion: '2024-12-18.acacia',
+// إعداد Stripe - فقط إذا كان المفتاح متوفر
+const stripe = process.env.STRIPE_SECRET_KEY ? new Stripe(process.env.STRIPE_SECRET_KEY, {
+  apiVersion: '2025-02-24.acacia',
   typescript: true,
-});
+}) : null;
 
 // أنواع البيانات
 export interface CreatePaymentIntentParams {
@@ -41,6 +41,9 @@ export class StripeService {
   private stripe: Stripe;
 
   constructor() {
+    if (!stripe) {
+      throw new Error('Stripe is not configured. Please set STRIPE_SECRET_KEY environment variable.');
+    }
     this.stripe = stripe;
   }
 
@@ -214,9 +217,10 @@ export class StripeService {
     try {
       // إنشاء عناصر الفاتورة
       for (const item of items) {
+        const { customer, ...itemData } = item;
         await this.stripe.invoiceItems.create({
           customer: customerId,
-          ...item,
+          ...itemData,
         });
       }
 

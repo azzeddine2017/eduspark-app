@@ -5,44 +5,10 @@ import SubscriptionPlans from './SubscriptionPlans';
 import PaymentHistory from './PaymentHistory';
 import PaymentMethods from './PaymentMethods';
 import CurrentSubscription from './CurrentSubscription';
+import { Subscription, SubscriptionPlan, Payment } from '@/types/payment';
 
 interface PaymentDashboardProps {
   userId: string;
-}
-
-interface SubscriptionPlan {
-  id: string;
-  name: string;
-  description: string;
-  amount: number;
-  currency: string;
-  interval: string;
-  features: string[];
-  provider: string;
-  providerPlanId: string;
-}
-
-interface Subscription {
-  id: string;
-  planId: string;
-  status: string;
-  amount: number;
-  currency: string;
-  interval: string;
-  createdAt: string;
-  nextBillingDate?: string;
-  plan?: SubscriptionPlan;
-}
-
-interface Payment {
-  id: string;
-  amount: number;
-  currency: string;
-  status: string;
-  provider: string;
-  description?: string;
-  createdAt: string;
-  completedAt?: string;
 }
 
 export default function PaymentDashboard({ userId }: PaymentDashboardProps) {

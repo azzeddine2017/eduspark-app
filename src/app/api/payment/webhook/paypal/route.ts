@@ -1,10 +1,21 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { paypalService } from '@/lib/payment/paypal';
 import { prisma } from '@/lib/prisma';
 import { headers } from 'next/headers';
 
 export async function POST(request: NextRequest) {
   try {
+    // التحقق من إعداد PayPal
+    if (!process.env.PAYPAL_CLIENT_ID || !process.env.PAYPAL_CLIENT_SECRET) {
+      console.warn('PayPal not configured, webhook ignored');
+      return NextResponse.json(
+        { error: 'PayPal not configured' },
+        { status: 503 }
+      );
+    }
+
+    // استيراد PayPal service فقط عند الحاجة
+    const { paypalService } = await import('@/lib/payment/paypal');
+
     // قراءة البيانات الخام
     const body = await request.text();
     const headersList = await headers();
