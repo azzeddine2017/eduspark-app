@@ -13,7 +13,7 @@ export interface CreateGlobalContentInput {
   estimatedDuration?: number;
   prerequisites?: string[];
   learningObjectives?: string[];
-  contentData: any;
+  contentData?: any;
   metadata?: any;
 }
 

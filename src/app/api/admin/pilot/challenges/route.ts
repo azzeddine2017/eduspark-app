@@ -5,7 +5,7 @@ import { prisma } from '@/lib/prisma'
 export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
-    const nodeId = searchParams.get('nodeId') || 'pilot-riyadh-001'
+    const nodeId = searchParams.get('nodeId') || 'pilot-algiers-001'
     const status = searchParams.get('status') // open, in_progress, resolved, closed
     const severity = searchParams.get('severity') // low, medium, high, critical
     const assignee = searchParams.get('assignee')

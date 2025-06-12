@@ -438,9 +438,9 @@ export default async function Home() {
       {/* Advanced AI Assistant */}
       <AdvancedAIAssistant
         context="الصفحة الرئيسية لمنصة فتح للتعلّم الذكي"
-        nodeId="pilot-riyadh-001"
+        nodeId="pilot-algiers-001"
         culturalContext={{
-          region: 'الرياض',
+          region: 'الجزائر العاصمة',
           language: 'العربية',
           level: 'متوسط'
         }}

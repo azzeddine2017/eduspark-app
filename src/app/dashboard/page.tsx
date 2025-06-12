@@ -415,9 +415,9 @@ export default async function DashboardPage() {
       {/* Advanced AI Assistant */}
       <AdvancedAIAssistant
         context={`لوحة تحكم المستخدم - ${user.name}`}
-        nodeId="pilot-riyadh-001"
+        nodeId="pilot-algiers-001"
         culturalContext={{
-          region: 'الرياض',
+          region: 'الجزائر العاصمة',
           language: 'العربية',
           level: 'متوسط'
         }}

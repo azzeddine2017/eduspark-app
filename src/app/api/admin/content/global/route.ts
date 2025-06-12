@@ -17,7 +17,7 @@ const createGlobalContentSchema = z.object({
   estimatedDuration: z.number().positive().optional(),
   prerequisites: z.array(z.string()).optional(),
   learningObjectives: z.array(z.string()).optional(),
-  contentData: z.any(), // البيانات الأساسية للمحتوى
+  contentData: z.any().optional(), // البيانات الأساسية للمحتوى
   metadata: z.any().optional()
 });
 

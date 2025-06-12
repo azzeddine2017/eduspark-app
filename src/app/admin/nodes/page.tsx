@@ -13,9 +13,9 @@ export default async function NodesManagementPage() {
   // محاكاة بيانات العقد الموزعة
   const nodes = [
     {
-      id: 'pilot-riyadh-001',
-      name: 'عقدة الرياض التجريبية',
-      region: 'الرياض، السعودية',
+      id: 'pilot-algiers-001',
+      name: 'عقدة الجزائر التجريبية',
+      region: 'الجزائر العاصمة، الجزائر',
       status: 'active',
       users: 1250,
       courses: 45,

@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { globalPlatformService } from '@/lib/distributed-platform';
+import { prisma } from '@/lib/prisma';
 import { RevenueType } from '@prisma/client';
 import { z } from 'zod';
 
@@ -61,7 +62,7 @@ export async function GET(
     }
 
     // Get revenues
-    const revenues = await globalPlatformService.prisma.nodeRevenue.findMany({
+    const revenues = await prisma.nodeRevenue.findMany({
       where,
       orderBy: { transactionDate: 'desc' },
       take: 100 // Limit to last 100 records

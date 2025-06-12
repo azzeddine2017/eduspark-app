@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { contentDistributionService } from '@/lib/content-distribution';
+import { prisma } from '@/lib/prisma';
 import { TranslationStatus } from '@prisma/client';
 import { z } from 'zod';
 
@@ -56,7 +57,7 @@ export async function POST(request: NextRequest) {
     const validatedData = createTranslationSchema.parse(body);
 
     // التحقق من وجود المحتوى المحلي
-    const localContent = await contentDistributionService.prisma.localContent.findUnique({
+    const localContent = await prisma.localContent.findUnique({
       where: { id: validatedData.localContentId },
       include: { node: true }
     });
@@ -70,7 +71,7 @@ export async function POST(request: NextRequest) {
 
     // التحقق من صلاحية المستخدم للعقدة
     if (session.user.role !== 'ADMIN') {
-      const nodePartnership = await contentDistributionService.prisma.nodePartner.findFirst({
+      const nodePartnership = await prisma.nodePartner.findFirst({
         where: {
           nodeId: localContent.nodeId,
           userId: session.user.id,
@@ -192,7 +193,7 @@ export async function GET(request: NextRequest) {
     }
 
     // جلب طلبات الترجمة
-    const translations = await contentDistributionService.prisma.translation.findMany({
+    const translations = await prisma.translation.findMany({
       where,
       include: {
         localContent: {
@@ -207,7 +208,7 @@ export async function GET(request: NextRequest) {
     });
 
     // جلب إحصائيات الترجمة
-    const statistics = await contentDistributionService.prisma.translation.groupBy({
+    const statistics = await prisma.translation.groupBy({
       by: ['status'],
       _count: { id: true }
     });

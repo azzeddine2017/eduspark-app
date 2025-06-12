@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { globalPlatformService } from '@/lib/distributed-platform';
+import { prisma } from '@/lib/prisma';
 
 /**
  * GET /api/admin/analytics/global - جلب الإحصائيات العامة للمنصة الموزعة
@@ -23,23 +24,23 @@ export async function GET(request: NextRequest) {
     const globalStats = await globalPlatformService.collectGlobalStatistics();
     
     // Get additional metrics
-    const totalUsers = await globalPlatformService.prisma.user.count();
-    const totalCourses = await globalPlatformService.prisma.course.count();
-    const totalEnrollments = await globalPlatformService.prisma.enrollment.count();
+    const totalUsers = await prisma.user.count();
+    const totalCourses = await prisma.course.count();
+    const totalEnrollments = await prisma.enrollment.count();
     
     // Get recent activity (last 30 days)
     const thirtyDaysAgo = new Date();
     thirtyDaysAgo.setDate(thirtyDaysAgo.getDate() - 30);
     
-    const recentUsers = await globalPlatformService.prisma.user.count({
+    const recentUsers = await prisma.user.count({
       where: {
         createdAt: {
           gte: thirtyDaysAgo
         }
       }
     });
-    
-    const recentEnrollments = await globalPlatformService.prisma.enrollment.count({
+
+    const recentEnrollments = await prisma.enrollment.count({
       where: {
         enrolledAt: {
           gte: thirtyDaysAgo
@@ -51,7 +52,7 @@ export async function GET(request: NextRequest) {
     const twelveMonthsAgo = new Date();
     twelveMonthsAgo.setMonth(twelveMonthsAgo.getMonth() - 12);
     
-    const monthlyRevenues = await globalPlatformService.prisma.nodeRevenue.groupBy({
+    const monthlyRevenues = await prisma.nodeRevenue.groupBy({
       by: ['transactionDate'],
       where: {
         transactionDate: {
@@ -87,7 +88,7 @@ export async function GET(request: NextRequest) {
     }, {} as Record<string, any>);
     
     // Get top performing nodes
-    const topNodes = await globalPlatformService.prisma.nodeRevenue.groupBy({
+    const topNodes = await prisma.nodeRevenue.groupBy({
       by: ['nodeId'],
       _sum: {
         amount: true,

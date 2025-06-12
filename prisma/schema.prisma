@@ -33,6 +33,8 @@ enum InteractionType {
   TEXT_SUMMARY
   WRITING_ASSISTANCE
   QUIZ_GENERATION
+  LOCALIZED_CHAT
+  RECOMMENDATION_REQUEST
 }
 
 enum QuestionType {
@@ -242,6 +244,7 @@ model LLMInteractionLog {
   tokens       Int?            // tokens used
   cost         Float?          // cost in USD
   responseTime Int?            // response time in milliseconds
+  metadata     Json?           // additional metadata
 
   // User relation
   userId       String
@@ -1156,12 +1159,16 @@ enum ChallengeSeverity {
 model Subscription {
   id            String              @id @default(cuid())
   userId        String
+  planId        String              @default("free-plan") // معرف الخطة
   planName      String
   amount        Decimal             @db.Decimal(10,2)
   currency      String              @default("USD")
   status        SubscriptionStatus  @default(PENDING)
+  provider      String?             // بوابة الدفع (stripe, paypal, etc.)
   startDate     DateTime            @default(now())
   endDate       DateTime?
+  cancelledAt   DateTime?           // تاريخ الإلغاء
+  cancellationReason String?        // سبب الإلغاء
   metadata      Json                @default("{}")
   createdAt     DateTime            @default(now())
   updatedAt     DateTime            @updatedAt

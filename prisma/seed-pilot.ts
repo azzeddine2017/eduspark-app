@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { PrismaClient, ChallengeSeverity, ChallengeStatus } from '@prisma/client'
 
 const prisma = new PrismaClient()
 
@@ -8,17 +8,17 @@ async function seedPilotData() {
   try {
     // إنشاء مستخدم للشريك
     const partnerUser = await prisma.user.upsert({
-      where: { email: 'partner@pilot-riyadh.com' },
+      where: { email: 'partner@pilot-algiers.com' },
       update: {},
       create: {
-        email: 'partner@pilot-riyadh.com',
-        name: 'أحمد محمد السعيد',
+        email: 'partner@pilot-algiers.com',
+        name: 'عبد الرحمن بن علي الجزائري',
         password: 'hashed_password_here',
         role: 'ADMIN',
         isActive: true,
-        phone: '+966501234567',
-        location: 'الرياض، المملكة العربية السعودية',
-        bio: 'مدير العقدة التجريبية في الرياض',
+        phone: '+213551234567',
+        location: 'الجزائر العاصمة، الجزائر',
+        bio: 'مدير العقدة التجريبية في الجزائر',
         birthDate: new Date('1985-05-15'),
         occupation: 'مدير عقدة تعليمية'
       }
@@ -28,28 +28,28 @@ async function seedPilotData() {
 
     // إنشاء العقدة المحلية أولاً
     const localNode = await prisma.localNode.upsert({
-      where: { id: 'pilot-riyadh-001' },
+      where: { id: 'pilot-algiers-001' },
       update: {},
       create: {
-        id: 'pilot-riyadh-001',
-        name: 'العقدة التجريبية - الرياض',
-        slug: 'pilot-riyadh-001',
-        region: 'الرياض',
-        country: 'SA',
+        id: 'pilot-algiers-001',
+        name: 'العقدة التجريبية - الجزائر',
+        slug: 'pilot-algiers-001',
+        region: 'الجزائر العاصمة',
+        country: 'DZ',
         language: 'ar',
-        currency: 'SAR',
-        timezone: 'Asia/Riyadh',
+        currency: 'DZD',
+        timezone: 'Africa/Algiers',
         status: 'ACTIVE',
-        databaseUrl: 'mysql://localhost:3306/pilot_riyadh_db',
-        apiEndpoint: 'https://riyadh.fateh.edu/api',
+        databaseUrl: 'mysql://localhost:3306/pilot_algiers_db',
+        apiEndpoint: 'https://algiers.fateh.edu/api',
         settings: {
           launchDate: new Date().toISOString(),
           targetUsers: 50,
           currentPhase: 'pilot',
           teamSize: 5,
-          supportedLanguages: ['ar', 'en'],
-          localCurrency: 'SAR',
-          timezone: 'Asia/Riyadh'
+          supportedLanguages: ['ar', 'fr', 'en'],
+          localCurrency: 'DZD',
+          timezone: 'Africa/Algiers'
         }
       }
     })
@@ -74,12 +74,12 @@ async function seedPilotData() {
         contractStartDate: new Date(),
         contractEndDate: new Date(Date.now() + 2 * 365 * 24 * 60 * 60 * 1000), // 2 years
         contractData: {
-          businessName: 'مركز فتح التعليمي - الرياض',
+          businessName: 'مركز فتح التعليمي - الجزائر',
           contactInfo: {
-            phone: '+966501234567',
-            email: 'partner@pilot-riyadh.com',
-            address: 'الرياض، المملكة العربية السعودية',
-            website: 'https://riyadh.fateh.edu'
+            phone: '+213551234567',
+            email: 'partner@pilot-algiers.com',
+            address: 'الجزائر العاصمة، الجزائر',
+            website: 'https://algiers.fateh.edu'
           },
           agreement: {
             signedDate: new Date().toISOString(),
@@ -104,8 +104,8 @@ async function seedPilotData() {
           role: 'STUDENT',
           isActive: true,
           localNodeId: localNode.id,
-          phone: `+96650123${String(i).padStart(4, '0')}`,
-          location: 'الرياض، المملكة العربية السعودية',
+          phone: `+21355123${String(i).padStart(4, '0')}`,
+          location: 'الجزائر العاصمة، الجزائر',
           birthDate: new Date(1990 + (i % 20), (i % 12), (i % 28) + 1),
           occupation: 'طالب'
         }
@@ -153,27 +153,27 @@ async function seedPilotData() {
       {
         title: 'بطء في التسجيل خلال ساعات الذروة',
         description: 'تم ملاحظة بطء في عملية تسجيل المستخدمين الجدد خلال ساعات الذروة (7-9 مساءً)',
-        severity: 'MEDIUM',
-        status: 'IN_PROGRESS',
-        assignee: 'محمد عبدالله القحطاني',
+        severity: ChallengeSeverity.MEDIUM,
+        status: ChallengeStatus.IN_PROGRESS,
+        assignee: 'محمد عبدالله الجزائري',
         dueDate: new Date(Date.now() + 5 * 24 * 60 * 60 * 1000),
         tags: ['performance', 'registration', 'peak_hours']
       },
       {
         title: 'طلبات تخصيص إضافي للمحتوى المحلي',
-        description: 'المستخدمون يطلبون المزيد من المحتوى المخصص للثقافة السعودية',
-        severity: 'LOW',
-        status: 'OPEN',
-        assignee: 'فاطمة علي الزهراني',
+        description: 'المستخدمون يطلبون المزيد من المحتوى المخصص للثقافة الجزائرية',
+        severity: ChallengeSeverity.LOW,
+        status: ChallengeStatus.OPEN,
+        assignee: 'فاطمة بنت علي الجزائرية',
         dueDate: new Date(Date.now() + 10 * 24 * 60 * 60 * 1000),
         tags: ['content', 'localization', 'user_feedback']
       },
       {
         title: 'تحسين واجهة الدفع للمستخدمين المحليين',
         description: 'تحسين تجربة الدفع لتتناسب مع طرق الدفع المحلية المفضلة',
-        severity: 'HIGH',
-        status: 'RESOLVED',
-        assignee: 'محمد عبدالله القحطاني',
+        severity: ChallengeSeverity.HIGH,
+        status: ChallengeStatus.RESOLVED,
+        assignee: 'محمد عبدالله الجزائري',
         dueDate: new Date(Date.now() - 2 * 24 * 60 * 60 * 1000),
         resolvedAt: new Date(Date.now() - 1 * 24 * 60 * 60 * 1000),
         tags: ['payment', 'ui_ux', 'localization']

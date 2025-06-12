@@ -1,6 +1,7 @@
 import { stripeService } from './stripe';
 import { paypalService } from './paypal';
 import { globalPlatformService } from '../distributed-platform';
+import { prisma } from '../prisma';
 
 // أنواع البيانات
 export type PaymentProvider = 'stripe' | 'paypal' | 'local';
@@ -58,7 +59,7 @@ export class PaymentService {
   async createPayment(params: CreatePaymentParams): Promise<PaymentIntent> {
     try {
       // جلب معلومات المستخدم
-      const user = await globalPlatformService.prisma.user.findUnique({
+      const user = await prisma.user.findUnique({
         where: { id: params.userId }
       });
 
@@ -325,7 +326,7 @@ export class PaymentService {
 
   // حفظ سجل الدفع
   private async savePaymentRecord(paymentIntent: PaymentIntent, params: CreatePaymentParams): Promise<void> {
-    await globalPlatformService.prisma.payment.create({
+    await prisma.payment.create({
       data: {
         id: paymentIntent.id,
         userId: params.userId,
@@ -348,7 +349,7 @@ export class PaymentService {
   ): Promise<void> {
     if (!result.subscriptionId) return;
 
-    await globalPlatformService.prisma.subscription.create({
+    await prisma.subscription.create({
       data: {
         id: result.subscriptionId,
         userId: params.userId,
@@ -388,7 +389,7 @@ export class PaymentService {
 
       if (result.success) {
         // تحديث حالة الدفع في قاعدة البيانات
-        await globalPlatformService.prisma.payment.update({
+        await prisma.payment.update({
           where: { id: paymentId },
           data: { 
             status: 'completed',

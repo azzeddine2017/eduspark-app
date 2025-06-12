@@ -6,7 +6,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url)
     const timeframe = searchParams.get('timeframe') || '7d' // 7d, 30d, 90d
-    const nodeId = searchParams.get('nodeId') || 'pilot-riyadh-001'
+    const nodeId = searchParams.get('nodeId') || 'pilot-algiers-001'
 
     // حساب التواريخ بناءً على الإطار الزمني
     const now = new Date()

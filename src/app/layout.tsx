@@ -12,7 +12,7 @@ const cairo = Cairo({
 });
 
 const notoSansArabic = Noto_Sans_Arabic({
-  subsets: ['arabic', 'latin'],
+  subsets: ['arabic'],
   variable: '--font-noto-arabic',
   display: 'swap',
 });
@@ -55,7 +55,7 @@ export default function RootLayout({
           }}
         />
       </head>
-      <body className="antialiased">
+      <body className={`antialiased ${cairo.variable} ${notoSansArabic.variable} ${tajawal.variable}`}>
         <Providers>
           {children}
         </Providers>

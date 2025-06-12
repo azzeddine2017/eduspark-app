@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { paymentService, PaymentProvider } from '@/lib/payment/payment-service';
 import { globalPlatformService } from '@/lib/distributed-platform';
+import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 
 // مخطط التحقق من البيانات
@@ -49,7 +50,7 @@ export async function POST(request: NextRequest) {
     const { planId, provider, metadata } = validationResult.data;
 
     // التحقق من وجود اشتراك نشط
-    const existingSubscription = await globalPlatformService.prisma.subscription.findFirst({
+    const existingSubscription = await prisma.subscription.findFirst({
       where: {
         userId: session.user.id,
         status: 'active'
@@ -109,7 +110,7 @@ export async function GET(request: NextRequest) {
     }
 
     // جلب اشتراكات المستخدم
-    const subscriptions = await globalPlatformService.prisma.subscription.findMany({
+    const subscriptions = await prisma.subscription.findMany({
       where: {
         userId: session.user.id
       },
@@ -179,7 +180,7 @@ export async function DELETE(request: NextRequest) {
     const { subscriptionId, reason } = validationResult.data;
 
     // التحقق من ملكية الاشتراك
-    const subscription = await globalPlatformService.prisma.subscription.findFirst({
+    const subscription = await prisma.subscription.findFirst({
       where: {
         id: subscriptionId,
         userId: session.user.id
@@ -216,7 +217,7 @@ export async function DELETE(request: NextRequest) {
       }
 
       // تحديث حالة الاشتراك في قاعدة البيانات
-      await globalPlatformService.prisma.subscription.update({
+      await prisma.subscription.update({
         where: { id: subscriptionId },
         data: {
           status: 'cancelled',
@@ -234,7 +235,7 @@ export async function DELETE(request: NextRequest) {
       console.error('خطأ في إلغاء الاشتراك من البوابة:', providerError);
       
       // حتى لو فشل الإلغاء من البوابة، نحدث حالة الاشتراك محلياً
-      await globalPlatformService.prisma.subscription.update({
+      await prisma.subscription.update({
         where: { id: subscriptionId },
         data: {
           status: 'cancelled',

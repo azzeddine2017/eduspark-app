@@ -170,7 +170,7 @@ function generateResponseMetadata(message: string, response: string, culturalCon
 }
 
 function extractRelatedTopics(message: string, response: string): string[] {
-  const topics = [];
+  const topics: string[] = [];
   const keywords = [
     'برمجة', 'تصميم', 'رياضيات', 'علوم', 'تاريخ', 'جغرافيا',
     'فيزياء', 'كيمياء', 'أحياء', 'لغة', 'أدب', 'فلسفة',

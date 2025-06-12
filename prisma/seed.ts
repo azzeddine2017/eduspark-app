@@ -201,20 +201,20 @@ async function main() {
 
   // إنشاء العقدة المحلية
   const localNode = await prisma.localNode.upsert({
-    where: { id: 'pilot-riyadh-001' },
+    where: { id: 'pilot-algiers-001' },
     update: {},
     create: {
-      id: 'pilot-riyadh-001',
-      name: 'العقدة التجريبية - الرياض',
-      slug: 'pilot-riyadh-001',
-      region: 'الرياض',
-      country: 'SA',
+      id: 'pilot-algiers-001',
+      name: 'العقدة التجريبية - الجزائر',
+      slug: 'pilot-algiers-001',
+      region: 'الجزائر العاصمة',
+      country: 'DZ',
       language: 'ar',
-      currency: 'SAR',
-      timezone: 'Asia/Riyadh',
+      currency: 'DZD',
+      timezone: 'Africa/Algiers',
       status: 'ACTIVE',
-      databaseUrl: 'mysql://localhost:3306/pilot_riyadh_db',
-      apiEndpoint: 'https://riyadh.fateh.edu/api',
+      databaseUrl: 'mysql://localhost:3306/pilot_algiers_db',
+      apiEndpoint: 'https://algiers.fateh.edu/api',
       settings: {
         launchDate: new Date().toISOString(),
         targetUsers: 50,

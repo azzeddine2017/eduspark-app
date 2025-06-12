@@ -179,10 +179,10 @@ export default function AIPage() {
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
                 transition={{ delay: index * 0.1 }}
-                className="group"
+                className="group cursor-pointer"
+                onClick={() => setActiveDemo(feature.id)}
               >
-                <Card className="h-full p-6 hover:shadow-xl transition-all duration-300 cursor-pointer"
-                      onClick={() => setActiveDemo(feature.id)}>
+                <Card className="h-full p-6 hover:shadow-xl transition-all duration-300">
                   <div className={`w-16 h-16 bg-gradient-to-r ${feature.color} rounded-2xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform`}>
                     <feature.icon className="w-8 h-8 text-white" />
                   </div>
@@ -257,10 +257,10 @@ export default function AIPage() {
       </div>
 
       {/* Advanced AI Assistant */}
-      <AdvancedAIAssistant 
-        nodeId="pilot-riyadh-001"
+      <AdvancedAIAssistant
+        nodeId="pilot-algiers-001"
         culturalContext={{
-          region: 'الرياض',
+          region: 'الجزائر العاصمة',
           language: 'العربية',
           level: 'متقدم'
         }}

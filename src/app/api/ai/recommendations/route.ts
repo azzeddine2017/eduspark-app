@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { createLocalizedAI } from '@/lib/localized-ai';
 import { globalPlatformService } from '@/lib/distributed-platform';
+import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 
 // مخطط التحقق من طلب التوصيات
@@ -219,7 +220,7 @@ export async function POST(request: NextRequest) {
 async function checkNodeAccess(userId: string, nodeId: string): Promise<boolean> {
   try {
     // التحقق من الاشتراك النشط
-    const subscription = await globalPlatformService.prisma.nodeSubscription.findFirst({
+    const subscription = await prisma.nodeSubscription.findFirst({
       where: {
         userId,
         nodeId,
@@ -231,7 +232,7 @@ async function checkNodeAccess(userId: string, nodeId: string): Promise<boolean>
     if (subscription) return true;
 
     // التحقق من الشراكة
-    const partnership = await globalPlatformService.prisma.nodePartner.findFirst({
+    const partnership = await prisma.nodePartner.findFirst({
       where: {
         userId,
         nodeId,
@@ -242,7 +243,7 @@ async function checkNodeAccess(userId: string, nodeId: string): Promise<boolean>
     if (partnership) return true;
 
     // التحقق من كون المستخدم مدير
-    const user = await globalPlatformService.prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: userId }
     });
 
@@ -260,7 +261,7 @@ async function generateLearningPathRecommendations(
   limit: number
 ) {
   // تحليل تقدم المستخدم الحالي
-  const userProgress = await globalPlatformService.prisma.lessonProgress.findMany({
+  const userProgress = await prisma.lessonProgress.findMany({
     where: { userId },
     include: {
       lesson: {
@@ -299,7 +300,7 @@ async function generateLearningPathRecommendations(
 // توليد توصيات جدول الدراسة
 async function generateStudyScheduleRecommendations(userId: string, nodeId: string) {
   // تحليل أنماط دراسة المستخدم
-  const userActivity = await globalPlatformService.prisma.lessonProgress.findMany({
+  const userActivity = await prisma.lessonProgress.findMany({
     where: { userId },
     orderBy: { updatedAt: 'desc' },
     take: 50
@@ -319,14 +320,14 @@ async function generateStudyScheduleRecommendations(userId: string, nodeId: stri
 // جلب إحصائيات تعلم المستخدم
 async function getUserLearningStats(userId: string, nodeId: string) {
   const [enrollments, completedLessons, quizAttempts] = await Promise.all([
-    globalPlatformService.prisma.enrollment.count({ where: { userId } }),
-    globalPlatformService.prisma.lessonProgress.count({ 
-      where: { userId, completed: true } 
+    prisma.enrollment.count({ where: { userId } }),
+    prisma.lessonProgress.count({
+      where: { userId, completed: true }
     }),
-    globalPlatformService.prisma.quizAttempt.count({ where: { userId } })
+    prisma.quizAttempt.count({ where: { userId } })
   ]);
 
-  const averageScore = await globalPlatformService.prisma.quizAttempt.aggregate({
+  const averageScore = await prisma.quizAttempt.aggregate({
     where: { userId },
     _avg: { score: true }
   });
@@ -384,7 +385,7 @@ async function logRecommendationRequest(
   resultCount: number
 ) {
   try {
-    await globalPlatformService.prisma.llmInteractionLog.create({
+    await prisma.lLMInteractionLog.create({
       data: {
         userId,
         type: 'RECOMMENDATION_REQUEST',

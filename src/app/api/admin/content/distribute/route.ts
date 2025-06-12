@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { contentDistributionService } from '@/lib/content-distribution';
+import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 
 // مخطط التحقق من بيانات التوزيع
@@ -104,7 +105,7 @@ export async function GET(request: NextRequest) {
     }
 
     // جلب عمليات التوزيع
-    const distributions = await contentDistributionService.prisma.contentDistribution.findMany({
+    const distributions = await prisma.contentDistribution.findMany({
       where,
       include: {
         globalContent: {
@@ -123,9 +124,9 @@ export async function GET(request: NextRequest) {
     });
 
     // حساب الإحصائيات
-    const totalDistributions = await contentDistributionService.prisma.contentDistribution.count({ where });
-    
-    const statusCounts = await contentDistributionService.prisma.contentDistribution.groupBy({
+    const totalDistributions = await prisma.contentDistribution.count({ where });
+
+    const statusCounts = await prisma.contentDistribution.groupBy({
       by: ['status'],
       _count: { id: true }
     });

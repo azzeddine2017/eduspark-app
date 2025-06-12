@@ -3,6 +3,7 @@ import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { createLocalizedAI } from '@/lib/localized-ai';
 import { globalPlatformService } from '@/lib/distributed-platform';
+import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 
 // مخطط التحقق من طلب المحادثة المخصصة
@@ -137,7 +138,7 @@ export async function POST(request: NextRequest) {
 async function checkNodeAccess(userId: string, nodeId: string): Promise<boolean> {
   try {
     // التحقق من الاشتراك النشط في العقدة
-    const subscription = await globalPlatformService.prisma.nodeSubscription.findFirst({
+    const subscription = await prisma.nodeSubscription.findFirst({
       where: {
         userId,
         nodeId,
@@ -151,7 +152,7 @@ async function checkNodeAccess(userId: string, nodeId: string): Promise<boolean>
     if (subscription) return true;
 
     // التحقق من الشراكة في العقدة
-    const partnership = await globalPlatformService.prisma.nodePartner.findFirst({
+    const partnership = await prisma.nodePartner.findFirst({
       where: {
         userId,
         nodeId,
@@ -162,7 +163,7 @@ async function checkNodeAccess(userId: string, nodeId: string): Promise<boolean>
     if (partnership) return true;
 
     // التحقق من كون المستخدم مدير عام
-    const user = await globalPlatformService.prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: userId }
     });
 
@@ -183,7 +184,7 @@ async function logLocalizedConversation(
   processingTime: number
 ) {
   try {
-    await globalPlatformService.prisma.llmInteractionLog.create({
+    await prisma.lLMInteractionLog.create({
       data: {
         userId,
         type: 'LOCALIZED_CHAT',

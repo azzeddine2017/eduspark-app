@@ -8,7 +8,7 @@ import {
 import StatCard from '@/components/ui/StatCard';
 import CourseManager from '@/components/instructor/CourseManager';
 import ContentStudio from '@/components/instructor/ContentStudio';
-import StudentAnalytics from '@/components/instructor/StudentAnalytics';
+import StudentAnalytics from '@/components/instructor/StudentAnalyticsNew';
 import ActivityFeed from '@/components/admin/ActivityFeed';
 
 interface InstructorDashboardContentProps {
@@ -318,11 +318,7 @@ export default function InstructorDashboardContent({
       )}
 
       {activeTab === 'analytics' && (
-        <StudentAnalytics 
-          courses={recentCourses}
-          topStudents={topStudents}
-          charts={charts}
-        />
+        <StudentAnalytics />
       )}
     </div>
   );

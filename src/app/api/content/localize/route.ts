@@ -2,6 +2,7 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { contentDistributionService } from '@/lib/content-distribution';
+import { prisma } from '@/lib/prisma';
 import { z } from 'zod';
 
 // مخطط التحقق من بيانات التخصيص المحلي
@@ -65,7 +66,7 @@ export async function POST(request: NextRequest) {
 
     // التحقق من صلاحية المستخدم للعقدة المحددة
     if (session.user.role !== 'ADMIN') {
-      const nodePartnership = await contentDistributionService.prisma.nodePartner.findFirst({
+      const nodePartnership = await prisma.nodePartner.findFirst({
         where: {
           nodeId: validatedData.nodeId,
           userId: session.user.id,
@@ -141,7 +142,7 @@ export async function GET(request: NextRequest) {
 
     // التحقق من صلاحية الوصول للعقدة
     if (session.user.role !== 'ADMIN') {
-      const nodePartnership = await contentDistributionService.prisma.nodePartner.findFirst({
+      const nodePartnership = await prisma.nodePartner.findFirst({
         where: {
           nodeId,
           userId: session.user.id,
@@ -164,7 +165,7 @@ export async function GET(request: NextRequest) {
     if (isCustomized !== null) where.isCustomized = isCustomized === 'true';
 
     // جلب المحتوى المحلي
-    const localContent = await contentDistributionService.prisma.localContent.findMany({
+    const localContent = await prisma.localContent.findMany({
       where,
       include: {
         globalContent: {
