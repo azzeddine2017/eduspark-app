@@ -361,9 +361,50 @@ export default async function Home() {
           </div>
 
           {/* AI Section */}
-          <div className="mt-12">
+          <div className="mt-12 grid grid-cols-1 lg:grid-cols-2 gap-6">
+            {/* مرجان المعلم الافتراضي */}
+            <Link href="/marjan" className="block">
+              <div className="bg-gradient-to-r from-purple-600 to-blue-600 rounded-2xl p-8 text-white hover:shadow-2xl transition-all duration-300 group">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4 space-x-reverse">
+                    <div className="w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center relative">
+                      <Bot className="w-8 h-8 text-white" />
+                      <div className="absolute -top-1 -right-1 w-4 h-4 bg-green-400 rounded-full animate-pulse"></div>
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold arabic-text mb-2">
+                        🌟 مرجان - المعلم الافتراضي
+                      </h3>
+                      <p className="text-lg opacity-90 arabic-text">
+                        أول معلم افتراضي ناطق بالعربية يجمع بين الذكاء والتفاعل
+                      </p>
+                      <div className="flex items-center space-x-4 space-x-reverse mt-3 text-sm">
+                        <span className="flex items-center">
+                          <CheckCircle className="w-4 h-4 ml-1" />
+                          طريقة سقراطية
+                        </span>
+                        <span className="flex items-center">
+                          <CheckCircle className="w-4 h-4 ml-1" />
+                          تفاعل صوتي
+                        </span>
+                        <span className="flex items-center">
+                          <CheckCircle className="w-4 h-4 ml-1" />
+                          رسم تفاعلي
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center text-white group-hover:translate-x-2 transition-transform">
+                    <span className="text-lg font-medium arabic-text ml-2">تحدث مع مرجان</span>
+                    <ArrowRight className="w-6 h-6" />
+                  </div>
+                </div>
+              </div>
+            </Link>
+
+            {/* المساعد الذكي المتقدم */}
             <Link href="/ai" className="block">
-              <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-8 text-white hover:shadow-2xl transition-all duration-300 group">
+              <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl p-8 text-white hover:shadow-2xl transition-all duration-300 group">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center space-x-4 space-x-reverse">
                     <div className="w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center">
@@ -371,7 +412,7 @@ export default async function Home() {
                     </div>
                     <div>
                       <h3 className="text-2xl font-bold arabic-text mb-2">
-                        🤖 الذكاء الاصطناعي المتطور
+                        🤖 المساعد الذكي المتقدم
                       </h3>
                       <p className="text-lg opacity-90 arabic-text">
                         مساعدك الذكي المخصص للتعلم والتطوير
