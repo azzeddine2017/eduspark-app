@@ -3,9 +3,39 @@ import { Metadata } from 'next';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { globalPlatformService } from '@/lib/distributed-platform';
+import { prisma } from '@/lib/prisma';
 import InstructorDashboardContent from '@/components/instructor/InstructorDashboardContent';
 import DashboardSkeleton from '@/components/admin/DashboardSkeleton';
+
+// تعريف الأنواع
+interface CourseWithStats {
+  id: string;
+  title: string;
+  createdAt: Date;
+  enrollments: any[];
+  lessons: any[];
+  studentsCount: number;
+  lessonsCount: number;
+  completionRate: number;
+}
+
+interface StudentStats {
+  id: string;
+  userId: string;
+  name: string;
+  email: string;
+  coursesCount: number;
+  enrolledAt: Date;
+}
+
+interface ActivityItem {
+  id: string;
+  type: string;
+  message: string;
+  timestamp: Date;
+  courseId?: string;
+  score?: number;
+}
 
 export const metadata: Metadata = {
   title: 'استوديو المدرس - منصة فتح الموزعة',
@@ -16,17 +46,17 @@ export const metadata: Metadata = {
 async function getInstructorData(userId: string) {
   try {
     // جلب معلومات المدرس
-    const instructor = await globalPlatformService.prisma.user.findUnique({
+    const instructor = await prisma.user.findUnique({
       where: { id: userId },
       include: {
-        courses: {
+        authoredCourses: {
           include: {
             lessons: {
               include: {
-                lessonProgress: true,
+                progress: true,
                 quizzes: {
                   include: {
-                    quizAttempts: true
+                    attempts: true
                   }
                 }
               }
@@ -51,68 +81,73 @@ async function getInstructorData(userId: string) {
       throw new Error('المدرس غير موجود');
     }
 
+    // تحويل النوع للوصول للعلاقات
+    const instructorWithCourses = instructor as any;
+
     // حساب إحصائيات المدرس
-    const totalCourses = instructor.courses.length;
-    const totalLessons = instructor.courses.reduce((sum, course) => sum + course.lessons.length, 0);
-    const totalStudents = instructor.courses.reduce((sum, course) => sum + course.enrollments.length, 0);
-    
+    const totalCourses = instructorWithCourses.authoredCourses.length;
+    const totalLessons = instructorWithCourses.authoredCourses.reduce((sum: number, course: any) => sum + course.lessons.length, 0);
+    const totalStudents = instructorWithCourses.authoredCourses.reduce((sum: number, course: any) => sum + course.enrollments.length, 0);
+
     // حساب إجمالي المشاهدات
-    const totalViews = instructor.courses.reduce((sum, course) => 
-      sum + course.lessons.reduce((lessonSum, lesson) => 
-        lessonSum + lesson.lessonProgress.length, 0
+    const totalViews = instructorWithCourses.authoredCourses.reduce((sum: number, course: any) =>
+      sum + course.lessons.reduce((lessonSum: number, lesson: any) =>
+        lessonSum + lesson.progress.length, 0
       ), 0
     );
 
     // حساب متوسط الدرجات
-    const allQuizAttempts = instructor.courses.flatMap(course =>
-      course.lessons.flatMap(lesson =>
-        lesson.quizzes.flatMap(quiz => quiz.quizAttempts)
+    const allQuizAttempts = instructorWithCourses.authoredCourses.flatMap((course: any) =>
+      course.lessons.flatMap((lesson: any) =>
+        lesson.quizzes.flatMap((quiz: any) => quiz.attempts)
       )
     );
     
     const averageScore = allQuizAttempts.length > 0
-      ? allQuizAttempts.reduce((sum, attempt) => sum + attempt.score, 0) / allQuizAttempts.length
+      ? allQuizAttempts.reduce((sum: number, attempt: any) => sum + (attempt.score || 0), 0) / allQuizAttempts.length
       : 0;
 
     // جلب الدورات الحديثة
-    const recentCourses = instructor.courses
-      .sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
+    const recentCourses: CourseWithStats[] = instructorWithCourses.authoredCourses
+      .sort((a: any, b: any) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime())
       .slice(0, 5)
-      .map(course => ({
+      .map((course: any): CourseWithStats => ({
         ...course,
         studentsCount: course.enrollments.length,
         lessonsCount: course.lessons.length,
-        completionRate: course.lessons.length > 0 
-          ? (course.lessons.reduce((sum, lesson) => 
-              sum + lesson.lessonProgress.filter(p => p.completed).length, 0
+        completionRate: course.lessons.length > 0
+          ? (course.lessons.reduce((sum: number, lesson: any) =>
+              sum + lesson.progress.filter((p: any) => p.completed).length, 0
             ) / (course.lessons.length * course.enrollments.length)) * 100
           : 0
       }));
 
     // جلب أفضل الطلاب أداءً
-    const topStudents = instructor.courses
-      .flatMap(course => course.enrollments)
-      .reduce((acc: any[], enrollment) => {
+    const topStudents: StudentStats[] = instructorWithCourses.authoredCourses
+      .flatMap((course: any) => course.enrollments)
+      .reduce((acc: StudentStats[], enrollment: any) => {
         const existingStudent = acc.find(s => s.userId === enrollment.userId);
         if (existingStudent) {
           existingStudent.coursesCount++;
         } else {
           acc.push({
+            id: enrollment.user.id,
             userId: enrollment.userId,
-            user: enrollment.user,
+            name: enrollment.user.name,
+            email: enrollment.user.email,
             coursesCount: 1,
             enrolledAt: enrollment.createdAt
           });
         }
         return acc;
       }, [])
-      .sort((a, b) => b.coursesCount - a.coursesCount)
+      .sort((a: StudentStats, b: StudentStats) => b.coursesCount - a.coursesCount)
       .slice(0, 5);
 
     // جلب آخر الأنشطة
-    const recentActivity = [
-      ...instructor.courses.flatMap(course =>
-        course.enrollments.slice(-3).map(enrollment => ({
+    const recentActivity: ActivityItem[] = [
+      ...instructorWithCourses.authoredCourses.flatMap((course: any) =>
+        course.enrollments.slice(-3).map((enrollment: any) => ({
           id: `enrollment_${enrollment.id}`,
           type: 'student_enrolled',
           message: `انضم ${enrollment.user.name} لدورة ${course.title}`,
@@ -120,15 +155,15 @@ async function getInstructorData(userId: string) {
           courseId: course.id
         }))
       ),
-      ...allQuizAttempts.slice(-3).map(attempt => ({
+      ...allQuizAttempts.slice(-3).map((attempt: any) => ({
         id: `quiz_${attempt.id}`,
         type: 'quiz_completed',
-        message: `طالب أكمل اختبار بدرجة ${attempt.score}%`,
+        message: `طالب أكمل اختبار بدرجة ${attempt.score || 0}%`,
         timestamp: attempt.createdAt,
-        score: attempt.score
+        score: attempt.score || 0
       }))
     ]
-      .sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
+      .sort((a: ActivityItem, b: ActivityItem) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime())
       .slice(0, 8);
 
     // تحضير بيانات المخططات

@@ -1,14 +1,14 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { paypalService } from '@/lib/payment/paypal';
-import { globalPlatformService } from '@/lib/distributed-platform';
+import { prisma } from '@/lib/prisma';
 import { headers } from 'next/headers';
 
 export async function POST(request: NextRequest) {
   try {
     // قراءة البيانات الخام
     const body = await request.text();
-    const headersList = headers();
-    
+    const headersList = await headers();
+
     // التحقق من صحة webhook (مبسط - يجب تحسينه للإنتاج)
     const isValid = await paypalService.verifyWebhook(
       Object.fromEntries(headersList.entries()),
@@ -85,17 +85,8 @@ async function handleOrderApproved(event: any) {
     const orderId = event.resource.id;
     console.log(`تمت الموافقة على الطلب: ${orderId}`);
 
-    // تحديث حالة الدفع
-    await globalPlatformService.prisma.payment.update({
-      where: { id: orderId },
-      data: {
-        status: 'approved',
-        metadata: {
-          paypalOrderId: orderId,
-          approvedAt: new Date().toISOString()
-        }
-      }
-    });
+    // يمكن إضافة منطق إضافي هنا عند الحاجة
+    // مثل إرسال إشعارات أو تحديث حالة الطلب في نظام آخر
 
   } catch (error) {
     console.error('خطأ في معالجة موافقة الطلب:', error);
@@ -107,25 +98,10 @@ async function handlePaymentCaptureCompleted(event: any) {
   try {
     const capture = event.resource;
     const orderId = capture.supplementary_data?.related_ids?.order_id;
-    
+
     console.log(`اكتمل الدفع: ${capture.id} للطلب: ${orderId}`);
 
     if (orderId) {
-      // تحديث حالة الدفع
-      await globalPlatformService.prisma.payment.update({
-        where: { id: orderId },
-        data: {
-          status: 'completed',
-          completedAt: new Date(),
-          metadata: {
-            paypalCaptureId: capture.id,
-            paypalOrderId: orderId,
-            amount: capture.amount.value,
-            currency: capture.amount.currency_code
-          }
-        }
-      });
-
       // إرسال إشعار نجاح الدفع
       await sendPaymentSuccessNotification(orderId, capture);
     }
@@ -140,24 +116,10 @@ async function handlePaymentCaptureDenied(event: any) {
   try {
     const capture = event.resource;
     const orderId = capture.supplementary_data?.related_ids?.order_id;
-    
+
     console.log(`تم رفض الدفع: ${capture.id} للطلب: ${orderId}`);
 
     if (orderId) {
-      // تحديث حالة الدفع
-      await globalPlatformService.prisma.payment.update({
-        where: { id: orderId },
-        data: {
-          status: 'failed',
-          failedAt: new Date(),
-          failureReason: 'تم رفض الدفع من PayPal',
-          metadata: {
-            paypalCaptureId: capture.id,
-            paypalOrderId: orderId
-          }
-        }
-      });
-
       // إرسال إشعار فشل الدفع
       await sendPaymentFailureNotification(orderId, capture);
     }
@@ -175,25 +137,25 @@ async function handleSubscriptionCreated(event: any) {
 
     // البحث عن المستخدم باستخدام custom_id
     const userId = subscription.custom_id;
-    
+
     if (userId) {
       // التحقق من وجود الاشتراك في قاعدة البيانات
-      const existingSubscription = await globalPlatformService.prisma.subscription.findUnique({
+      const existingSubscription = await prisma.subscription.findUnique({
         where: { id: subscription.id }
       });
 
       if (!existingSubscription) {
         // إنشاء سجل الاشتراك
-        await globalPlatformService.prisma.subscription.create({
+        await prisma.subscription.create({
           data: {
             id: subscription.id,
             userId,
-            planId: subscription.plan_id,
+            planId: subscription.plan_id || 'paypal-plan',
+            planName: 'PayPal Subscription',
             provider: 'paypal',
-            status: 'pending',
+            status: 'PENDING',
             amount: parseFloat(subscription.billing_info?.last_payment?.amount?.value || '0'),
             currency: subscription.billing_info?.last_payment?.amount?.currency_code || 'USD',
-            interval: 'month', // يجب استخراج هذا من plan details
             createdAt: new Date(subscription.create_time),
             metadata: {
               paypalSubscriptionId: subscription.id,
@@ -216,12 +178,12 @@ async function handleSubscriptionActivated(event: any) {
     console.log(`تم تفعيل اشتراك PayPal: ${subscription.id}`);
 
     // تحديث حالة الاشتراك
-    await globalPlatformService.prisma.subscription.update({
+    await prisma.subscription.update({
       where: { id: subscription.id },
       data: {
-        status: 'active',
-        activatedAt: new Date(),
-        nextBillingDate: subscription.billing_info?.next_billing_time 
+        status: 'ACTIVE',
+        startDate: new Date(),
+        endDate: subscription.billing_info?.next_billing_time
           ? new Date(subscription.billing_info.next_billing_time)
           : undefined
       }
@@ -242,10 +204,10 @@ async function handleSubscriptionCancelled(event: any) {
     console.log(`تم إلغاء اشتراك PayPal: ${subscription.id}`);
 
     // تحديث حالة الاشتراك
-    await globalPlatformService.prisma.subscription.update({
+    await prisma.subscription.update({
       where: { id: subscription.id },
       data: {
-        status: 'cancelled',
+        status: 'CANCELLED',
         cancelledAt: new Date(),
         cancellationReason: 'إلغاء من PayPal'
       }
@@ -266,11 +228,16 @@ async function handleSubscriptionSuspended(event: any) {
     console.log(`تم تعليق اشتراك PayPal: ${subscription.id}`);
 
     // تحديث حالة الاشتراك
-    await globalPlatformService.prisma.subscription.update({
+    await prisma.subscription.update({
       where: { id: subscription.id },
       data: {
-        status: 'suspended',
-        suspendedAt: new Date()
+        status: 'CANCELLED',
+        cancelledAt: new Date(),
+        cancellationReason: 'تعليق من PayPal',
+        metadata: {
+          suspendedAt: new Date().toISOString(),
+          suspensionReason: 'تعليق من PayPal'
+        }
       }
     });
 
@@ -290,39 +257,19 @@ async function handleSaleCompleted(event: any) {
 
     // البحث عن الاشتراك المرتبط
     const subscriptionId = sale.billing_agreement_id;
-    
+
     if (subscriptionId) {
       // تحديث آخر دفعة للاشتراك
-      await globalPlatformService.prisma.subscription.update({
+      await prisma.subscription.update({
         where: { id: subscriptionId },
         data: {
-          lastPaymentAt: new Date(),
-          status: 'active'
+          status: 'ACTIVE',
+          metadata: {
+            lastPaymentAt: new Date().toISOString(),
+            lastSaleId: sale.id
+          }
         }
       });
-
-      // إنشاء سجل دفع للبيع
-      const userId = await getUserIdFromSubscription(subscriptionId);
-      
-      if (userId) {
-        await globalPlatformService.prisma.payment.create({
-          data: {
-            id: `sale_${sale.id}`,
-            userId,
-            amount: parseFloat(sale.amount.total),
-            currency: sale.amount.currency,
-            provider: 'paypal',
-            status: 'completed',
-            description: `دفع اشتراك PayPal ${subscriptionId}`,
-            metadata: {
-              paypalSaleId: sale.id,
-              subscriptionId,
-              billingAgreementId: sale.billing_agreement_id
-            },
-            completedAt: new Date()
-          }
-        });
-      }
     }
 
   } catch (error) {
@@ -337,14 +284,18 @@ async function handleSaleDenied(event: any) {
     console.log(`تم رفض البيع: ${sale.id}`);
 
     const subscriptionId = sale.billing_agreement_id;
-    
+
     if (subscriptionId) {
       // تحديث حالة الاشتراك
-      await globalPlatformService.prisma.subscription.update({
+      await prisma.subscription.update({
         where: { id: subscriptionId },
         data: {
-          status: 'past_due',
-          lastFailedPaymentAt: new Date()
+          status: 'EXPIRED',
+          metadata: {
+            lastFailedPaymentAt: new Date().toISOString(),
+            failedSaleId: sale.id,
+            failureReason: 'فشل في الدفع'
+          }
         }
       });
 
@@ -357,35 +308,33 @@ async function handleSaleDenied(event: any) {
   }
 }
 
-// دوال مساعدة
-async function getUserIdFromSubscription(subscriptionId: string): Promise<string | null> {
-  const subscription = await globalPlatformService.prisma.subscription.findUnique({
-    where: { id: subscriptionId }
-  });
-  
-  return subscription?.userId || null;
-}
-
-async function sendPaymentSuccessNotification(orderId: string, capture: any) {
+// دوال مساعدة للإشعارات
+async function sendPaymentSuccessNotification(orderId: string, _capture: unknown) {
   console.log(`إرسال إشعار نجاح الدفع للطلب: ${orderId}`);
+  // يمكن إضافة منطق إرسال الإشعارات هنا
 }
 
-async function sendPaymentFailureNotification(orderId: string, capture: any) {
+async function sendPaymentFailureNotification(orderId: string, _capture: unknown) {
   console.log(`إرسال إشعار فشل الدفع للطلب: ${orderId}`);
+  // يمكن إضافة منطق إرسال الإشعارات هنا
 }
 
-async function sendSubscriptionActivatedNotification(subscription: any) {
-  console.log(`إرسال إشعار تفعيل الاشتراك: ${subscription.id}`);
+async function sendSubscriptionActivatedNotification(subscription: unknown) {
+  console.log(`إرسال إشعار تفعيل الاشتراك: ${(subscription as any).id}`);
+  // يمكن إضافة منطق إرسال الإشعارات هنا
 }
 
-async function sendSubscriptionCancelledNotification(subscription: any) {
-  console.log(`إرسال إشعار إلغاء الاشتراك: ${subscription.id}`);
+async function sendSubscriptionCancelledNotification(subscription: unknown) {
+  console.log(`إرسال إشعار إلغاء الاشتراك: ${(subscription as any).id}`);
+  // يمكن إضافة منطق إرسال الإشعارات هنا
 }
 
-async function sendSubscriptionSuspendedNotification(subscription: any) {
-  console.log(`إرسال إشعار تعليق الاشتراك: ${subscription.id}`);
+async function sendSubscriptionSuspendedNotification(subscription: unknown) {
+  console.log(`إرسال إشعار تعليق الاشتراك: ${(subscription as any).id}`);
+  // يمكن إضافة منطق إرسال الإشعارات هنا
 }
 
-async function sendSubscriptionPaymentFailureNotification(subscriptionId: string, sale: any) {
+async function sendSubscriptionPaymentFailureNotification(subscriptionId: string, _sale: unknown) {
   console.log(`إرسال إشعار فشل دفع الاشتراك: ${subscriptionId}`);
+  // يمكن إضافة منطق إرسال الإشعارات هنا
 }

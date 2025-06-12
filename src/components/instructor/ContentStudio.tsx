@@ -11,7 +11,13 @@ interface Content {
   lastModified: string;
 }
 
-export default function ContentStudio() {
+interface ContentStudioProps {
+  instructorId?: string;
+}
+
+export default function ContentStudio({ instructorId }: ContentStudioProps) {
+  // يمكن استخدام instructorId لجلب المحتوى الخاص بالمدرس
+  console.log('Instructor ID:', instructorId);
   const [contents, setContents] = useState<Content[]>([
     {
       id: '1',

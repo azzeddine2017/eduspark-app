@@ -10,7 +10,7 @@ export async function GET(request: NextRequest) {
 
     // حساب التواريخ بناءً على الإطار الزمني
     const now = new Date()
-    let startDate = new Date()
+    const startDate = new Date()
 
     switch (timeframe) {
       case '7d':

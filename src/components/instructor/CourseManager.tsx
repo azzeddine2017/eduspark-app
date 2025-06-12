@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+// import { useState } from 'react'; // غير مستخدم حالياً
 import { BookOpen, Plus, Edit, Trash2, Users, Clock, Star } from 'lucide-react';
 
 interface Course {
@@ -13,8 +13,14 @@ interface Course {
   status: 'draft' | 'published' | 'archived';
 }
 
-export default function CourseManager() {
-  const [courses, setCourses] = useState<Course[]>([
+interface CourseManagerProps {
+  courses?: any[];
+  instructorId?: string;
+}
+
+export default function CourseManager({ courses: propCourses, instructorId }: CourseManagerProps) {
+  // استخدام البيانات الممررة أو البيانات الافتراضية
+  const defaultCourses: Course[] = [
     {
       id: '1',
       title: 'مقدمة في البرمجة',
@@ -42,7 +48,18 @@ export default function CourseManager() {
       rating: 0,
       status: 'draft'
     }
-  ]);
+  ];
+
+  // تحويل البيانات الممررة إلى تنسيق Course أو استخدام البيانات الافتراضية
+  const courses = propCourses ? propCourses.map((course: any) => ({
+    id: course.id,
+    title: course.title,
+    description: course.description || 'وصف الدورة',
+    students: course.studentsCount || 0,
+    duration: '8 أسابيع', // يمكن حسابها من البيانات الفعلية
+    rating: 4.5, // يمكن حسابها من التقييمات الفعلية
+    status: course.isPublished ? 'published' : 'draft'
+  })) : defaultCourses;
 
   const getStatusColor = (status: string) => {
     switch (status) {

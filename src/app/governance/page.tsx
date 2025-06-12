@@ -19,9 +19,21 @@ import {
   Scale
 } from 'lucide-react';
 
+// تعريف الأنواع
+interface Vote {
+  id: number;
+  title: string;
+  description: string;
+  type: string;
+  deadline: string;
+  votes: { yes: number; no: number; abstain: number };
+  status: string;
+  category: string;
+}
+
 export default function GovernancePage() {
   const [activeTab, setActiveTab] = useState('overview');
-  const [selectedVote, setSelectedVote] = useState(null);
+  const [selectedVote, setSelectedVote] = useState<Vote | null>(null);
 
   const governanceStats = [
     { label: 'الأعضاء النشطون', value: '1,247', icon: Users, color: 'text-blue-600' },
@@ -110,7 +122,7 @@ export default function GovernancePage() {
     }
   ];
 
-  const getVoteTypeInfo = (type) => {
+  const getVoteTypeInfo = (type: string) => {
     switch (type) {
       case 'simple':
         return { threshold: '50%+1', color: 'bg-green-100 text-green-800', label: 'تصويت بسيط' };
@@ -125,7 +137,7 @@ export default function GovernancePage() {
     }
   };
 
-  const calculateVotePercentage = (votes) => {
+  const calculateVotePercentage = (votes: { yes: number; no: number; abstain: number }) => {
     const total = votes.yes + votes.no + votes.abstain;
     return total > 0 ? Math.round((votes.yes / total) * 100) : 0;
   };

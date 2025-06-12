@@ -26,9 +26,10 @@ export default function APITestPage() {
         [testName]: { success: true, data: result } 
       }));
     } catch (error) {
-      setResults(prev => ({ 
-        ...prev, 
-        [testName]: { success: false, error: error.message } 
+      const errorMessage = error instanceof Error ? error.message : String(error);
+      setResults(prev => ({
+        ...prev,
+        [testName]: { success: false, error: errorMessage }
       }));
     } finally {
       setLoading(prev => ({ ...prev, [testName]: false }));
@@ -75,7 +76,7 @@ export default function APITestPage() {
       metadata: {
         source: 'automated_test',
         timestamp: new Date().toISOString(),
-        testId: Math.random().toString(36).substr(2, 9)
+        testId: Math.random().toString(36).substring(2, 11)
       }
     };
 

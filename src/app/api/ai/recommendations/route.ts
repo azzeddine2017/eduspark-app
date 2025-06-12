@@ -69,7 +69,7 @@ export async function GET(request: NextRequest) {
     // إنشاء مثيل الذكاء الاصطناعي المحلي
     const localizedAI = createLocalizedAI(nodeId);
 
-    let recommendations: any = {};
+    const recommendations: any = {};
 
     // توليد التوصيات حسب النوع المطلوب
     if (type === 'content' || type === 'all') {

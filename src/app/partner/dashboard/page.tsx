@@ -3,6 +3,7 @@ import { Metadata } from 'next';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
+import { prisma } from '@/lib/prisma';
 import { globalPlatformService } from '@/lib/distributed-platform';
 import LocalDashboardContent from '@/components/partner/LocalDashboardContent';
 import DashboardSkeleton from '@/components/admin/DashboardSkeleton';
@@ -16,7 +17,7 @@ export const metadata: Metadata = {
 async function getLocalNodeData(userId: string) {
   try {
     // جلب العقدة التي يديرها المستخدم
-    const partnership = await globalPlatformService.prisma.nodePartner.findFirst({
+    const partnership = await prisma.nodePartner.findFirst({
       where: {
         userId,
         status: 'ACTIVE'
@@ -30,7 +31,7 @@ async function getLocalNodeData(userId: string) {
                 globalContent: true
               }
             },
-            nodeSubscriptions: {
+            subscriptions: {
               where: {
                 isActive: true,
                 endDate: {
@@ -64,11 +65,11 @@ async function getLocalNodeData(userId: string) {
     const localContent = node.localContent;
 
     // جلب الاشتراكات النشطة
-    const activeSubscriptions = node.nodeSubscriptions;
+    const activeSubscriptions = node.subscriptions;
 
     // حساب إحصائيات إضافية
     const totalUsers = activeSubscriptions.length;
-    const monthlyRevenue = activeSubscriptions.reduce((sum, sub) => sum + Number(sub.amount), 0);
+    const monthlyRevenue = activeSubscriptions.reduce((sum: number, sub: any) => sum + Number(sub.amount), 0);
     
     // جلب آخر الأنشطة المحلية
     const recentActivity = [
@@ -148,7 +149,7 @@ function generateUserGrowthData() {
 
 // توليد بيانات أداء المحتوى (مؤقت)
 function generateContentPerformanceData(localContent: any[]) {
-  return localContent.slice(0, 5).map((content, index) => ({
+  return localContent.slice(0, 5).map((content) => ({
     id: content.id,
     title: content.title,
     views: Math.floor(Math.random() * 500) + 100,
@@ -225,7 +226,7 @@ async function LocalDashboardDataWrapper({ userId }: { userId: string }) {
   try {
     const dashboardData = await getLocalNodeData(userId);
     return <LocalDashboardContent {...dashboardData} />;
-  } catch (error: any) {
+  } catch (error: unknown) {
     return (
       <div className="text-center py-12">
         <div className="text-red-500 mb-4">
@@ -237,7 +238,7 @@ async function LocalDashboardDataWrapper({ userId }: { userId: string }) {
           خطأ في تحميل بيانات العقدة
         </h3>
         <p className="text-gray-500 dark:text-gray-400 mb-4">
-          {error.message || 'حدث خطأ أثناء جلب بيانات العقدة المحلية. يرجى المحاولة مرة أخرى.'}
+          {(error instanceof Error ? error.message : String(error)) || 'حدث خطأ أثناء جلب بيانات العقدة المحلية. يرجى المحاولة مرة أخرى.'}
         </p>
         <button 
           onClick={() => window.location.reload()}

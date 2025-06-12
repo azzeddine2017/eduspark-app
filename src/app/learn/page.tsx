@@ -3,7 +3,7 @@ import { Metadata } from 'next';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 import { redirect } from 'next/navigation';
-import { globalPlatformService } from '@/lib/distributed-platform';
+import { prisma } from '@/lib/prisma';
 import { createLocalizedAI } from '@/lib/localized-ai';
 import LearnerDashboardContent from '@/components/learn/LearnerDashboardContent';
 import DashboardSkeleton from '@/components/admin/DashboardSkeleton';
@@ -17,7 +17,7 @@ export const metadata: Metadata = {
 async function getLearnerData(userId: string) {
   try {
     // جلب معلومات المستخدم
-    const user = await globalPlatformService.prisma.user.findUnique({
+    const user = await prisma.user.findUnique({
       where: { id: userId },
       include: {
         enrollments: {
@@ -26,7 +26,7 @@ async function getLearnerData(userId: string) {
               include: {
                 lessons: {
                   include: {
-                    lessonProgress: {
+                    progress: {
                       where: { userId }
                     }
                   }
@@ -65,7 +65,7 @@ async function getLearnerData(userId: string) {
     }
 
     // تحديد العقدة المحلية للمستخدم (افتراضياً أول عقدة نشطة)
-    const userNode = await globalPlatformService.prisma.localNode.findFirst({
+    const userNode = await prisma.localNode.findFirst({
       where: {
         status: 'ACTIVE'
       }
@@ -86,8 +86,8 @@ async function getLearnerData(userId: string) {
     const progressPercentage = totalLessons > 0 ? (completedLessons / totalLessons) * 100 : 0;
 
     // حساب متوسط الدرجات
-    const averageScore = user.quizAttempts.length > 0 
-      ? user.quizAttempts.reduce((sum, attempt) => sum + attempt.score, 0) / user.quizAttempts.length
+    const averageScore = user.quizAttempts.length > 0
+      ? user.quizAttempts.reduce((sum, attempt) => sum + (attempt.score || 0), 0) / user.quizAttempts.length
       : 0;
 
     // جلب التوصيات المخصصة
@@ -99,7 +99,7 @@ async function getLearnerData(userId: string) {
     const currentCourses = user.enrollments.map(enrollment => {
       const course = enrollment.course;
       const completedLessonsInCourse = course.lessons.filter(lesson =>
-        lesson.lessonProgress.some(progress => progress.completed)
+        lesson.progress.some(progress => progress.completed)
       ).length;
       
       const courseProgress = course.lessons.length > 0 
@@ -111,7 +111,7 @@ async function getLearnerData(userId: string) {
         progress: courseProgress,
         completedLessons: completedLessonsInCourse,
         totalLessons: course.lessons.length,
-        lastAccessed: enrollment.createdAt
+        lastAccessed: enrollment.enrolledAt
       };
     });
 
@@ -133,9 +133,9 @@ async function getLearnerData(userId: string) {
         type: 'quiz_completed',
         title: `أكمل اختبار: ${attempt.quiz.lesson.title}`,
         course: attempt.quiz.lesson.course.title,
-        timestamp: attempt.createdAt,
-        score: attempt.score,
-        points: Math.round(attempt.score / 10)
+        timestamp: attempt.startedAt,
+        score: attempt.score || 0,
+        points: Math.round((attempt.score || 0) / 10)
       }))
     ].sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime()).slice(0, 8);
 
@@ -149,7 +149,7 @@ async function getLearnerData(userId: string) {
         averageScore: Math.round(averageScore),
         totalCourses: user.enrollments.length,
         studyStreak: 7, // يمكن حسابها من النشاط الفعلي
-        totalPoints: completedLessons * 10 + user.quizAttempts.reduce((sum, attempt) => sum + Math.round(attempt.score / 10), 0)
+        totalPoints: completedLessons * 10 + user.quizAttempts.reduce((sum, attempt) => sum + Math.round((attempt.score || 0) / 10), 0)
       },
       currentCourses,
       recommendations,

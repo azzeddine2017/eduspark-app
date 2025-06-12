@@ -9,7 +9,7 @@ import { z } from 'zod';
 // مخطط التحقق من البيانات
 const createSubscriptionSchema = z.object({
   planId: z.string().min(1, 'معرف الخطة مطلوب'),
-  provider: z.enum(['stripe', 'paypal'], {
+  provider: z.enum(['stripe', 'paypal', 'local'], {
     errorMap: () => ({ message: 'بوابة دفع غير صحيحة للاشتراكات' })
   }),
   metadata: z.record(z.any()).optional(),
@@ -53,7 +53,7 @@ export async function POST(request: NextRequest) {
     const existingSubscription = await prisma.subscription.findFirst({
       where: {
         userId: session.user.id,
-        status: 'active'
+        status: 'ACTIVE'
       }
     });
 
@@ -98,7 +98,7 @@ export async function POST(request: NextRequest) {
 }
 
 // جلب اشتراكات المستخدم
-export async function GET(request: NextRequest) {
+export async function GET() {
   try {
     // التحقق من المصادقة
     const session = await getServerSession(authOptions);
@@ -194,7 +194,7 @@ export async function DELETE(request: NextRequest) {
       );
     }
 
-    if (subscription.status === 'cancelled') {
+    if (subscription.status === 'CANCELLED') {
       return NextResponse.json(
         { success: false, error: 'الاشتراك ملغى بالفعل' },
         { status: 400 }
@@ -220,7 +220,7 @@ export async function DELETE(request: NextRequest) {
       await prisma.subscription.update({
         where: { id: subscriptionId },
         data: {
-          status: 'cancelled',
+          status: 'CANCELLED',
           cancelledAt: new Date(),
           cancellationReason: reason
         }
@@ -238,7 +238,7 @@ export async function DELETE(request: NextRequest) {
       await prisma.subscription.update({
         where: { id: subscriptionId },
         data: {
-          status: 'cancelled',
+          status: 'CANCELLED',
           cancelledAt: new Date(),
           cancellationReason: reason || 'إلغاء محلي بسبب خطأ في البوابة'
         }

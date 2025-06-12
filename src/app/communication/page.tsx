@@ -23,9 +23,21 @@ import {
   Bell
 } from 'lucide-react';
 
+// تعريف الأنواع
+interface CommunicationChannel {
+  id: string;
+  title: string;
+  description: string;
+  icon: any;
+  color: string;
+  features: string[];
+  activeUsers: number;
+  status: string;
+}
+
 export default function CommunicationPage() {
   const [activeTab, setActiveTab] = useState('overview');
-  const [selectedChannel, setSelectedChannel] = useState(null);
+  const [selectedChannel, setSelectedChannel] = useState<CommunicationChannel | null>(null);
 
   const communicationStats = [
     { label: 'المستخدمون النشطون', value: '2,847', icon: Users, color: 'text-blue-600' },
@@ -139,7 +151,7 @@ export default function CommunicationPage() {
     { code: 'ko', name: '한국어', flag: '🇰🇷', users: 67 }
   ];
 
-  const getActivityIcon = (type) => {
+  const getActivityIcon = (type: string) => {
     switch (type) {
       case 'meeting': return Video;
       case 'message': return MessageCircle;
@@ -149,7 +161,7 @@ export default function CommunicationPage() {
     }
   };
 
-  const getStatusColor = (status) => {
+  const getStatusColor = (status: string) => {
     switch (status) {
       case 'مكتمل': return 'bg-green-100 text-green-800';
       case 'جديد': return 'bg-blue-100 text-blue-800';
