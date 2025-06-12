@@ -3,6 +3,7 @@ import { callGemini } from '@/lib/openai';
 import { buildMarjanPrompt, getRandomResponse } from '@/lib/marjan-prompts';
 import { questionAnalyzer } from '@/lib/question-analyzer';
 import { getSocraticQuestions, getRandomGuidingQuestion, getAnalogy } from '@/lib/socratic-questions';
+import { WHITEBOARD_FUNCTIONS } from '@/lib/whiteboard-functions';
 
 interface ChatRequest {
   message: string;
@@ -16,6 +17,7 @@ interface ChatRequest {
   context: {
     sessionId: string;
     timestamp: string;
+    whiteboardAvailable?: boolean;
   };
 }
 
@@ -30,6 +32,10 @@ interface MarjanResponse {
     suggestedQuestions?: string[];
     analogy?: string;
   };
+  whiteboardFunctions?: Array<{
+    name: string;
+    parameters: any;
+  }>;
   success: boolean;
 }
 
@@ -73,12 +79,19 @@ export async function POST(request: NextRequest) {
 
 سؤال الطالب: "${body.message}"
 
+${body.context.whiteboardAvailable ? `
+السبورة الافتراضية متاحة! يمكنك استخدام الوظائف التالية للرسم والتوضيح:
+${WHITEBOARD_FUNCTIONS.map(f => `- ${f.name}: ${f.description}`).join('\n')}
+
+عندما تحتاج للرسم أو التوضيح، استخدم هذه الوظائف في ردك.
+` : ''}
+
 تذكر:
 1. استخدم الطريقة السقراطية - لا تعطِ الإجابة مباشرة
 2. اطرح سؤالاً توجيهياً واحداً فقط في كل رد
 3. استخدم أمثلة من الحياة اليومية
 4. كن مشجعاً وإيجابياً
-5. إذا احتاج الأمر رسماً، اذكر أنك ستوضح بصرياً
+5. ${body.context.whiteboardAvailable ? 'استخدم السبورة للتوضيح البصري عند الحاجة' : 'إذا احتاج الأمر رسماً، اذكر أنك ستوضح بصرياً'}
 
 ردك يجب أن يكون:`;
 
@@ -90,11 +103,16 @@ export async function POST(request: NextRequest) {
     
     // إضافة معلومات إضافية
     const metadata = generateResponseMetadata(questionAnalysis, body.message);
-    
+
+    // استخراج وظائف السبورة من الاستجابة
+    const whiteboardFunctions = body.context.whiteboardAvailable
+      ? extractWhiteboardFunctions(aiResponse, questionAnalysis)
+      : undefined;
+
     // إضافة تشجيع إذا كان الطالب محبطاً
     const enhancedResponse = enhanceResponseWithEncouragement(
-      aiResponse, 
-      body.message, 
+      aiResponse,
+      body.message,
       questionAnalysis
     );
 
@@ -102,6 +120,7 @@ export async function POST(request: NextRequest) {
       response: enhancedResponse,
       type: responseType,
       metadata,
+      whiteboardFunctions,
       success: true
     };
 
@@ -237,4 +256,100 @@ function handleMarjanError(error: any): string {
   ];
   
   return friendlyErrors[Math.floor(Math.random() * friendlyErrors.length)];
+}
+
+/**
+ * استخراج وظائف السبورة من استجابة مرجان
+ */
+function extractWhiteboardFunctions(
+  response: string,
+  analysis: ReturnType<typeof questionAnalyzer.analyzeQuestion>
+): Array<{ name: string; parameters: any }> {
+  const functions: Array<{ name: string; parameters: any }> = [];
+
+  // إذا كان السؤال يحتاج توضيح بصري، أضف وظائف مناسبة
+  if (analysis.requiresVisualAid || analysis.subject === 'mathematics' || analysis.subject === 'physics') {
+
+    // للرياضيات - رسم أشكال هندسية
+    if (analysis.subject === 'mathematics') {
+      if (analysis.keywords.some(k => k.includes('مثلث') || k.includes('triangle'))) {
+        functions.push({
+          name: 'draw_triangle',
+          parameters: {
+            x1: 200, y1: 300,
+            x2: 400, y2: 300,
+            x3: 200, y3: 150,
+            color: '#0066cc',
+            label: 'مثلث'
+          }
+        });
+      }
+
+      if (analysis.keywords.some(k => k.includes('دائرة') || k.includes('circle'))) {
+        functions.push({
+          name: 'draw_circle',
+          parameters: {
+            center_x: 300,
+            center_y: 200,
+            radius: 80,
+            color: '#0066cc',
+            label: 'دائرة'
+          }
+        });
+      }
+
+      if (analysis.keywords.some(k => k.includes('معادلة') || k.includes('equation'))) {
+        functions.push({
+          name: 'draw_equation',
+          parameters: {
+            x: 400,
+            y: 150,
+            equation: 'أ² + ب² = ج²',
+            size: 20,
+            color: '#cc0066'
+          }
+        });
+      }
+    }
+
+    // للفيزياء - رسم دوائر كهربائية ومخططات
+    if (analysis.subject === 'physics') {
+      if (analysis.keywords.some(k => k.includes('دائرة') || k.includes('كهرباء'))) {
+        // رسم دائرة كهربائية بسيطة
+        functions.push({
+          name: 'draw_rectangle',
+          parameters: {
+            x: 200, y: 200,
+            width: 60, height: 30,
+            color: '#009900',
+            label: 'بطارية'
+          }
+        });
+
+        functions.push({
+          name: 'draw_circle',
+          parameters: {
+            center_x: 400,
+            center_y: 215,
+            radius: 20,
+            color: '#ff6600',
+            label: 'مصباح'
+          }
+        });
+
+        // خطوط التوصيل
+        functions.push({
+          name: 'draw_line',
+          parameters: {
+            from_x: 260, from_y: 215,
+            to_x: 380, to_y: 215,
+            color: '#000000',
+            thickness: 2
+          }
+        });
+      }
+    }
+  }
+
+  return functions;
 }

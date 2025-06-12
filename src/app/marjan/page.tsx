@@ -4,12 +4,12 @@ import { useState } from 'react';
 import { motion } from 'framer-motion';
 import MarjanTeacher from '@/components/MarjanTeacher';
 import DarkModeWrapper, { Card, Header, Title, Text, Button } from '@/components/ui/DarkModeWrapper';
-import { 
-  Bot, 
-  Brain, 
-  Sparkles, 
-  Target, 
-  MessageCircle, 
+import {
+  Bot,
+  Brain,
+  Sparkles,
+  Target,
+  MessageCircle,
   Lightbulb,
   BookOpen,
   Mic,
@@ -18,9 +18,7 @@ import {
   Users,
   Clock,
   CheckCircle,
-  ArrowRight,
   Play,
-  Volume2,
   Eye
 } from 'lucide-react';
 
@@ -32,7 +30,7 @@ export default function MarjanPage() {
     {
       id: 'fractions',
       title: 'تعلم الكسور',
-      description: 'مرجان يشرح الكسور بطريقة تفاعلية',
+      description: 'مرجان يشرح الكسور بطريقة تفاعلية مع الرسم',
       subject: 'الرياضيات',
       difficulty: 'مبتدئ',
       icon: <Target className="w-6 h-6" />,
@@ -41,7 +39,7 @@ export default function MarjanPage() {
     {
       id: 'pythagoras',
       title: 'نظرية فيثاغورس',
-      description: 'شرح تفاعلي مع الرسم والتوضيح',
+      description: 'شرح تفاعلي مع الرسم والتوضيح على السبورة',
       subject: 'الرياضيات',
       difficulty: 'متوسط',
       icon: <BookOpen className="w-6 h-6" />,
@@ -50,7 +48,7 @@ export default function MarjanPage() {
     {
       id: 'ohms_law',
       title: 'قانون أوم',
-      description: 'فهم الكهرباء من خلال أمثلة يومية',
+      description: 'فهم الكهرباء مع رسم الدوائر الكهربائية',
       subject: 'الفيزياء',
       difficulty: 'متوسط',
       icon: <Sparkles className="w-6 h-6" />,
@@ -59,11 +57,47 @@ export default function MarjanPage() {
     {
       id: 'programming',
       title: 'أساسيات البرمجة',
-      description: 'تعلم المتغيرات والحلقات بطريقة سهلة',
+      description: 'تعلم المتغيرات والدوال بطريقة سهلة',
       subject: 'البرمجة',
       difficulty: 'مبتدئ',
       icon: <Brain className="w-6 h-6" />,
       initialMessage: 'أريد تعلم البرمجة'
+    },
+    {
+      id: 'photosynthesis',
+      title: 'البناء الضوئي',
+      description: 'كيف تصنع النباتات طعامها؟',
+      subject: 'الأحياء',
+      difficulty: 'متوسط',
+      icon: <Lightbulb className="w-6 h-6" />,
+      initialMessage: 'كيف تحصل النباتات على طعامها؟'
+    },
+    {
+      id: 'chemical_reactions',
+      title: 'التفاعلات الكيميائية',
+      description: 'فهم التفاعلات من خلال أمثلة المطبخ',
+      subject: 'الكيمياء',
+      difficulty: 'متوسط',
+      icon: <Users className="w-6 h-6" />,
+      initialMessage: 'ماذا يحدث عندما نخلط الخل مع بيكربونات الصوديوم؟'
+    },
+    {
+      id: 'algorithms',
+      title: 'الخوارزميات',
+      description: 'تعلم حل المشاكل خطوة بخطوة',
+      subject: 'البرمجة',
+      difficulty: 'متقدم',
+      icon: <Clock className="w-6 h-6" />,
+      initialMessage: 'ما هي الخوارزمية؟'
+    },
+    {
+      id: 'cell_structure',
+      title: 'تركيب الخلية',
+      description: 'اكتشف أصغر وحدة في الحياة',
+      subject: 'الأحياء',
+      difficulty: 'مبتدئ',
+      icon: <CheckCircle className="w-6 h-6" />,
+      initialMessage: 'مما يتكون جسم الإنسان؟'
     }
   ];
 
@@ -219,7 +253,7 @@ export default function MarjanPage() {
               </Text>
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
               {demoScenarios.map((scenario) => (
                 <motion.div
                   key={scenario.id}

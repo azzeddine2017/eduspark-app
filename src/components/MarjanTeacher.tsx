@@ -2,20 +2,24 @@
 
 import { useState, useRef, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
-import { 
-  Bot, 
-  MessageCircle, 
-  X, 
-  Send, 
-  Loader2, 
-  Mic, 
+import MarjanWhiteboard, { MarjanWhiteboardRef } from './MarjanWhiteboard';
+import {
+  Bot,
+  MessageCircle,
+  X,
+  Send,
+  Loader2,
+  Mic,
   MicOff,
   Volume2,
   VolumeX,
   Lightbulb,
   BookOpen,
   Brain,
-  Sparkles
+  Sparkles,
+  PenTool,
+  Eye,
+  EyeOff
 } from 'lucide-react';
 
 interface Message {
@@ -59,7 +63,9 @@ export default function MarjanTeacher({
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
+  const [showWhiteboard, setShowWhiteboard] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const whiteboardRef = useRef<MarjanWhiteboardRef>(null);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -116,7 +122,8 @@ export default function MarjanTeacher({
           initialTopic,
           context: {
             sessionId: session?.user?.id || 'anonymous',
-            timestamp: new Date().toISOString()
+            timestamp: new Date().toISOString(),
+            whiteboardAvailable: showWhiteboard
           }
         }),
       });
@@ -134,6 +141,17 @@ export default function MarjanTeacher({
         };
 
         setMessages(prev => [...prev, marjanMessage]);
+
+        // تنفيذ وظائف السبورة إذا كانت موجودة
+        if (data.whiteboardFunctions && whiteboardRef.current && showWhiteboard) {
+          for (const func of data.whiteboardFunctions) {
+            try {
+              await whiteboardRef.current.executeFunction(func.name, func.parameters);
+            } catch (error) {
+              console.error('خطأ في تنفيذ وظيفة السبورة:', error);
+            }
+          }
+        }
 
         // تشغيل الصوت إذا كان مفعلاً
         if (voiceEnabled && data.response) {
@@ -250,9 +268,9 @@ export default function MarjanTeacher({
   }
 
   return (
-    <div className={`fixed bottom-6 right-6 w-96 h-[600px] bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 flex flex-col z-50 ${className}`}>
+    <div className={`fixed bottom-6 right-6 ${showWhiteboard ? 'w-[1200px] h-[700px]' : 'w-96 h-[600px]'} bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 flex ${showWhiteboard ? 'flex-row' : 'flex-col'} z-50 transition-all duration-300 ${className}`}>
       {/* رأس النافذة */}
-      <div className="flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-t-lg">
+      <div className={`flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-purple-600 to-blue-600 text-white ${showWhiteboard ? 'rounded-tl-lg' : 'rounded-t-lg'}`}>
         <div className="flex items-center space-x-3 space-x-reverse">
           <div className="relative">
             <Bot className="w-8 h-8" />
@@ -265,6 +283,17 @@ export default function MarjanTeacher({
         </div>
         
         <div className="flex items-center space-x-2 space-x-reverse">
+          {/* زر السبورة */}
+          <button
+            onClick={() => setShowWhiteboard(!showWhiteboard)}
+            className={`p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors ${
+              showWhiteboard ? 'bg-white bg-opacity-20' : ''
+            }`}
+            title={showWhiteboard ? 'إخفاء السبورة' : 'إظهار السبورة'}
+          >
+            {showWhiteboard ? <EyeOff className="w-5 h-5" /> : <PenTool className="w-5 h-5" />}
+          </button>
+
           {/* زر الصوت */}
           <button
             onClick={() => setVoiceEnabled(!voiceEnabled)}
@@ -284,8 +313,12 @@ export default function MarjanTeacher({
         </div>
       </div>
 
-      {/* منطقة الرسائل */}
-      <div className="flex-1 overflow-y-auto p-4 space-y-4">
+      {/* المحتوى الرئيسي */}
+      <div className="flex flex-1 overflow-hidden">
+        {/* منطقة المحادثة */}
+        <div className={`${showWhiteboard ? 'w-1/2 border-l border-gray-200 dark:border-gray-700' : 'w-full'} flex flex-col`}>
+          {/* منطقة الرسائل */}
+          <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message) => (
           <div
             key={message.id}
@@ -350,11 +383,11 @@ export default function MarjanTeacher({
           </div>
         )}
         
-        <div ref={messagesEndRef} />
-      </div>
+            <div ref={messagesEndRef} />
+          </div>
 
-      {/* منطقة الإدخال */}
-      <div className="p-4 border-t border-gray-200 dark:border-gray-700">
+          {/* منطقة الإدخال */}
+          <div className="p-4 border-t border-gray-200 dark:border-gray-700">
         <div className="flex items-end space-x-2 space-x-reverse">
           <div className="flex-1">
             <textarea
@@ -395,9 +428,26 @@ export default function MarjanTeacher({
           </div>
         </div>
         
-        <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">
-          اضغط Enter للإرسال • Shift+Enter لسطر جديد
+            <div className="mt-2 text-xs text-gray-500 dark:text-gray-400 text-center">
+              اضغط Enter للإرسال • Shift+Enter لسطر جديد
+            </div>
+          </div>
         </div>
+
+        {/* السبورة الافتراضية */}
+        {showWhiteboard && (
+          <div className="w-1/2 bg-gray-50 dark:bg-gray-900 rounded-tr-lg">
+            <div className="h-full p-4">
+              <div className="bg-white dark:bg-gray-800 rounded-lg h-full shadow-inner">
+                <MarjanWhiteboard
+                  ref={whiteboardRef}
+                  className="h-full"
+                  showControls={true}
+                />
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
