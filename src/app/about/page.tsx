@@ -18,8 +18,8 @@ import {
 } from "lucide-react"
 
 export const metadata: Metadata = {
-  title: "عن المنصة - منصة فتح للتعلّم الذكي",
-  description: "تعرف على منصة فتح للتعلّم الذكي - منصة تعليمية مجانية تفتح أبواب المعرفة للجميع بتقنيات الذكاء الاصطناعي المتطورة",
+  title: "عن المنصة - منصة فتح الموزعة العالمية",
+  description: "تعرف على منصة فتح الموزعة - شبكة تعليمية عالمية موزعة مع ذكاء اصطناعي مخصص ثقافياً وحوكمة ديمقراطية",
 }
 
 export default function AboutPage() {
@@ -32,17 +32,17 @@ export default function AboutPage() {
         <div className="text-center mb-16">
           <div className="mb-8">
             <span className="inline-block px-4 py-2 bg-primary bg-opacity-10 text-primary rounded-full text-sm font-medium mb-4">
-              🌟 مدرسة المجتمع الذكية
+              🌐 الشبكة التعليمية العالمية الموزعة
             </span>
           </div>
           <h1 className="text-4xl font-bold text-high-contrast sm:text-5xl md:text-6xl arabic-text mb-6">
             عن منصة فتح
-            <span className="text-primary block mt-2">للتعلّم الذكي</span>
+            <span className="text-primary block mt-2">الموزعة العالمية 🌐</span>
           </h1>
           <p className="text-lg text-medium-contrast arabic-text max-w-3xl mx-auto leading-relaxed">
-            منصة تعليمية مجانية مفتوحة المصدر تهدف إلى فتح أبواب المعرفة للجميع
+            شبكة تعليمية عالمية موزعة مع ذكاء اصطناعي مخصص ثقافياً وحوكمة ديمقراطية
             <br />
-            <span className="text-primary font-semibold">تعليم للجميع - لا أحد يُترك خلف الركب</span>
+            <span className="text-primary font-semibold">تعليم عالمي محلي - تقنية متقدمة بروح إنسانية</span>
           </p>
         </div>
 
@@ -54,9 +54,9 @@ export default function AboutPage() {
             </div>
             <h2 className="text-2xl font-bold text-high-contrast arabic-text mb-4">رؤيتنا</h2>
             <p className="text-medium-contrast arabic-text leading-relaxed">
-              أن نكون المنصة التعليمية الرائدة في العالم العربي التي تجمع بين التعلم التقليدي 
-              والذكاء الاصطناعي لتوفير تعليم عالي الجودة ومجاني للجميع، مما يساهم في بناء 
-              مجتمع معرفي متقدم ومتمكن.
+              أن نكون الشبكة التعليمية الموزعة الرائدة عالمياً التي تربط بين الثقافات المحلية والمعرفة العالمية
+              من خلال ذكاء اصطناعي مخصص ثقافياً وحوكمة ديمقراطية، مما يخلق نظاماً تعليمياً عادلاً ومستداماً
+              يمكّن كل فرد من الوصول لأفضل تعليم مناسب لثقافته وبيئته.
             </p>
           </div>
 
@@ -66,9 +66,9 @@ export default function AboutPage() {
             </div>
             <h2 className="text-2xl font-bold text-high-contrast arabic-text mb-4">رسالتنا</h2>
             <p className="text-medium-contrast arabic-text leading-relaxed">
-              نسعى لتوفير تعليم ذكي ومجاني للجميع من خلال منصة مفتوحة المصدر تدعم 
-              التعلم الذاتي والتفاعلي، وتستخدم أحدث تقنيات الذكاء الاصطناعي لتخصيص 
-              التجربة التعليمية لكل متعلم.
+              نبني شبكة تعليمية عالمية موزعة تجمع بين أفضل المحتوى العالمي والتخصيص الثقافي المحلي،
+              مدعومة بذكاء اصطناعي متطور يفهم السياق الثقافي ونظام حوكمة ديمقراطي يضمن العدالة والشفافية،
+              لنوفر تعليماً مجانياً عالي الجودة يحترم التنوع الثقافي ويمكّن المجتمعات المحلية.
             </p>
           </div>
         </div>
@@ -83,9 +83,9 @@ export default function AboutPage() {
               <div className="w-16 h-16 bg-success bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Globe className="w-8 h-8 text-success" />
               </div>
-              <h3 className="text-xl font-bold text-high-contrast arabic-text mb-3">الوصول المجاني</h3>
+              <h3 className="text-xl font-bold text-high-contrast arabic-text mb-3">الشبكة الموزعة</h3>
               <p className="text-medium-contrast arabic-text">
-                التعليم حق للجميع، لذلك نوفر جميع خدماتنا مجاناً بدون أي قيود أو رسوم خفية
+                شبكة عالمية من العقد المحلية المستقلة تضمن الوصول العادل للتعليم مع احترام الثقافات المحلية
               </p>
             </div>
 
@@ -93,9 +93,9 @@ export default function AboutPage() {
               <div className="w-16 h-16 bg-warning bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Lightbulb className="w-8 h-8 text-warning" />
               </div>
-              <h3 className="text-xl font-bold text-high-contrast arabic-text mb-3">الابتكار التقني</h3>
+              <h3 className="text-xl font-bold text-high-contrast arabic-text mb-3">الذكاء الاصطناعي المخصص</h3>
               <p className="text-medium-contrast arabic-text">
-                نستخدم أحدث تقنيات الذكاء الاصطناعي لتوفير تجربة تعليمية مخصصة وتفاعلية
+                ذكاء اصطناعي متطور يفهم السياق الثقافي ويقدم تجربة تعليمية مخصصة لكل منطقة وثقافة
               </p>
             </div>
 
@@ -103,9 +103,9 @@ export default function AboutPage() {
               <div className="w-16 h-16 bg-info bg-opacity-20 rounded-full flex items-center justify-center mx-auto mb-4">
                 <Users className="w-8 h-8 text-info" />
               </div>
-              <h3 className="text-xl font-bold text-high-contrast arabic-text mb-3">المجتمع التعاوني</h3>
+              <h3 className="text-xl font-bold text-high-contrast arabic-text mb-3">الحوكمة الديمقراطية</h3>
               <p className="text-medium-contrast arabic-text">
-                نؤمن بقوة التعلم الجماعي والمشاركة المعرفية بين أفراد المجتمع
+                نظام حوكمة شفاف وديمقراطي يضمن مشاركة المجتمع في اتخاذ القرارات وتطوير المنصة
               </p>
             </div>
           </div>
@@ -114,30 +114,30 @@ export default function AboutPage() {
         {/* Features */}
         <div className="mb-16">
           <h2 className="text-3xl font-bold text-high-contrast arabic-text text-center mb-12">
-            ما يميز منصة فتح
+            ما يميز منصة فتح الموزعة
           </h2>
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
             <div className="card p-6">
               <Bot className="w-8 h-8 text-primary mb-4" />
-              <h3 className="text-lg font-bold text-high-contrast arabic-text mb-2">مساعد ذكي متطور</h3>
+              <h3 className="text-lg font-bold text-high-contrast arabic-text mb-2">ذكاء اصطناعي مخصص ثقافياً</h3>
               <p className="text-medium-contrast arabic-text text-sm">
-                مساعد ذكي يدعم اللغة العربية ويساعدك في فهم المواد وحل التمارين
+                مساعد ذكي متطور يفهم السياق الثقافي المحلي ويقدم محتوى مخصص لكل منطقة
               </p>
             </div>
 
             <div className="card p-6">
               <BookOpen className="w-8 h-8 text-secondary mb-4" />
-              <h3 className="text-lg font-bold text-high-contrast arabic-text mb-2">محتوى تعليمي متنوع</h3>
+              <h3 className="text-lg font-bold text-high-contrast arabic-text mb-2">محتوى عالمي محلي</h3>
               <p className="text-medium-contrast arabic-text text-sm">
-                دورات ودروس في مختلف المجالات مع تحديث مستمر للمحتوى
+                محتوى تعليمي عالمي مخصص محلياً مع أمثلة وتطبيقات من البيئة المحلية
               </p>
             </div>
 
             <div className="card p-6">
               <Shield className="w-8 h-8 text-success mb-4" />
-              <h3 className="text-lg font-bold text-high-contrast arabic-text mb-2">مفتوح المصدر</h3>
+              <h3 className="text-lg font-bold text-high-contrast arabic-text mb-2">شبكة موزعة مفتوحة</h3>
               <p className="text-medium-contrast arabic-text text-sm">
-                كود المنصة متاح للجميع للمساهمة والتطوير والتحسين
+                بنية موزعة مفتوحة المصدر تضمن الاستقلالية المحلية والتعاون العالمي
               </p>
             </div>
 
@@ -172,20 +172,20 @@ export default function AboutPage() {
           <h2 className="text-3xl font-bold arabic-text text-center mb-8">إنجازاتنا</h2>
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 text-center">
             <div>
-              <div className="text-3xl font-bold mb-2">100%</div>
+              <div className="text-3xl font-bold mb-2">🌐</div>
+              <div className="text-sm opacity-90 arabic-text">شبكة موزعة عالمية</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold mb-2">🤖</div>
+              <div className="text-sm opacity-90 arabic-text">ذكاء اصطناعي مخصص</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold mb-2">🏛️</div>
+              <div className="text-sm opacity-90 arabic-text">حوكمة ديمقراطية</div>
+            </div>
+            <div>
+              <div className="text-3xl font-bold mb-2">🆓</div>
               <div className="text-sm opacity-90 arabic-text">مجاني للجميع</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold mb-2">24/7</div>
-              <div className="text-sm opacity-90 arabic-text">متاح دائماً</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold mb-2">∞</div>
-              <div className="text-sm opacity-90 arabic-text">إمكانيات لا محدودة</div>
-            </div>
-            <div>
-              <div className="text-3xl font-bold mb-2">🌍</div>
-              <div className="text-sm opacity-90 arabic-text">للمجتمع العالمي</div>
             </div>
           </div>
         </div>

@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { useSession, signOut } from "next-auth/react"
 import SimpleThemeToggle from "./SimpleThemeToggle"
-import { Settings, BookOpen, LogIn, UserPlus, LogOut, User, Menu, X, ChevronDown, Info, Users, Heart, Shield, FileText, Handshake, Vote, Crown, MessageCircle } from "lucide-react"
+import { Settings, BookOpen, LogIn, UserPlus, LogOut, User, Menu, X, ChevronDown, Info, Users, Heart, Shield, FileText, Handshake, Vote, Crown, MessageCircle, Bot } from "lucide-react"
 import { useState, useRef, useEffect } from "react"
 
 interface HeaderProps {
@@ -13,7 +13,7 @@ interface HeaderProps {
 }
 
 export default function Header({
-  title = "منصة فتح للتعلّم الذكي",
+  title = "منصة فتح الموزعة 🌐",
   showBackButton = false,
   backUrl = "/"
 }: HeaderProps) {
@@ -149,6 +149,15 @@ export default function Header({
                   >
                     <MessageCircle className="w-4 h-4 ml-2" />
                     التواصل
+                  </Link>
+
+                  <Link
+                    href="/ai"
+                    className="flex items-center px-4 py-2 text-sm text-text hover:bg-background transition-colors arabic-text"
+                    onClick={() => setIsPagesMenuOpen(false)}
+                  >
+                    <Bot className="w-4 h-4 ml-2" />
+                    الذكاء الاصطناعي
                   </Link>
 
                   <Link
@@ -442,6 +451,15 @@ export default function Header({
               >
                 <MessageCircle className="w-4 h-4 ml-2" />
                 التواصل
+              </Link>
+
+              <Link
+                href="/ai"
+                className="flex items-center w-full text-right py-2 px-3 rounded-lg hover:bg-background transition-colors text-text arabic-text"
+                onClick={() => setIsMobileMenuOpen(false)}
+              >
+                <Bot className="w-4 h-4 ml-2" />
+                الذكاء الاصطناعي
               </Link>
 
               <Link

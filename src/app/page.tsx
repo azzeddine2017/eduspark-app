@@ -1,7 +1,7 @@
 import Link from "next/link"
 import { getCurrentUser } from "@/lib/auth"
 import SimpleThemeToggle from "@/components/SimpleThemeToggle"
-import AIAssistant from "@/components/AIAssistant"
+import AdvancedAIAssistant from "@/components/ai/AdvancedAIAssistant"
 import {
   Bot,
   BookOpen,
@@ -359,6 +359,47 @@ export default async function Home() {
               </div>
             </Link>
           </div>
+
+          {/* AI Section */}
+          <div className="mt-12">
+            <Link href="/ai" className="block">
+              <div className="bg-gradient-to-r from-purple-600 to-indigo-600 rounded-2xl p-8 text-white hover:shadow-2xl transition-all duration-300 group">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-4 space-x-reverse">
+                    <div className="w-16 h-16 bg-white bg-opacity-20 rounded-2xl flex items-center justify-center">
+                      <Bot className="w-8 h-8 text-white" />
+                    </div>
+                    <div>
+                      <h3 className="text-2xl font-bold arabic-text mb-2">
+                        🤖 الذكاء الاصطناعي المتطور
+                      </h3>
+                      <p className="text-lg opacity-90 arabic-text">
+                        مساعدك الذكي المخصص للتعلم والتطوير
+                      </p>
+                      <div className="flex items-center space-x-4 space-x-reverse mt-3 text-sm">
+                        <span className="flex items-center">
+                          <CheckCircle className="w-4 h-4 ml-1" />
+                          تحليل ذكي للمحتوى
+                        </span>
+                        <span className="flex items-center">
+                          <CheckCircle className="w-4 h-4 ml-1" />
+                          توصيات مخصصة
+                        </span>
+                        <span className="flex items-center">
+                          <CheckCircle className="w-4 h-4 ml-1" />
+                          دعم 24/7
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                  <div className="flex items-center text-white group-hover:translate-x-2 transition-transform">
+                    <span className="text-lg font-medium arabic-text ml-2">جرب الآن</span>
+                    <ArrowRight className="w-6 h-6" />
+                  </div>
+                </div>
+              </div>
+            </Link>
+          </div>
         </div>
 
         {/* Community Impact Section */}
@@ -394,8 +435,16 @@ export default async function Home() {
         </div>
       </main>
 
-      {/* AI Assistant */}
-      <AIAssistant context="الصفحة الرئيسية لمنصة فتح للتعلّم الذكي" />
+      {/* Advanced AI Assistant */}
+      <AdvancedAIAssistant
+        context="الصفحة الرئيسية لمنصة فتح للتعلّم الذكي"
+        nodeId="pilot-riyadh-001"
+        culturalContext={{
+          region: 'الرياض',
+          language: 'العربية',
+          level: 'متوسط'
+        }}
+      />
     </div>
   )
 }

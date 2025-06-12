@@ -41,7 +41,7 @@ export default async function CoursesPage() {
                 <span className="text-white font-bold text-xl">ف</span>
               </div>
               <Link href="/" className="text-2xl font-bold text-text arabic-text">
-                منصة فتح للتعلّم الذكي
+                منصة فتح الموزعة 🌐
               </Link>
             </div>
             <nav className="flex items-center space-x-4 space-x-reverse">
@@ -91,13 +91,27 @@ export default async function CoursesPage() {
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div className="mb-8 text-center">
           <h1 className="text-4xl font-bold text-text arabic-text mb-4">
-            🎓 الدورات التعليمية المجتمعية
+            🌐 دورات منصة فتح الموزعة
           </h1>
           <p className="text-lg text-textSecondary arabic-text max-w-3xl mx-auto">
-            اكتشف مجموعة واسعة من الدورات التعليمية المجانية المدعومة بالذكاء الاصطناعي
+            اكتشف دورات تعليمية عالمية مخصصة محلياً مع ذكاء اصطناعي متطور
             <br />
-            <span className="text-primary font-semibold">تعلم مهارات جديدة وطور نفسك مع مجتمعك</span>
+            <span className="text-primary font-semibold">شبكة تعليمية موزعة تربط العالم بثقافتك المحلية</span>
           </p>
+          <div className="mt-6 flex items-center justify-center space-x-6 space-x-reverse text-sm">
+            <span className="flex items-center text-green-600">
+              <span className="w-2 h-2 bg-green-400 rounded-full ml-1 animate-pulse"></span>
+              🤖 ذكاء اصطناعي مخصص
+            </span>
+            <span className="flex items-center text-blue-600">
+              <span className="w-2 h-2 bg-blue-400 rounded-full ml-1 animate-pulse"></span>
+              🌍 محتوى عالمي محلي
+            </span>
+            <span className="flex items-center text-purple-600">
+              <span className="w-2 h-2 bg-purple-400 rounded-full ml-1 animate-pulse"></span>
+              🏛️ حوكمة ديمقراطية
+            </span>
+          </div>
         </div>
 
         {/* Filter Section */}
@@ -189,9 +203,9 @@ export default async function CoursesPage() {
                       🚀 ابدأ التعلم
                     </Link>
                     <div className="flex justify-between text-xs text-textSecondary">
-                      <span>🆓 مجاني</span>
-                      <span>🤖 مع مساعد ذكي</span>
-                      <span>📱 متاح دائماً</span>
+                      <span>🌐 عالمي</span>
+                      <span>🤖 ذكي مخصص</span>
+                      <span>🏛️ موزع</span>
                     </div>
                   </div>
                 </div>

@@ -480,37 +480,37 @@ export default function EnhancedRegisterPage() {
   const renderStep5 = () => (
     <div className="space-y-6">
       <div className="text-center mb-6">
-        <h3 className="text-xl font-bold text-text arabic-text">نظام الهولاكراسي والتطوع</h3>
-        <p className="text-textSecondary arabic-text">انضم لمجتمع التعلم التشاركي</p>
+        <h3 className="text-xl font-bold text-text arabic-text">🌐 منصة فتح الموزعة والهولاكراسي</h3>
+        <p className="text-textSecondary arabic-text">انضم للثورة التعليمية العالمية الموزعة</p>
       </div>
 
       {/* شرح نظام الهولاكراسي */}
       <div className="bg-primary bg-opacity-10 rounded-lg p-6 mb-6">
         <h4 className="text-lg font-bold text-primary arabic-text mb-4 flex items-center">
           <Users className="w-5 h-5 ml-2" />
-          ما هو نظام الهولاكراسي؟
+          ما هي منصة فتح الموزعة؟
         </h4>
         <div className="space-y-3 text-sm text-text arabic-text">
           <p>
-            <strong>الهولاكراسي</strong> هو نظام إداري حديث يعتمد على توزيع السلطة والمسؤوليات بدلاً من التسلسل الهرمي التقليدي.
+            <strong>منصة فتح الموزعة</strong> هي شبكة عالمية للتعليم تعتمد على نظام الهولاكراسي لتوزيع السلطة والمسؤوليات، مما يخلق نظاماً تعليمياً ديمقراطياً ومستداماً.
           </p>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mt-4">
             <div className="bg-background rounded-lg p-4">
-              <h5 className="font-semibold text-success mb-2">✅ المبادئ الأساسية:</h5>
+              <h5 className="font-semibold text-success mb-2">🌐 المبادئ الأساسية:</h5>
               <ul className="space-y-1 text-xs">
-                <li>• الشفافية في اتخاذ القرارات</li>
-                <li>• توزيع المسؤوليات حسب الخبرة</li>
-                <li>• التطوير المستمر للعمليات</li>
-                <li>• المشاركة الفعالة للجميع</li>
+                <li>• شبكة عالمية موزعة للتعليم</li>
+                <li>• حوكمة ديمقراطية شفافة</li>
+                <li>• عقد محلية مستقلة</li>
+                <li>• ذكاء اصطناعي مخصص ثقافياً</li>
               </ul>
             </div>
             <div className="bg-background rounded-lg p-4">
-              <h5 className="font-semibold text-info mb-2">🎯 الفوائد لك:</h5>
+              <h5 className="font-semibold text-info mb-2">🚀 الفوائد لك:</h5>
               <ul className="space-y-1 text-xs">
-                <li>• فرص قيادة مشاريع تعليمية</li>
-                <li>• تطوير مهارات الإدارة والتنظيم</li>
-                <li>• شبكة علاقات مهنية قوية</li>
-                <li>• تأثير حقيقي في المجتمع</li>
+                <li>• الوصول لشبكة تعليمية عالمية</li>
+                <li>• مساعد ذكي مخصص لثقافتك</li>
+                <li>• فرص ريادة أعمال تعليمية</li>
+                <li>• تأثير عالمي من موقعك المحلي</li>
               </ul>
             </div>
           </div>

@@ -58,17 +58,17 @@ export default async function AdminDashboard() {
             <div className="flex items-center justify-between">
               <div>
                 <h1 className="text-3xl font-bold arabic-text mb-2">
-                  🏛️ مرحباً بك في لوحة التحكم
+                  🌐 مرحباً بك في لوحة التحكم الموزعة
                 </h1>
                 <p className="text-lg opacity-90 arabic-text">
-                  إدارة منصة فتح للتعلّم الذكي - مدرسة المجتمع
+                  إدارة منصة فتح الموزعة العالمية - شبكة التعليم الذكي
                 </p>
                 <div className="mt-4 flex items-center space-x-4 space-x-reverse">
                   <span className="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">
                     👤 {user.name}
                   </span>
                   <span className="bg-white bg-opacity-20 px-3 py-1 rounded-full text-sm">
-                    🔑 مدير عام
+                    🌐 مدير العقدة المحلية
                   </span>
                 </div>
               </div>
@@ -198,6 +198,20 @@ export default async function AdminDashboard() {
               >
                 <span className="ml-2">🏛️</span>
                 نظام الهولاكراسي
+              </Link>
+              <Link
+                href="/admin/nodes"
+                className="btn btn-accent text-center py-3 flex items-center justify-center"
+              >
+                <span className="ml-2">🌐</span>
+                إدارة العقد الموزعة
+              </Link>
+              <Link
+                href="/admin/ai"
+                className="btn btn-info text-center py-3 flex items-center justify-center"
+              >
+                <span className="ml-2">🤖</span>
+                إدارة الذكاء الاصطناعي
               </Link>
             </div>
           </div>

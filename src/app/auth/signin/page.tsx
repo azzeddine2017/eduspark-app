@@ -52,11 +52,21 @@ function SignInForm() {
             </div>
           </div>
           <h2 className="text-3xl font-bold text-text arabic-text">
-            مرحباً بعودتك! 👋
+            مرحباً بعودتك إلى فتح! 🌟
           </h2>
           <p className="mt-2 text-textSecondary arabic-text">
-            سجل دخولك لمتابعة رحلة التعلم
+            ادخل إلى منصة فتح الموزعة العالمية للتعليم الذكي
           </p>
+          <div className="mt-4 flex items-center justify-center space-x-4 space-x-reverse text-sm">
+            <span className="flex items-center text-green-600">
+              <span className="w-2 h-2 bg-green-400 rounded-full ml-1 animate-pulse"></span>
+              🤖 ذكاء اصطناعي متطور
+            </span>
+            <span className="flex items-center text-blue-600">
+              <span className="w-2 h-2 bg-blue-400 rounded-full ml-1 animate-pulse"></span>
+              🌐 شبكة عالمية موزعة
+            </span>
+          </div>
         </div>
 
         {/* Success Message */}

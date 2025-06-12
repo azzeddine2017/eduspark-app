@@ -18,6 +18,7 @@ import {
   Zap
 } from "lucide-react"
 import Header from "@/components/Header"
+import AdvancedAIAssistant from "@/components/ai/AdvancedAIAssistant"
 
 export default async function DashboardPage() {
   const user = await getCurrentUser()
@@ -134,8 +135,16 @@ export default async function DashboardPage() {
                   مرحباً، {user.name}! 👋
                 </h1>
                 <p className="text-lg opacity-90 arabic-text">
-                  استمر في رحلة التعلم واكتشف المزيد من المعرفة
+                  استمر في رحلة التعلم مع منصة فتح الموزعة العالمية 🌐
                 </p>
+                <div className="mt-2 flex items-center space-x-4 space-x-reverse text-sm">
+                  <span className="flex items-center bg-white bg-opacity-20 px-2 py-1 rounded-full">
+                    🤖 مساعد ذكي مخصص
+                  </span>
+                  <span className="flex items-center bg-white bg-opacity-20 px-2 py-1 rounded-full">
+                    🌍 محتوى عالمي محلي
+                  </span>
+                </div>
                 <div className="mt-4 flex items-center space-x-6 space-x-reverse">
                   <div className="flex items-center">
                     <Trophy className="w-5 h-5 ml-2" />
@@ -339,7 +348,7 @@ export default async function DashboardPage() {
             <div className="card p-6">
               <h3 className="text-lg font-bold text-high-contrast arabic-text mb-4 flex items-center">
                 <MessageCircle className="w-5 h-5 ml-2" />
-                المساعد الذكي
+                المساعد الذكي المتطور
               </h3>
 
               <div className="space-y-3">
@@ -402,6 +411,17 @@ export default async function DashboardPage() {
           </div>
         </div>
       </main>
+
+      {/* Advanced AI Assistant */}
+      <AdvancedAIAssistant
+        context={`لوحة تحكم المستخدم - ${user.name}`}
+        nodeId="pilot-riyadh-001"
+        culturalContext={{
+          region: 'الرياض',
+          language: 'العربية',
+          level: 'متوسط'
+        }}
+      />
     </div>
   )
 }
