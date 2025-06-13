@@ -168,13 +168,16 @@ export class EnhancedTextToSpeech {
   private voices: SpeechSynthesisVoice[] = [];
   private config: SpeechConfig;
   private currentUtterance: SpeechSynthesisUtterance | null = null;
-  
+  private speechQueue: Array<{text: string, onStart?: () => void, onEnd?: () => void}> = [];
+  private isProcessingQueue = false;
+
   // معالجات الأحداث
   public onStart?: () => void;
   public onEnd?: () => void;
   public onError?: (error: string) => void;
   public onPause?: () => void;
   public onResume?: () => void;
+  public onWordBoundary?: (word: string, charIndex: number) => void;
   
   constructor(config: Partial<SpeechConfig> = {}) {
     this.synth = window.speechSynthesis;
@@ -233,55 +236,63 @@ export class EnhancedTextToSpeech {
         resolve();
         return;
       }
-      
+
       // إيقاف أي كلام سابق
       this.stop();
-      
+
       // تنظيف وتحسين النص
       const cleanText = this.preprocessText(text);
-      
+
       // إنشاء utterance جديد
       this.currentUtterance = new SpeechSynthesisUtterance(cleanText);
-      
+
       // تطبيق الإعدادات
       const finalConfig = { ...this.config, ...options };
       this.currentUtterance.rate = finalConfig.rate;
       this.currentUtterance.pitch = finalConfig.pitch;
       this.currentUtterance.volume = finalConfig.volume;
       this.currentUtterance.lang = finalConfig.language;
-      
+
       // اختيار أفضل صوت
       const voice = this.getBestVoice();
       if (voice) {
         this.currentUtterance.voice = voice;
       }
-      
+
       // ربط معالجات الأحداث
       this.currentUtterance.onstart = () => {
         this.onStart?.();
       };
-      
+
       this.currentUtterance.onend = () => {
         this.currentUtterance = null;
         this.onEnd?.();
         resolve();
       };
-      
+
       this.currentUtterance.onerror = (event) => {
         this.currentUtterance = null;
         const errorMessage = `خطأ في النطق: ${event.error}`;
         this.onError?.(errorMessage);
         reject(new Error(errorMessage));
       };
-      
+
       this.currentUtterance.onpause = () => {
         this.onPause?.();
       };
-      
+
       this.currentUtterance.onresume = () => {
         this.onResume?.();
       };
-      
+
+      // إضافة معالج boundary للكلمات (للتزامن مع السبورة)
+      this.currentUtterance.onboundary = (event) => {
+        if (event.name === 'word') {
+          const word = cleanText.substring(event.charIndex, event.charIndex + event.charLength);
+          this.onWordBoundary?.(word, event.charIndex);
+        }
+      };
+
       // بدء النطق
       try {
         this.synth.speak(this.currentUtterance);
@@ -289,6 +300,68 @@ export class EnhancedTextToSpeech {
         reject(new Error('فشل في بدء النطق'));
       }
     });
+  }
+
+  /**
+   * إضافة نص إلى طابور النطق
+   */
+  addToQueue(text: string, onStart?: () => void, onEnd?: () => void): void {
+    this.speechQueue.push({ text, onStart, onEnd });
+    if (!this.isProcessingQueue) {
+      this.processQueue();
+    }
+  }
+
+  /**
+   * معالجة طابور النطق
+   */
+  private async processQueue(): Promise<void> {
+    if (this.speechQueue.length === 0) {
+      this.isProcessingQueue = false;
+      return;
+    }
+
+    this.isProcessingQueue = true;
+    const item = this.speechQueue.shift();
+
+    if (item) {
+      try {
+        item.onStart?.();
+        await this.speak(item.text);
+        item.onEnd?.();
+      } catch (error) {
+        console.error('خطأ في نطق العنصر من الطابور:', error);
+      }
+    }
+
+    // معالجة العنصر التالي
+    setTimeout(() => this.processQueue(), 100);
+  }
+
+  /**
+   * نطق متزامن مع إجراءات السبورة
+   */
+  async speakWithActions(
+    segments: Array<{
+      text: string;
+      action?: () => Promise<void> | void;
+      delay?: number;
+    }>
+  ): Promise<void> {
+    for (const segment of segments) {
+      // تنفيذ الإجراء أولاً (مثل الرسم)
+      if (segment.action) {
+        await segment.action();
+      }
+
+      // تأخير اختياري
+      if (segment.delay) {
+        await new Promise(resolve => setTimeout(resolve, segment.delay));
+      }
+
+      // ثم النطق
+      await this.speak(segment.text);
+    }
   }
   
   private preprocessText(text: string): string {

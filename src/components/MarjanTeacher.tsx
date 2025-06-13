@@ -3,6 +3,8 @@
 import { useState, useRef, useEffect } from 'react';
 import { useSession } from 'next-auth/react';
 import MarjanWhiteboard, { MarjanWhiteboardRef } from './MarjanWhiteboard';
+import { synchronizedTeacher, TEACHING_SCRIPTS } from '@/lib/synchronized-teaching';
+import { EnhancedTextToSpeech } from '@/lib/enhanced-speech';
 import {
   Bot,
   X,
@@ -19,7 +21,8 @@ import {
   PenTool,
   EyeOff,
   Settings,
-  ChevronDown
+  Pause,
+  Square
 } from 'lucide-react';
 
 interface Message {
@@ -69,6 +72,8 @@ export default function MarjanTeacher({
   const [showWhiteboard, setShowWhiteboard] = useState(false);
   const [preferredMethod, setPreferredMethod] = useState<string>('auto');
   const [showMethodSelector, setShowMethodSelector] = useState(false);
+  const [enhancedTTS, setEnhancedTTS] = useState<EnhancedTextToSpeech | null>(null);
+  const [isTeachingWithVoice, setIsTeachingWithVoice] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const whiteboardRef = useRef<MarjanWhiteboardRef>(null);
 
@@ -115,6 +120,95 @@ export default function MarjanTeacher({
       return () => document.removeEventListener('click', handleClickOutside);
     }
   }, [showMethodSelector]);
+
+  // إعداد النظام الصوتي المحسن
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const tts = new EnhancedTextToSpeech({
+        language: 'ar-SA',
+        rate: 0.85,
+        pitch: 1.1,
+        volume: 1.0
+      });
+
+      // ربط السبورة مع النظام المتزامن
+      if (whiteboardRef.current) {
+        synchronizedTeacher.setWhiteboard(whiteboardRef.current);
+      }
+
+      // معالجات الأحداث
+      tts.onStart = () => {
+        setIsTeachingWithVoice(true);
+      };
+
+      tts.onEnd = () => {
+        setIsTeachingWithVoice(false);
+      };
+
+      tts.onError = (error) => {
+        console.error('خطأ في النطق:', error);
+        setIsTeachingWithVoice(false);
+      };
+
+      setEnhancedTTS(tts);
+    }
+  }, []);
+
+  // وظائف التحكم في العروض التوضيحية
+  const startSynchronizedDemo = async (scriptName: string) => {
+    if (!whiteboardRef.current || !enhancedTTS) {
+      console.error('السبورة أو النظام الصوتي غير جاهز');
+      return;
+    }
+
+    const script = TEACHING_SCRIPTS[scriptName];
+    if (!script) {
+      console.error('السكريبت غير موجود:', scriptName);
+      return;
+    }
+
+    try {
+      setIsTeachingWithVoice(true);
+
+      // ربط السبورة مع النظام المتزامن
+      synchronizedTeacher.setWhiteboard(whiteboardRef.current);
+
+      // معالجات الأحداث
+      synchronizedTeacher.onSegmentStart = (segment, index) => {
+        console.log(`🎬 بدء القطعة ${index + 1}: ${segment.text.substring(0, 30)}...`);
+      };
+
+      synchronizedTeacher.onTeachingComplete = () => {
+        setIsTeachingWithVoice(false);
+        console.log('🎉 انتهى العرض التوضيحي');
+      };
+
+      synchronizedTeacher.onTeachingError = (error) => {
+        setIsTeachingWithVoice(false);
+        console.error('❌ خطأ في العرض:', error);
+      };
+
+      // بدء العرض
+      await synchronizedTeacher.startTeaching(script);
+
+    } catch (error) {
+      setIsTeachingWithVoice(false);
+      console.error('خطأ في بدء العرض التوضيحي:', error);
+    }
+  };
+
+  const stopSynchronizedDemo = () => {
+    synchronizedTeacher.stopTeaching();
+    setIsTeachingWithVoice(false);
+  };
+
+  const pauseSynchronizedDemo = () => {
+    synchronizedTeacher.pauseTeaching();
+  };
+
+  const resumeSynchronizedDemo = () => {
+    synchronizedTeacher.resumeTeaching();
+  };
 
   const sendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
@@ -181,9 +275,15 @@ export default function MarjanTeacher({
           }
         }
 
-        // تشغيل الصوت إذا كان مفعلاً
-        if (voiceEnabled && data.response) {
-          speakText(data.response);
+        // تشغيل الصوت المحسن إذا كان مفعلاً
+        if (voiceEnabled && data.response && enhancedTTS) {
+          try {
+            await enhancedTTS.speak(data.response);
+          } catch (error) {
+            console.error('خطأ في النطق المحسن:', error);
+            // العودة للنطق العادي كبديل
+            speakText(data.response);
+          }
         }
       } else {
         throw new Error(data.error || 'حدث خطأ في الاتصال');
@@ -369,6 +469,54 @@ export default function MarjanTeacher({
             )}
           </div>
 
+          {/* أزرار التحكم في العروض التوضيحية */}
+          {showWhiteboard && (
+            <div className="flex items-center space-x-1 space-x-reverse border-l border-white border-opacity-30 pl-2 ml-2">
+              {!isTeachingWithVoice ? (
+                <div className="flex items-center space-x-1 space-x-reverse">
+                  <button
+                    onClick={() => startSynchronizedDemo('pythagoras')}
+                    className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+                    title="عرض توضيحي: نظرية فيثاغورس"
+                  >
+                    <span className="text-xs">📐</span>
+                  </button>
+                  <button
+                    onClick={() => startSynchronizedDemo('chemical_reaction')}
+                    className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+                    title="عرض توضيحي: التفاعلات الكيميائية"
+                  >
+                    <span className="text-xs">🧪</span>
+                  </button>
+                  <button
+                    onClick={() => startSynchronizedDemo('photosynthesis')}
+                    className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+                    title="عرض توضيحي: البناء الضوئي"
+                  >
+                    <span className="text-xs">🌱</span>
+                  </button>
+                </div>
+              ) : (
+                <>
+                  <button
+                    onClick={pauseSynchronizedDemo}
+                    className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+                    title="إيقاف مؤقت"
+                  >
+                    <Pause className="w-4 h-4" />
+                  </button>
+                  <button
+                    onClick={stopSynchronizedDemo}
+                    className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+                    title="إيقاف العرض"
+                  >
+                    <Square className="w-4 h-4" />
+                  </button>
+                </>
+              )}
+            </div>
+          )}
+
           {/* زر الصوت */}
           <button
             onClick={() => setVoiceEnabled(!voiceEnabled)}
@@ -387,6 +535,21 @@ export default function MarjanTeacher({
           </button>
         </div>
       </div>
+
+      {/* مؤشر العرض التوضيحي */}
+      {isTeachingWithVoice && (
+        <div className="absolute top-16 left-4 z-10">
+          <div className="bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center space-x-2 space-x-reverse">
+            <div className="w-4 h-4 bg-white rounded-full animate-pulse"></div>
+            <span className="text-sm font-medium">🎤 مرجان يشرح...</span>
+            <div className="flex space-x-1">
+              <div className="w-1 h-4 bg-white rounded animate-pulse" style={{animationDelay: '0ms'}}></div>
+              <div className="w-1 h-4 bg-white rounded animate-pulse" style={{animationDelay: '150ms'}}></div>
+              <div className="w-1 h-4 bg-white rounded animate-pulse" style={{animationDelay: '300ms'}}></div>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* المحتوى الرئيسي */}
       <div className="flex flex-1 overflow-hidden">
