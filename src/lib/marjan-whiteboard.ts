@@ -46,10 +46,12 @@ export class MarjanWhiteboard {
   private animationQueue: DrawingElement[] = [];
   private currentAnimation: number | null = null;
   
-  // إعدادات السبورة
-  private readonly CANVAS_WIDTH = 800;
-  private readonly CANVAS_HEIGHT = 600;
+  // إعدادات السبورة المحسنة
+  private readonly DEFAULT_CANVAS_WIDTH = 1000;
+  private readonly DEFAULT_CANVAS_HEIGHT = 700;
   private readonly GRID_SIZE = 20;
+  private readonly MIN_CANVAS_WIDTH = 400;
+  private readonly MIN_CANVAS_HEIGHT = 300;
   
   constructor(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
@@ -73,12 +75,21 @@ export class MarjanWhiteboard {
     const dpr = window.devicePixelRatio || 1;
     const rect = this.canvas.getBoundingClientRect();
     
-    this.canvas.width = this.CANVAS_WIDTH * dpr;
-    this.canvas.height = this.CANVAS_HEIGHT * dpr;
-    
+    // تحديد الأبعاد بناءً على حجم الحاوي أو القيم الافتراضية
+    const containerWidth = this.canvas.parentElement?.clientWidth || this.DEFAULT_CANVAS_WIDTH;
+    const containerHeight = this.canvas.parentElement?.clientHeight || this.DEFAULT_CANVAS_HEIGHT;
+
+    const canvasWidth = Math.max(containerWidth, this.MIN_CANVAS_WIDTH);
+    const canvasHeight = Math.max(containerHeight, this.MIN_CANVAS_HEIGHT);
+
+    this.canvas.width = canvasWidth * dpr;
+    this.canvas.height = canvasHeight * dpr;
+
     this.ctx.scale(dpr, dpr);
-    this.canvas.style.width = this.CANVAS_WIDTH + 'px';
-    this.canvas.style.height = this.CANVAS_HEIGHT + 'px';
+    this.canvas.style.width = canvasWidth + 'px';
+    this.canvas.style.height = canvasHeight + 'px';
+
+    console.log(`🎨 إعداد السبورة: ${canvasWidth}×${canvasHeight} (DPR: ${dpr})`);
     
     // إعدادات الرسم الأساسية
     this.ctx.lineCap = 'round';
@@ -699,6 +710,47 @@ export class MarjanWhiteboard {
    */
   getState(): WhiteboardState {
     return { ...this.state };
+  }
+
+  /**
+   * تحديث حجم السبورة
+   */
+  resize(width?: number, height?: number): void {
+    const newWidth = width || this.canvas.parentElement?.clientWidth || this.DEFAULT_CANVAS_WIDTH;
+    const newHeight = height || this.canvas.parentElement?.clientHeight || this.DEFAULT_CANVAS_HEIGHT;
+
+    // حفظ المحتوى الحالي
+    const imageData = this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height);
+
+    // إعادة إعداد السبورة بالحجم الجديد
+    this.setupCanvas();
+
+    // استعادة المحتوى
+    this.ctx.putImageData(imageData, 0, 0);
+
+    console.log(`🔄 تم تغيير حجم السبورة إلى: ${newWidth}×${newHeight}`);
+  }
+
+  /**
+   * تحديث إعدادات العرض
+   */
+  updateDisplaySettings(settings: {
+    gridVisible?: boolean;
+    backgroundColor?: string;
+    gridSize?: number;
+  }): void {
+    if (settings.gridVisible !== undefined) {
+      this.state.gridVisible = settings.gridVisible;
+    }
+
+    if (settings.backgroundColor !== undefined) {
+      this.state.backgroundColor = settings.backgroundColor;
+    }
+
+    // إعادة رسم السبورة مع الإعدادات الجديدة
+    this.redraw();
+
+    console.log('⚙️ تم تحديث إعدادات العرض:', settings);
   }
   
   /**

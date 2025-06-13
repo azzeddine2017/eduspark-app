@@ -22,7 +22,12 @@ import {
   EyeOff,
   Settings,
   Pause,
-  Square
+  Square,
+  Maximize,
+  Minimize,
+  Monitor,
+  Smartphone,
+  Tablet
 } from 'lucide-react';
 
 interface Message {
@@ -74,6 +79,39 @@ export default function MarjanTeacher({
   const [showMethodSelector, setShowMethodSelector] = useState(false);
   const [enhancedTTS, setEnhancedTTS] = useState<EnhancedTextToSpeech | null>(null);
   const [isTeachingWithVoice, setIsTeachingWithVoice] = useState(false);
+  const [viewMode, setViewMode] = useState<'compact' | 'large' | 'fullscreen'>('compact');
+  const [whiteboardSize, setWhiteboardSize] = useState<'small' | 'medium' | 'large'>('medium');
+
+  // حفظ واستعادة تفضيلات المستخدم
+  useEffect(() => {
+    // استعادة التفضيلات المحفوظة
+    const savedViewMode = localStorage.getItem('marjan_view_mode') as 'compact' | 'large' | 'fullscreen';
+    const savedWhiteboardSize = localStorage.getItem('marjan_whiteboard_size') as 'small' | 'medium' | 'large';
+    const savedVoiceEnabled = localStorage.getItem('marjan_voice_enabled');
+    const savedShowWhiteboard = localStorage.getItem('marjan_show_whiteboard');
+
+    if (savedViewMode) setViewMode(savedViewMode);
+    if (savedWhiteboardSize) setWhiteboardSize(savedWhiteboardSize);
+    if (savedVoiceEnabled !== null) setVoiceEnabled(savedVoiceEnabled === 'true');
+    if (savedShowWhiteboard !== null) setShowWhiteboard(savedShowWhiteboard === 'true');
+  }, []);
+
+  // حفظ التفضيلات عند التغيير
+  useEffect(() => {
+    localStorage.setItem('marjan_view_mode', viewMode);
+  }, [viewMode]);
+
+  useEffect(() => {
+    localStorage.setItem('marjan_whiteboard_size', whiteboardSize);
+  }, [whiteboardSize]);
+
+  useEffect(() => {
+    localStorage.setItem('marjan_voice_enabled', voiceEnabled.toString());
+  }, [voiceEnabled]);
+
+  useEffect(() => {
+    localStorage.setItem('marjan_show_whiteboard', showWhiteboard.toString());
+  }, [showWhiteboard]);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const whiteboardRef = useRef<MarjanWhiteboardRef>(null);
 
@@ -121,14 +159,31 @@ export default function MarjanTeacher({
     }
   }, [showMethodSelector]);
 
+  // تحديث حجم السبورة عند تغيير الإعدادات
+  useEffect(() => {
+    if (whiteboardRef.current && showWhiteboard) {
+      const whiteboard = whiteboardRef.current.getWhiteboard();
+      if (whiteboard) {
+        // تأخير قصير للسماح للـ CSS بالتحديث
+        setTimeout(() => {
+          whiteboard.resize();
+        }, 100);
+      }
+    }
+  }, [viewMode, whiteboardSize, showWhiteboard]);
+
   // إعداد النظام الصوتي المحسن
   useEffect(() => {
-    if (typeof window !== 'undefined') {
-      const tts = new EnhancedTextToSpeech({
+    let tts: EnhancedTextToSpeech | null = null;
+
+    const initTTS = () => {
+      console.log('🎤 تهيئة النظام الصوتي المحسن...');
+
+      tts = new EnhancedTextToSpeech({
         language: 'ar-SA',
-        rate: 0.85,
-        pitch: 1.1,
-        volume: 1.0
+        rate: 0.85, // سرعة مناسبة للفهم
+        pitch: 1.1, // نبرة أعلى قليلاً للحيوية
+        volume: 1.0 // أقصى مستوى صوت
       });
 
       // ربط السبورة مع النظام المتزامن
@@ -136,22 +191,67 @@ export default function MarjanTeacher({
         synchronizedTeacher.setWhiteboard(whiteboardRef.current);
       }
 
-      // معالجات الأحداث
+      // معالجات الأحداث المحسنة
       tts.onStart = () => {
+        console.log('🎤 بدء النطق - تحديث حالة الواجهة');
         setIsTeachingWithVoice(true);
+        setIsSpeaking(true);
       };
 
       tts.onEnd = () => {
+        console.log('🎤 انتهاء النطق - تحديث حالة الواجهة');
         setIsTeachingWithVoice(false);
+        setIsSpeaking(false);
       };
 
       tts.onError = (error) => {
-        console.error('خطأ في النطق:', error);
+        console.error('❌ خطأ في النطق:', error);
         setIsTeachingWithVoice(false);
+        setIsSpeaking(false);
+
+        // محاولة إعادة تهيئة النظام عند حدوث خطأ
+        setTimeout(() => {
+          console.log('🔄 إعادة تهيئة النظام بعد خطأ...');
+          tts?.reinitialize();
+        }, 1000);
       };
 
+      tts.onPause = () => {
+        console.log('⏸️ إيقاف مؤقت للنطق');
+      };
+
+      tts.onResume = () => {
+        console.log('▶️ استئناف النطق');
+      };
+
+      // فحص حالة النظام بعد التهيئة
+      setTimeout(() => {
+        if (tts) {
+          const status = tts.checkSpeechSynthesisStatus();
+          console.log('📊 حالة النظام الصوتي بعد التهيئة:', status);
+
+          if (status.voices === 0) {
+            console.warn('⚠️ لم يتم تحميل أي أصوات، محاولة إعادة التحميل...');
+            tts.reinitialize();
+          }
+        }
+      }, 2000);
+
       setEnhancedTTS(tts);
+      console.log('✅ تم تهيئة النظام الصوتي المحسن');
+    };
+
+    // تأخير التهيئة حتى يتم تحميل الصفحة بالكامل
+    if (typeof window !== 'undefined') {
+      // تأخير التهيئة قليلاً للتأكد من تحميل الصفحة
+      setTimeout(initTTS, 100);
     }
+
+    return () => {
+      if (tts) {
+        tts.stop();
+      }
+    };
   }, []);
 
   // وظائف التحكم في العروض التوضيحية
@@ -278,11 +378,46 @@ export default function MarjanTeacher({
         // تشغيل الصوت المحسن إذا كان مفعلاً
         if (voiceEnabled && data.response && enhancedTTS) {
           try {
-            await enhancedTTS.speak(data.response);
+            console.log('🎤 بدء نطق الرد:', data.response.substring(0, 50) + '...');
+
+            // فحص حالة النظام الصوتي قبل البدء
+            const status = enhancedTTS.checkSpeechSynthesisStatus();
+            console.log('📊 حالة النظام الصوتي:', status);
+
+            if (!status.available) {
+              console.warn('⚠️ النظام الصوتي غير متاح، إعادة تهيئة...');
+              enhancedTTS.reinitialize();
+            }
+
+            // استخدام النطق مع إعادة المحاولة
+            await enhancedTTS.speakWithRetry(data.response, {
+              rate: 0.85,
+              pitch: 1.1,
+              volume: 1.0
+            });
+
+            console.log('✅ تم إنهاء النطق بنجاح');
+
           } catch (error) {
-            console.error('خطأ في النطق المحسن:', error);
-            // العودة للنطق العادي كبديل
-            speakText(data.response);
+            console.error('❌ خطأ في النطق المحسن:', error);
+
+            // محاولة إعادة تهيئة النظام
+            try {
+              console.log('🔄 محاولة إعادة تهيئة النظام الصوتي...');
+              enhancedTTS.reinitialize();
+
+              // محاولة أخيرة بإعدادات أبسط
+              await enhancedTTS.speak(data.response, {
+                rate: 0.9,
+                pitch: 1.0,
+                volume: 1.0
+              });
+
+            } catch (retryError) {
+              console.error('❌ فشل في إعادة المحاولة:', retryError);
+              // العودة للنطق العادي كبديل أخير
+              speakText(data.response);
+            }
           }
         }
       } else {
@@ -346,17 +481,58 @@ export default function MarjanTeacher({
 
   const speakText = (text: string) => {
     if ('speechSynthesis' in window && voiceEnabled) {
+      console.log('🔊 استخدام النطق العادي كبديل احتياطي');
+
+      // إيقاف أي نطق سابق
+      speechSynthesis.cancel();
+
       setIsSpeaking(true);
-      const utterance = new SpeechSynthesisUtterance(text);
+
+      // تنظيف النص
+      const cleanText = text
+        .replace(/[#*_`\[\]{}|\\]/g, '')
+        .replace(/\s+/g, ' ')
+        .trim();
+
+      const utterance = new SpeechSynthesisUtterance(cleanText);
+
+      // إعدادات محسنة للغة العربية
       utterance.lang = 'ar-SA';
-      utterance.rate = 0.9;
-      utterance.pitch = 1;
-      
+      utterance.rate = 0.8; // أبطأ للوضوح
+      utterance.pitch = 1.0;
+      utterance.volume = 1.0;
+
+      // البحث عن صوت عربي مناسب
+      const voices = speechSynthesis.getVoices();
+      const arabicVoice = voices.find(voice =>
+        voice.lang.startsWith('ar') && voice.name.toLowerCase().includes('female')
+      ) || voices.find(voice => voice.lang.startsWith('ar'));
+
+      if (arabicVoice) {
+        utterance.voice = arabicVoice;
+        console.log('🎤 استخدام الصوت العربي:', arabicVoice.name);
+      } else {
+        console.warn('⚠️ لم يتم العثور على صوت عربي مناسب');
+      }
+
+      utterance.onstart = () => {
+        console.log('🎤 بدء النطق العادي');
+      };
+
       utterance.onend = () => {
+        console.log('🎤 انتهاء النطق العادي');
         setIsSpeaking(false);
       };
 
-      speechSynthesis.speak(utterance);
+      utterance.onerror = (event) => {
+        console.error('❌ خطأ في النطق العادي:', event.error);
+        setIsSpeaking(false);
+      };
+
+      // بدء النطق مع تأخير قصير
+      setTimeout(() => {
+        speechSynthesis.speak(utterance);
+      }, 100);
     }
   };
 
@@ -395,8 +571,27 @@ export default function MarjanTeacher({
     );
   }
 
+  // حساب أبعاد النافذة بناءً على وضع العرض
+  const getWindowDimensions = () => {
+    if (viewMode === 'fullscreen') {
+      return 'inset-4';
+    } else if (viewMode === 'large') {
+      return showWhiteboard ? 'w-[1600px] h-[900px]' : 'w-[500px] h-[700px]';
+    } else {
+      return showWhiteboard ? 'w-[1400px] h-[800px]' : 'w-96 h-[600px]';
+    }
+  };
+
+  const getPosition = () => {
+    if (viewMode === 'fullscreen') {
+      return 'fixed';
+    } else {
+      return 'fixed bottom-6 right-6';
+    }
+  };
+
   return (
-    <div className={`fixed bottom-6 right-6 ${showWhiteboard ? 'w-[1200px] h-[700px]' : 'w-96 h-[600px]'} bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 flex ${showWhiteboard ? 'flex-row' : 'flex-col'} z-50 transition-all duration-300 ${className}`}>
+    <div className={`${getPosition()} ${getWindowDimensions()} bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 flex ${showWhiteboard ? 'flex-row' : 'flex-col'} z-50 transition-all duration-300 ${className} ${viewMode === 'fullscreen' ? 'bg-opacity-95 backdrop-blur-sm' : ''}`}>
       {/* رأس النافذة */}
       <div className={`flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-purple-600 to-blue-600 text-white ${showWhiteboard ? 'rounded-tl-lg' : 'rounded-t-lg'}`}>
         <div className="flex items-center space-x-3 space-x-reverse">
@@ -411,6 +606,35 @@ export default function MarjanTeacher({
         </div>
         
         <div className="flex items-center space-x-2 space-x-reverse">
+          {/* أزرار التحكم في حجم النافذة */}
+          <div className="flex items-center space-x-1 space-x-reverse border-l border-white border-opacity-30 pl-2 ml-2">
+            <button
+              onClick={() => setViewMode(viewMode === 'compact' ? 'large' : viewMode === 'large' ? 'fullscreen' : 'compact')}
+              className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+              title={viewMode === 'compact' ? 'تكبير النافذة' : viewMode === 'large' ? 'ملء الشاشة' : 'تصغير النافذة'}
+            >
+              {viewMode === 'compact' ? <Tablet className="w-4 h-4" /> :
+               viewMode === 'large' ? <Monitor className="w-4 h-4" /> :
+               <Smartphone className="w-4 h-4" />}
+            </button>
+
+            {/* زر تغيير حجم السبورة */}
+            {showWhiteboard && (
+              <button
+                onClick={() => setWhiteboardSize(
+                  whiteboardSize === 'small' ? 'medium' :
+                  whiteboardSize === 'medium' ? 'large' : 'small'
+                )}
+                className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+                title={`حجم السبورة: ${whiteboardSize === 'small' ? 'صغير' : whiteboardSize === 'medium' ? 'متوسط' : 'كبير'}`}
+              >
+                <span className="text-xs font-bold">
+                  {whiteboardSize === 'small' ? 'S' : whiteboardSize === 'medium' ? 'M' : 'L'}
+                </span>
+              </button>
+            )}
+          </div>
+
           {/* زر السبورة */}
           <button
             onClick={() => setShowWhiteboard(!showWhiteboard)}
@@ -517,14 +741,36 @@ export default function MarjanTeacher({
             </div>
           )}
 
-          {/* زر الصوت */}
-          <button
-            onClick={() => setVoiceEnabled(!voiceEnabled)}
-            className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
-            title={voiceEnabled ? 'إيقاف الصوت' : 'تشغيل الصوت'}
-          >
-            {voiceEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
-          </button>
+          {/* أزرار التحكم في الصوت */}
+          <div className="flex items-center space-x-1 space-x-reverse">
+            {/* زر اختبار الصوت */}
+            <button
+              onClick={async () => {
+                if (enhancedTTS && voiceEnabled) {
+                  try {
+                    await enhancedTTS.speakWithRetry('مرحباً، أنا مرجان معلمك الافتراضي. النظام الصوتي يعمل بشكل صحيح.');
+                  } catch (error) {
+                    console.error('فشل اختبار الصوت:', error);
+                    speakText('اختبار الصوت');
+                  }
+                }
+              }}
+              className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+              title="اختبار النظام الصوتي"
+              disabled={!voiceEnabled || isSpeaking}
+            >
+              <span className="text-xs">🎵</span>
+            </button>
+
+            {/* زر تشغيل/إيقاف الصوت */}
+            <button
+              onClick={() => setVoiceEnabled(!voiceEnabled)}
+              className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+              title={voiceEnabled ? 'إيقاف الصوت' : 'تشغيل الصوت'}
+            >
+              {voiceEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+            </button>
+          </div>
 
           {/* زر الإغلاق */}
           <button
@@ -554,7 +800,13 @@ export default function MarjanTeacher({
       {/* المحتوى الرئيسي */}
       <div className="flex flex-1 overflow-hidden">
         {/* منطقة المحادثة */}
-        <div className={`${showWhiteboard ? 'w-1/2 border-l border-gray-200 dark:border-gray-700' : 'w-full'} flex flex-col`}>
+        <div className={`${
+          showWhiteboard ?
+            (viewMode === 'fullscreen' ? 'w-2/5' :
+             whiteboardSize === 'small' ? 'w-3/5' :
+             whiteboardSize === 'medium' ? 'w-1/2' : 'w-2/5') + ' border-l border-gray-200 dark:border-gray-700'
+            : 'w-full'
+        } flex flex-col`}>
           {/* منطقة الرسائل */}
           <div className="flex-1 overflow-y-auto p-4 space-y-4">
         {messages.map((message) => (
@@ -618,15 +870,27 @@ export default function MarjanTeacher({
           </div>
         )}
         
-        {isSpeaking && (
+        {(isSpeaking || isTeachingWithVoice) && (
           <div className="flex justify-start">
             <div className="bg-green-100 dark:bg-green-900 p-3 rounded-lg">
               <div className="flex items-center space-x-2 space-x-reverse">
-                <Volume2 className="w-4 h-4 animate-pulse" />
-                <span className="text-sm">مرجان يتحدث...</span>
+                <Volume2 className="w-4 h-4 animate-pulse text-green-600" />
+                <span className="text-sm font-medium">
+                  {isTeachingWithVoice ? '🎤 مرجان يشرح بالصوت...' : '🗣️ مرجان يتحدث...'}
+                </span>
+                <div className="flex space-x-1">
+                  <div className="w-1 h-4 bg-green-500 rounded animate-pulse" style={{animationDelay: '0ms'}}></div>
+                  <div className="w-1 h-4 bg-green-500 rounded animate-pulse" style={{animationDelay: '150ms'}}></div>
+                  <div className="w-1 h-4 bg-green-500 rounded animate-pulse" style={{animationDelay: '300ms'}}></div>
+                </div>
                 <button
-                  onClick={stopSpeaking}
-                  className="text-xs underline hover:no-underline"
+                  onClick={() => {
+                    stopSpeaking();
+                    if (enhancedTTS) {
+                      enhancedTTS.stop();
+                    }
+                  }}
+                  className="text-xs underline hover:no-underline text-red-600 hover:text-red-800"
                 >
                   إيقاف
                 </button>
@@ -688,14 +952,91 @@ export default function MarjanTeacher({
 
         {/* السبورة الافتراضية */}
         {showWhiteboard && (
-          <div className="w-1/2 bg-gray-50 dark:bg-gray-900 rounded-tr-lg">
-            <div className="h-full p-4">
-              <div className="bg-white dark:bg-gray-800 rounded-lg h-full shadow-inner">
+          <div className={`${
+            viewMode === 'fullscreen' ? 'w-3/5' :
+            whiteboardSize === 'small' ? 'w-2/5' :
+            whiteboardSize === 'medium' ? 'w-1/2' : 'w-3/5'
+          } bg-gray-50 dark:bg-gray-900 ${viewMode === 'fullscreen' ? '' : 'rounded-tr-lg'} flex flex-col`}>
+
+            {/* رأس السبورة مع أدوات إضافية */}
+            <div className="bg-gradient-to-r from-gray-100 to-gray-200 dark:from-gray-700 dark:to-gray-800 p-3 border-b border-gray-300 dark:border-gray-600">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2 space-x-reverse">
+                  <PenTool className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                  <span className="text-sm font-medium text-gray-700 dark:text-gray-300">
+                    السبورة التفاعلية
+                  </span>
+                  <div className="text-xs bg-green-100 dark:bg-green-900 text-green-700 dark:text-green-300 px-2 py-1 rounded">
+                    {whiteboardSize === 'small' ? 'صغير' : whiteboardSize === 'medium' ? 'متوسط' : 'كبير'}
+                  </div>
+                </div>
+
+                <div className="flex items-center space-x-1 space-x-reverse">
+                  {/* زر تجربة سريعة */}
+                  <button
+                    onClick={async () => {
+                      if (whiteboardRef.current) {
+                        try {
+                          await whiteboardRef.current.executeFunction('clear_whiteboard', {});
+                          await whiteboardRef.current.executeFunction('write_text', {
+                            x: 100, y: 100,
+                            text: 'مرحباً! هذه السبورة التفاعلية 🎨',
+                            size: 18,
+                            color: '#0066cc'
+                          });
+                        } catch (error) {
+                          console.error('خطأ في التجربة السريعة:', error);
+                        }
+                      }
+                    }}
+                    className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded text-xs"
+                    title="تجربة سريعة"
+                  >
+                    ✨
+                  </button>
+
+                  {/* زر مسح السبورة */}
+                  <button
+                    onClick={() => whiteboardRef.current?.clear()}
+                    className="p-1 hover:bg-gray-200 dark:hover:bg-gray-600 rounded text-xs"
+                    title="مسح السبورة"
+                  >
+                    🗑️
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            {/* منطقة السبورة */}
+            <div className="flex-1 p-4">
+              <div className="bg-white dark:bg-gray-800 rounded-lg h-full shadow-inner border-2 border-dashed border-gray-300 dark:border-gray-600 hover:border-purple-400 dark:hover:border-purple-500 transition-colors">
                 <MarjanWhiteboard
                   ref={whiteboardRef}
-                  className="h-full"
+                  className="h-full w-full"
                   showControls={true}
                 />
+              </div>
+            </div>
+
+            {/* شريط معلومات السبورة */}
+            <div className="bg-gray-100 dark:bg-gray-800 p-2 text-xs text-gray-600 dark:text-gray-400 border-t border-gray-300 dark:border-gray-600">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center space-x-2 space-x-reverse">
+                  <span>💡 نصيحة: اطلب من مرجان أن يرسم أو يوضح المفاهيم على السبورة</span>
+                </div>
+                <div className="flex items-center space-x-2 space-x-reverse text-xs">
+                  <span className={`px-2 py-1 rounded ${
+                    viewMode === 'compact' ? 'bg-blue-100 text-blue-700' :
+                    viewMode === 'large' ? 'bg-green-100 text-green-700' :
+                    'bg-purple-100 text-purple-700'
+                  }`}>
+                    {viewMode === 'compact' ? '📱 مضغوط' :
+                     viewMode === 'large' ? '💻 كبير' : '🖥️ ملء الشاشة'}
+                  </span>
+                  <span className="px-2 py-1 rounded bg-gray-200 dark:bg-gray-700">
+                    📐 {whiteboardSize === 'small' ? 'صغير' : whiteboardSize === 'medium' ? 'متوسط' : 'كبير'}
+                  </span>
+                </div>
               </div>
             </div>
           </div>

@@ -61,8 +61,7 @@ export async function POST(request: NextRequest) {
 
     // إنشاء سياق التدريس
     const teachingContext: TeachingContext = {
-      studentLevel: body.studentLevel === 'مبتدئ' ? 'beginner' :
-                   body.studentLevel === 'متقدم' ? 'advanced' : 'intermediate',
+      studentLevel: body.studentLevel,
       subject: questionAnalysis.subject,
       questionType: questionAnalysis.type === 'factual' ? 'factual' :
                    questionAnalysis.type === 'conceptual' ? 'conceptual' :

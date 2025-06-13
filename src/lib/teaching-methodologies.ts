@@ -44,7 +44,9 @@ export class TeachingMethodologySelector {
     const score = this.calculateMethodScores(context, question);
     
     // إرجاع المنهجية ذات أعلى نقاط
-    return Object.entries(score).reduce((a, b) => score[a[0]] > score[b[0]] ? a : b)[0] as TeachingMethod;
+    return Object.entries(score).reduce((a, b) => 
+      score[a[0] as TeachingMethod] > score[b[0] as TeachingMethod] ? a : b
+    )[0] as TeachingMethod;
   }
   
   /**

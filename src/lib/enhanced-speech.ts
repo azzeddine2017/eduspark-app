@@ -164,7 +164,7 @@ export class EnhancedSpeechRecognition {
 }
 
 export class EnhancedTextToSpeech {
-  private synth: SpeechSynthesis;
+  private synth: SpeechSynthesis | null = null;
   private voices: SpeechSynthesisVoice[] = [];
   private config: SpeechConfig;
   private currentUtterance: SpeechSynthesisUtterance | null = null;
@@ -180,7 +180,6 @@ export class EnhancedTextToSpeech {
   public onWordBoundary?: (word: string, charIndex: number) => void;
   
   constructor(config: Partial<SpeechConfig> = {}) {
-    this.synth = window.speechSynthesis;
     this.config = {
       language: 'ar-SA',
       rate: 0.9,
@@ -189,22 +188,53 @@ export class EnhancedTextToSpeech {
       ...config
     };
     
-    this.loadVoices();
-    this.setupEventListeners();
+    if (typeof window !== 'undefined') {
+      this.synth = window.speechSynthesis;
+      this.loadVoices();
+      this.setupEventListeners();
+    }
   }
   
   private loadVoices(): void {
+    if (!this.synth) return;
+
     this.voices = this.synth.getVoices();
-    
+
+    console.log('🔊 تحميل الأصوات المتاحة:', this.voices.length);
+
+    // طباعة الأصوات العربية المتاحة للتشخيص
+    const arabicVoices = this.voices.filter(v => v.lang.startsWith('ar'));
+    if (arabicVoices.length > 0) {
+      console.log('🇸🇦 الأصوات العربية المتاحة:',
+        arabicVoices.map(v => ({ name: v.name, lang: v.lang, local: v.localService }))
+      );
+    } else {
+      console.warn('⚠️ لا توجد أصوات عربية متاحة');
+    }
+
     if (this.voices.length === 0) {
       // الأصوات قد لا تكون محملة بعد
+      console.log('⏳ انتظار تحميل الأصوات...');
       this.synth.onvoiceschanged = () => {
-        this.voices = this.synth.getVoices();
+        if (this.synth) {
+          this.voices = this.synth.getVoices();
+          console.log('✅ تم تحميل الأصوات:', this.voices.length);
+
+          // طباعة الأصوات العربية بعد التحميل
+          const arabicVoices = this.voices.filter(v => v.lang.startsWith('ar'));
+          if (arabicVoices.length > 0) {
+            console.log('🇸🇦 الأصوات العربية بعد التحميل:',
+              arabicVoices.map(v => ({ name: v.name, lang: v.lang, local: v.localService }))
+            );
+          }
+        }
       };
     }
   }
   
   private setupEventListeners(): void {
+    if (!this.synth) return;
+    
     // إعادة تحميل الأصوات عند تغييرها
     this.synth.onvoiceschanged = () => {
       this.loadVoices();
@@ -213,38 +243,97 @@ export class EnhancedTextToSpeech {
   
   private getBestVoice(): SpeechSynthesisVoice | null {
     const language = this.config.language;
-    
-    // البحث عن أفضل صوت للغة المحددة
-    let voice = this.voices.find(v => 
-      v.lang === language && v.name.toLowerCase().includes('female')
-    );
-    
-    if (!voice) {
-      voice = this.voices.find(v => v.lang === language);
+
+    // إعادة تحميل الأصوات إذا لم تكن محملة
+    if (this.voices.length === 0) {
+      this.loadVoices();
     }
-    
-    if (!voice) {
-      voice = this.voices.find(v => v.lang.startsWith(language.split('-')[0]));
+
+    // البحث عن أفضل صوت للغة العربية بترتيب الأولوية
+    let voice: SpeechSynthesisVoice | null = null;
+
+    // 1. البحث عن أصوات عربية محددة بأسماء معروفة
+    const preferredArabicVoices = [
+      'Microsoft Hoda Desktop', // Windows Arabic voice
+      'Microsoft Naayf Desktop', // Windows Arabic voice
+      'Majed', // macOS Arabic voice
+      'Maged', // macOS Arabic voice
+      'Tarik', // macOS Arabic voice
+      'Samira', // Google Arabic voice
+      'Fatima', // Google Arabic voice
+    ];
+
+    for (const voiceName of preferredArabicVoices) {
+      voice = this.voices.find(v =>
+        v.name.includes(voiceName) && v.lang.startsWith('ar')
+      ) || null;
+      if (voice) break;
     }
-    
-    return voice || null;
+
+    // 2. البحث عن أي صوت عربي أنثوي
+    if (!voice) {
+      voice = this.voices.find(v =>
+        v.lang.startsWith('ar') &&
+        (v.name.toLowerCase().includes('female') ||
+         v.name.toLowerCase().includes('woman') ||
+         v.name.toLowerCase().includes('أنثى'))
+      ) || null;
+    }
+
+    // 3. البحث عن أي صوت عربي
+    if (!voice) {
+      voice = this.voices.find(v => v.lang.startsWith('ar')) || null;
+    }
+
+    // 4. البحث عن صوت بنفس اللغة المحددة
+    if (!voice) {
+      voice = this.voices.find(v => v.lang === language) || null;
+    }
+
+    // 5. البحث عن صوت بنفس رمز اللغة الأساسي
+    if (!voice) {
+      voice = this.voices.find(v => v.lang.startsWith(language.split('-')[0])) || null;
+    }
+
+    // طباعة معلومات الصوت المختار للتشخيص
+    if (voice) {
+      console.log('🎤 تم اختيار الصوت:', {
+        name: voice.name,
+        lang: voice.lang,
+        localService: voice.localService,
+        default: voice.default
+      });
+    } else {
+      console.warn('⚠️ لم يتم العثور على صوت مناسب للغة:', language);
+      console.log('الأصوات المتاحة:', this.voices.map(v => ({ name: v.name, lang: v.lang })));
+    }
+
+    return voice;
   }
   
   async speak(text: string, options?: Partial<SpeechConfig>): Promise<void> {
-    return new Promise((resolve, reject) => {
-      if (!text.trim()) {
-        resolve();
-        return;
-      }
+    if (!text.trim()) {
+      return Promise.resolve();
+    }
 
+    // تنظيف وتحسين النص
+    const cleanText = this.preprocessText(text);
+
+    // تقسيم النص إذا كان طويلاً جداً (أكثر من 200 حرف)
+    if (cleanText.length > 200) {
+      return this.speakLongText(cleanText, options);
+    }
+
+    return this.speakSingleUtterance(cleanText, options);
+  }
+
+  private async speakSingleUtterance(text: string, options?: Partial<SpeechConfig>): Promise<void> {
+    return new Promise((resolve, reject) => {
       // إيقاف أي كلام سابق
       this.stop();
 
-      // تنظيف وتحسين النص
-      const cleanText = this.preprocessText(text);
-
       // إنشاء utterance جديد
-      this.currentUtterance = new SpeechSynthesisUtterance(cleanText);
+      this.currentUtterance = new SpeechSynthesisUtterance(text);
 
       // تطبيق الإعدادات
       const finalConfig = { ...this.config, ...options };
@@ -257,20 +346,26 @@ export class EnhancedTextToSpeech {
       const voice = this.getBestVoice();
       if (voice) {
         this.currentUtterance.voice = voice;
+        console.log('🎤 استخدام الصوت:', voice.name, 'للغة:', voice.lang);
+      } else {
+        console.warn('⚠️ لم يتم العثور على صوت مناسب، سيتم استخدام الصوت الافتراضي');
       }
 
       // ربط معالجات الأحداث
       this.currentUtterance.onstart = () => {
+        console.log('🎤 بدء النطق:', text.substring(0, 50) + '...');
         this.onStart?.();
       };
 
       this.currentUtterance.onend = () => {
+        console.log('🎤 انتهاء النطق');
         this.currentUtterance = null;
         this.onEnd?.();
         resolve();
       };
 
       this.currentUtterance.onerror = (event) => {
+        console.error('❌ خطأ في النطق:', event.error);
         this.currentUtterance = null;
         const errorMessage = `خطأ في النطق: ${event.error}`;
         this.onError?.(errorMessage);
@@ -278,28 +373,83 @@ export class EnhancedTextToSpeech {
       };
 
       this.currentUtterance.onpause = () => {
+        console.log('⏸️ إيقاف مؤقت للنطق');
         this.onPause?.();
       };
 
       this.currentUtterance.onresume = () => {
+        console.log('▶️ استئناف النطق');
         this.onResume?.();
       };
 
       // إضافة معالج boundary للكلمات (للتزامن مع السبورة)
       this.currentUtterance.onboundary = (event) => {
         if (event.name === 'word') {
-          const word = cleanText.substring(event.charIndex, event.charIndex + event.charLength);
+          const word = text.substring(event.charIndex, event.charIndex + event.charLength);
           this.onWordBoundary?.(word, event.charIndex);
         }
       };
 
-      // بدء النطق
+      // التأكد من أن النظام جاهز للنطق
+      if (!this.synth) {
+        reject(new Error('نظام النطق غير متاح'));
+        return;
+      }
+
+      // بدء النطق مع معالجة الأخطاء
       try {
-        this.synth.speak(this.currentUtterance);
+        // التأكد من إلغاء أي نطق سابق
+        if (this.synth.speaking) {
+          this.synth.cancel();
+        }
+
+        // انتظار قصير للتأكد من إلغاء النطق السابق
+        setTimeout(() => {
+          if (this.synth && this.currentUtterance) {
+            this.synth.speak(this.currentUtterance);
+          }
+        }, 100);
+
       } catch (error) {
+        console.error('❌ فشل في بدء النطق:', error);
         reject(new Error('فشل في بدء النطق'));
       }
     });
+  }
+
+  private async speakLongText(text: string, options?: Partial<SpeechConfig>): Promise<void> {
+    console.log('📝 نطق نص طويل، سيتم تقسيمه إلى أجزاء');
+
+    // تقسيم النص إلى جمل
+    const sentences = this.splitTextIntoSentences(text);
+
+    for (let i = 0; i < sentences.length; i++) {
+      const sentence = sentences[i].trim();
+      if (sentence) {
+        console.log(`🗣️ نطق الجملة ${i + 1}/${sentences.length}: ${sentence.substring(0, 30)}...`);
+        await this.speakSingleUtterance(sentence, options);
+
+        // وقفة قصيرة بين الجمل
+        if (i < sentences.length - 1) {
+          await new Promise(resolve => setTimeout(resolve, 300));
+        }
+      }
+    }
+  }
+
+  private splitTextIntoSentences(text: string): string[] {
+    // تقسيم النص إلى جمل بناءً على علامات الترقيم العربية والإنجليزية
+    return text
+      .split(/[.!؟?؛;]/)
+      .map(sentence => sentence.trim())
+      .filter(sentence => sentence.length > 0)
+      .map(sentence => {
+        // إضافة علامة ترقيم في النهاية إذا لم تكن موجودة
+        if (!sentence.match(/[.!؟?؛;]$/)) {
+          sentence += '.';
+        }
+        return sentence;
+      });
   }
 
   /**
@@ -366,17 +516,17 @@ export class EnhancedTextToSpeech {
   
   private preprocessText(text: string): string {
     return text
-      // تحسين علامات الترقيم للنطق الأفضل
+      // تحسين علامات الترقيم للنطق الأفضل مع وقفات أطول
       .replace(/[،,]/g, '، ')
       .replace(/[.]/g, '. ')
       .replace(/[؟?]/g, '؟ ')
       .replace(/[!]/g, '! ')
       .replace(/[:]/g, ': ')
       .replace(/[;]/g, '؛ ')
-      
-      // تحسين نطق الأرقام العربية
+
+      // تحسين نطق الأرقام العربية والإنجليزية
       .replace(/(\d+)/g, (match) => this.numberToArabicWords(parseInt(match)))
-      
+
       // تحسين نطق الرموز الرياضية
       .replace(/\+/g, ' زائد ')
       .replace(/-/g, ' ناقص ')
@@ -385,9 +535,22 @@ export class EnhancedTextToSpeech {
       .replace(/=/g, ' يساوي ')
       .replace(/²/g, ' تربيع ')
       .replace(/³/g, ' تكعيب ')
-      
+      .replace(/√/g, ' جذر ')
+      .replace(/π/g, ' باي ')
+      .replace(/∞/g, ' ما لا نهاية ')
+
+      // تحسين نطق الرموز الشائعة
+      .replace(/%/g, ' بالمائة ')
+      .replace(/&/g, ' و ')
+      .replace(/@/g, ' في ')
+
+      // تحسين نطق الأحرف الإنجليزية المفردة
+      .replace(/\b([A-Z])\b/g, (match) => ` حرف ${match} `)
+
       // إزالة الرموز غير المرغوبة
-      .replace(/[#*_`]/g, '')
+      .replace(/[#*_`\[\]{}|\\]/g, '')
+
+      // تحسين المسافات والتنظيف النهائي
       .replace(/\s+/g, ' ')
       .trim();
   }
@@ -421,30 +584,30 @@ export class EnhancedTextToSpeech {
   }
   
   stop(): void {
-    if (this.synth.speaking) {
+    if (this.synth?.speaking) {
       this.synth.cancel();
     }
     this.currentUtterance = null;
   }
   
   pause(): void {
-    if (this.synth.speaking && !this.synth.paused) {
+    if (this.synth?.speaking && !this.synth.paused) {
       this.synth.pause();
     }
   }
   
   resume(): void {
-    if (this.synth.paused) {
+    if (this.synth?.paused) {
       this.synth.resume();
     }
   }
   
   get isSpeaking(): boolean {
-    return this.synth.speaking;
+    return this.synth?.speaking || false;
   }
   
   get isPaused(): boolean {
-    return this.synth.paused;
+    return this.synth?.paused || false;
   }
   
   getAvailableVoices(): SpeechSynthesisVoice[] {
@@ -462,5 +625,80 @@ export class EnhancedTextToSpeech {
     if (voice) {
       this.config.voiceURI = voiceURI;
     }
+  }
+
+  /**
+   * إعادة محاولة النطق مع إعدادات مختلفة في حالة الفشل
+   */
+  async speakWithRetry(text: string, options?: Partial<SpeechConfig>, maxRetries: number = 3): Promise<void> {
+    let lastError: Error | null = null;
+
+    for (let attempt = 1; attempt <= maxRetries; attempt++) {
+      try {
+        console.log(`🔄 محاولة النطق ${attempt}/${maxRetries}`);
+
+        // تجربة إعدادات مختلفة في كل محاولة
+        const retryOptions = {
+          ...options,
+          rate: options?.rate || (0.7 + (attempt * 0.1)), // سرعة أبطأ في المحاولات التالية
+          pitch: options?.pitch || (0.9 + (attempt * 0.05)), // نبرة مختلفة قليلاً
+        };
+
+        await this.speak(text, retryOptions);
+        console.log(`✅ نجح النطق في المحاولة ${attempt}`);
+        return; // نجح النطق، خروج من الدالة
+
+      } catch (error) {
+        lastError = error as Error;
+        console.warn(`⚠️ فشل النطق في المحاولة ${attempt}:`, error);
+
+        if (attempt < maxRetries) {
+          // انتظار قبل المحاولة التالية
+          await new Promise(resolve => setTimeout(resolve, 500 * attempt));
+
+          // إعادة تحميل الأصوات قبل المحاولة التالية
+          this.loadVoices();
+        }
+      }
+    }
+
+    // إذا فشلت جميع المحاولات
+    console.error(`❌ فشل النطق نهائياً بعد ${maxRetries} محاولات`);
+    throw lastError || new Error('فشل النطق بعد عدة محاولات');
+  }
+
+  /**
+   * فحص حالة النظام الصوتي
+   */
+  checkSpeechSynthesisStatus(): { available: boolean; speaking: boolean; pending: boolean; paused: boolean; voices: number } {
+    if (!this.synth) {
+      return { available: false, speaking: false, pending: false, paused: false, voices: 0 };
+    }
+
+    return {
+      available: true,
+      speaking: this.synth.speaking,
+      pending: this.synth.pending,
+      paused: this.synth.paused,
+      voices: this.voices.length
+    };
+  }
+
+  /**
+   * إعادة تهيئة النظام الصوتي
+   */
+  reinitialize(): void {
+    console.log('🔄 إعادة تهيئة النظام الصوتي...');
+
+    // إيقاف أي نطق حالي
+    this.stop();
+
+    // إعادة تحميل الأصوات
+    this.loadVoices();
+
+    // إعادة إعداد معالجات الأحداث
+    this.setupEventListeners();
+
+    console.log('✅ تم إعادة تهيئة النظام الصوتي');
   }
 }
