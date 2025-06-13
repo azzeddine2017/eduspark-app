@@ -40,51 +40,59 @@ export class EnhancedSpeechRecognition {
   }
   
   private initializeRecognition(): void {
+    if (typeof window === 'undefined') {
+      return;
+    }
+
     if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
       console.warn('Speech recognition not supported in this browser');
       return;
     }
-    
-    const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
+
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     this.recognition = new SpeechRecognition();
-    
+
+    if (!this.recognition) {
+      return;
+    }
+
     // إعداد التكوين
     this.recognition.lang = this.config.language;
     this.recognition.continuous = this.config.continuous;
     this.recognition.interimResults = this.config.interimResults;
     this.recognition.maxAlternatives = this.config.maxAlternatives;
-    
+
     // ربط معالجات الأحداث
     this.recognition.onstart = () => {
       this.isListening = true;
       this.onStart?.();
     };
-    
-    this.recognition.onresult = (event: any) => {
+
+    this.recognition.onresult = (event: SpeechRecognitionEvent) => {
       let interimTranscript = '';
       let finalTranscript = '';
-      
+
       for (let i = event.resultIndex; i < event.results.length; i++) {
         const transcript = event.results[i][0].transcript;
-        
+
         if (event.results[i].isFinal) {
           finalTranscript += transcript;
         } else {
           interimTranscript += transcript;
         }
       }
-      
+
       if (finalTranscript) {
         this.onResult?.(finalTranscript, true);
       } else if (interimTranscript) {
         this.onResult?.(interimTranscript, false);
       }
     };
-    
-    this.recognition.onerror = (event: any) => {
+
+    this.recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
       this.isListening = false;
       let errorMessage = 'خطأ في التعرف على الكلام';
-      
+
       switch (event.error) {
         case 'no-speech':
           errorMessage = 'لم يتم اكتشاف كلام. حاول مرة أخرى.';
@@ -102,10 +110,10 @@ export class EnhancedSpeechRecognition {
           errorMessage = 'اللغة المحددة غير مدعومة.';
           break;
       }
-      
+
       this.onError?.(errorMessage);
     };
-    
+
     this.recognition.onend = () => {
       this.isListening = false;
       this.onEnd?.();

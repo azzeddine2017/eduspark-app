@@ -5,7 +5,6 @@ import { useSession } from 'next-auth/react';
 import MarjanWhiteboard, { MarjanWhiteboardRef } from './MarjanWhiteboard';
 import {
   Bot,
-  MessageCircle,
   X,
   Send,
   Loader2,
@@ -18,8 +17,9 @@ import {
   Brain,
   Sparkles,
   PenTool,
-  Eye,
-  EyeOff
+  EyeOff,
+  Settings,
+  ChevronDown
 } from 'lucide-react';
 
 interface Message {
@@ -33,6 +33,9 @@ interface Message {
     concept?: string;
     difficulty?: number;
     requiresVisual?: boolean;
+    teachingMethod?: string;
+    methodReasoning?: string;
+    nextSteps?: string[];
   };
 }
 
@@ -64,6 +67,8 @@ export default function MarjanTeacher({
   const [isSpeaking, setIsSpeaking] = useState(false);
   const [voiceEnabled, setVoiceEnabled] = useState(true);
   const [showWhiteboard, setShowWhiteboard] = useState(false);
+  const [preferredMethod, setPreferredMethod] = useState<string>('auto');
+  const [showMethodSelector, setShowMethodSelector] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const whiteboardRef = useRef<MarjanWhiteboardRef>(null);
 
@@ -94,6 +99,23 @@ export default function MarjanTeacher({
     }
   }, [initialTopic, messages.length]);
 
+  // إغلاق قائمة اختيار المنهجية عند النقر خارجها
+  useEffect(() => {
+    const handleClickOutside = (e: MouseEvent) => {
+      if (showMethodSelector) {
+        const target = e.target as Element;
+        if (!target.closest('.method-selector')) {
+          setShowMethodSelector(false);
+        }
+      }
+    };
+
+    if (showMethodSelector) {
+      document.addEventListener('click', handleClickOutside);
+      return () => document.removeEventListener('click', handleClickOutside);
+    }
+  }, [showMethodSelector]);
+
   const sendMessage = async () => {
     if (!inputMessage.trim() || isLoading) return;
 
@@ -123,7 +145,9 @@ export default function MarjanTeacher({
           context: {
             sessionId: session?.user?.id || 'anonymous',
             timestamp: new Date().toISOString(),
-            whiteboardAvailable: showWhiteboard
+            whiteboardAvailable: showWhiteboard,
+            preferredMethod: preferredMethod === 'auto' ? undefined : preferredMethod,
+            previousAttempts: messages.filter(m => m.isUser).length
           }
         }),
       });
@@ -137,7 +161,11 @@ export default function MarjanTeacher({
           isUser: false,
           timestamp: new Date(),
           type: data.type || 'text',
-          metadata: data.metadata
+          metadata: {
+            ...data.metadata,
+            teachingMethod: data.teachingMethod,
+            methodReasoning: data.methodReasoning
+          }
         };
 
         setMessages(prev => [...prev, marjanMessage]);
@@ -175,7 +203,7 @@ export default function MarjanTeacher({
     }
   };
 
-  const handleKeyPress = (e: React.KeyboardEvent) => {
+  const handleKeyDown = (e: React.KeyboardEvent) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
       sendMessage();
@@ -184,7 +212,7 @@ export default function MarjanTeacher({
 
   // وظائف التفاعل الصوتي (مبسطة للنموذج الأولي)
   const startListening = () => {
-    if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+    if (typeof window !== 'undefined' && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
       const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
       const recognition = new SpeechRecognition();
       
@@ -294,6 +322,53 @@ export default function MarjanTeacher({
             {showWhiteboard ? <EyeOff className="w-5 h-5" /> : <PenTool className="w-5 h-5" />}
           </button>
 
+          {/* زر إعدادات التدريس */}
+          <div className="relative">
+            <button
+              onClick={() => setShowMethodSelector(!showMethodSelector)}
+              className={`p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors ${
+                showMethodSelector ? 'bg-white bg-opacity-20' : ''
+              }`}
+              title="اختيار طريقة التدريس"
+            >
+              <Settings className="w-5 h-5" />
+            </button>
+
+            {showMethodSelector && (
+              <div className="method-selector absolute top-full left-0 mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-3 min-w-[200px] z-50">
+                <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
+                  طريقة التدريس المفضلة:
+                </div>
+                <select
+                  value={preferredMethod}
+                  onChange={(e) => setPreferredMethod(e.target.value)}
+                  className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-md text-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100"
+                >
+                  <option value="auto">اختيار تلقائي ذكي</option>
+                  <option value="socratic">الطريقة السقراطية</option>
+                  <option value="direct_instruction">التعليم المباشر</option>
+                  <option value="worked_example">المثال المحلول</option>
+                  <option value="problem_based">التعلم بالمشكلات</option>
+                  <option value="narrative">التعلم السردي</option>
+                  <option value="scaffolding">السقالات التعليمية</option>
+                  <option value="visual_demo">العرض البصري</option>
+                  <option value="analogy_based">التعلم بالتشبيه</option>
+                </select>
+                <div className="text-xs text-gray-500 dark:text-gray-400 mt-1">
+                  {preferredMethod === 'auto' ? 'مرجان سيختار أفضل طريقة حسب السؤال' :
+                   preferredMethod === 'socratic' ? 'أسئلة توجيهية لتطوير التفكير' :
+                   preferredMethod === 'direct_instruction' ? 'شرح مباشر وواضح' :
+                   preferredMethod === 'worked_example' ? 'حل مثال خطوة بخطوة' :
+                   preferredMethod === 'problem_based' ? 'تعلم من خلال مشاكل واقعية' :
+                   preferredMethod === 'narrative' ? 'تعلم من خلال القصص' :
+                   preferredMethod === 'scaffolding' ? 'دعم تدريجي متناقص' :
+                   preferredMethod === 'visual_demo' ? 'توضيح بصري تفاعلي' :
+                   'تعلم من خلال التشبيهات'}
+                </div>
+              </div>
+            )}
+          </div>
+
           {/* زر الصوت */}
           <button
             onClick={() => setVoiceEnabled(!voiceEnabled)}
@@ -302,7 +377,7 @@ export default function MarjanTeacher({
           >
             {voiceEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
           </button>
-          
+
           {/* زر الإغلاق */}
           <button
             onClick={() => setIsOpen(false)}
@@ -332,13 +407,27 @@ export default function MarjanTeacher({
               }`}
             >
               {!message.isUser && (
-                <div className="flex items-center space-x-2 space-x-reverse mb-2">
-                  {getMessageIcon(message.type)}
-                  <span className="text-xs font-medium opacity-70">
-                    {message.type === 'socratic' ? 'سؤال توجيهي' : 
-                     message.type === 'explanation' ? 'شرح' :
-                     message.type === 'encouragement' ? 'تشجيع' : 'مرجان'}
-                  </span>
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center space-x-2 space-x-reverse">
+                    {getMessageIcon(message.type)}
+                    <span className="text-xs font-medium opacity-70">
+                      {message.type === 'socratic' ? 'سؤال توجيهي' :
+                       message.type === 'explanation' ? 'شرح' :
+                       message.type === 'encouragement' ? 'تشجيع' : 'مرجان'}
+                    </span>
+                  </div>
+                  {message.metadata?.teachingMethod && (
+                    <div className="text-xs opacity-60 bg-gray-200 dark:bg-gray-600 px-2 py-1 rounded">
+                      {message.metadata.teachingMethod === 'socratic' ? '🤔 سقراطية' :
+                       message.metadata.teachingMethod === 'direct_instruction' ? '📚 مباشر' :
+                       message.metadata.teachingMethod === 'worked_example' ? '📝 مثال' :
+                       message.metadata.teachingMethod === 'problem_based' ? '🎯 مشكلة' :
+                       message.metadata.teachingMethod === 'narrative' ? '📖 قصة' :
+                       message.metadata.teachingMethod === 'scaffolding' ? '🏗️ سقالات' :
+                       message.metadata.teachingMethod === 'visual_demo' ? '🎨 بصري' :
+                       message.metadata.teachingMethod === 'analogy_based' ? '🔗 تشبيه' : '🤖'}
+                    </div>
+                  )}
                 </div>
               )}
               
@@ -393,7 +482,7 @@ export default function MarjanTeacher({
             <textarea
               value={inputMessage}
               onChange={(e) => setInputMessage(e.target.value)}
-              onKeyPress={handleKeyPress}
+              onKeyDown={handleKeyDown}
               placeholder="اسأل مرجان أي شيء..."
               className="w-full p-3 border border-gray-300 dark:border-gray-600 rounded-lg resize-none focus:ring-2 focus:ring-purple-500 focus:border-transparent dark:bg-gray-700 dark:text-white"
               rows={2}

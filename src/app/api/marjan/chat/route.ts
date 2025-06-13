@@ -4,6 +4,7 @@ import { buildMarjanPrompt, getRandomResponse } from '@/lib/marjan-prompts';
 import { questionAnalyzer } from '@/lib/question-analyzer';
 import { getSocraticQuestions, getRandomGuidingQuestion, getAnalogy } from '@/lib/socratic-questions';
 import { WHITEBOARD_FUNCTIONS } from '@/lib/whiteboard-functions';
+import { methodologySelector, TeachingContext } from '@/lib/teaching-methodologies';
 
 interface ChatRequest {
   message: string;
@@ -18,12 +19,16 @@ interface ChatRequest {
     sessionId: string;
     timestamp: string;
     whiteboardAvailable?: boolean;
+    preferredMethod?: string;
+    previousAttempts?: number;
   };
 }
 
 interface MarjanResponse {
   response: string;
   type: 'socratic' | 'explanation' | 'encouragement' | 'text';
+  teachingMethod?: string;
+  methodReasoning?: string;
   metadata: {
     subject?: string;
     concept?: string;
@@ -31,6 +36,7 @@ interface MarjanResponse {
     requiresVisual?: boolean;
     suggestedQuestions?: string[];
     analogy?: string;
+    nextSteps?: string[];
   };
   whiteboardFunctions?: Array<{
     name: string;
@@ -52,7 +58,24 @@ export async function POST(request: NextRequest) {
 
     // تحليل سؤال الطالب
     const questionAnalysis = questionAnalyzer.analyzeQuestion(body.message);
-    
+
+    // إنشاء سياق التدريس
+    const teachingContext: TeachingContext = {
+      studentLevel: body.studentLevel === 'مبتدئ' ? 'beginner' :
+                   body.studentLevel === 'متقدم' ? 'advanced' : 'intermediate',
+      subject: questionAnalysis.subject,
+      questionType: questionAnalysis.type === 'factual' ? 'factual' :
+                   questionAnalysis.type === 'conceptual' ? 'conceptual' :
+                   questionAnalysis.type === 'procedural' ? 'procedural' : 'analytical',
+      studentConfusion: body.conversationHistory.length > 3 ? 'moderate' : 'slight',
+      previousAttempts: body.context.previousAttempts || 0,
+      preferredStyle: body.context.preferredMethod as any
+    };
+
+    // اختيار أفضل منهجية تدريس
+    const selectedMethod = methodologySelector.selectBestMethod(teachingContext, body.message);
+    const methodologyResponse = methodologySelector.applyMethodology(selectedMethod, body.message, teachingContext);
+
     // بناء سياق المحادثة
     const conversationContext = buildConversationContext(body.conversationHistory);
     
@@ -86,9 +109,14 @@ ${WHITEBOARD_FUNCTIONS.map(f => `- ${f.name}: ${f.description}`).join('\n')}
 عندما تحتاج للرسم أو التوضيح، استخدم هذه الوظائف في ردك.
 ` : ''}
 
+المنهجية المختارة: ${methodologyResponse.method}
+السبب: ${methodologyResponse.reasoning}
+
+${methodologyResponse.response}
+
 تذكر:
-1. استخدم الطريقة السقراطية - لا تعطِ الإجابة مباشرة
-2. اطرح سؤالاً توجيهياً واحداً فقط في كل رد
+1. اتبع المنهجية المختارة: ${methodologyResponse.method}
+2. ${methodologyResponse.nextSteps ? 'الخطوات التالية: ' + methodologyResponse.nextSteps.join(', ') : ''}
 3. استخدم أمثلة من الحياة اليومية
 4. كن مشجعاً وإيجابياً
 5. ${body.context.whiteboardAvailable ? 'استخدم السبورة للتوضيح البصري عند الحاجة' : 'إذا احتاج الأمر رسماً، اذكر أنك ستوضح بصرياً'}
@@ -119,7 +147,12 @@ ${WHITEBOARD_FUNCTIONS.map(f => `- ${f.name}: ${f.description}`).join('\n')}
     const response: MarjanResponse = {
       response: enhancedResponse,
       type: responseType,
-      metadata,
+      teachingMethod: methodologyResponse.method,
+      methodReasoning: methodologyResponse.reasoning,
+      metadata: {
+        ...metadata,
+        nextSteps: methodologyResponse.nextSteps
+      },
       whiteboardFunctions,
       success: true
     };
