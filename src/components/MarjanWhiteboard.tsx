@@ -347,185 +347,130 @@ const MarjanWhiteboardComponent = forwardRef<MarjanWhiteboardRef, MarjanWhiteboa
       ref={containerRef}
       className={`whiteboard-container relative ${isFullscreen ? 'fixed inset-0 z-50 bg-white' : ''} ${className}`}
     >
-      {/* شريط أدوات الرسم التفاعلي */}
+      {/* شريط أدوات الرسم التفاعلي - تصميم مضغوط */}
       {showControls && showToolbar && (
-        <div className="absolute top-4 left-4 z-20">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-3 border border-gray-200 dark:border-gray-700">
-            <div className="text-xs font-medium text-gray-700 dark:text-gray-300 mb-2 text-center">
-              أدوات الرسم
+        <div className="absolute top-2 left-2 z-20">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2 border border-gray-200 dark:border-gray-700 max-w-xs">
+            {/* أدوات الرسم في صف واحد */}
+            <div className="flex items-center gap-1 mb-2">
+              {[
+                { tool: 'pointer', icon: MousePointer, title: 'مؤشر' },
+                { tool: 'line', icon: Minus, title: 'خط' },
+                { tool: 'circle', icon: Circle, title: 'دائرة' },
+                { tool: 'rectangle', icon: SquareIcon, title: 'مستطيل' },
+                { tool: 'triangle', icon: Triangle, title: 'مثلث' },
+                { tool: 'text', icon: Type, title: 'نص' }
+              ].map(({ tool, icon: Icon, title }) => (
+                <button
+                  key={tool}
+                  onClick={() => setCurrentTool(tool as any)}
+                  className={`p-1.5 rounded transition-colors ${
+                    currentTool === tool
+                      ? 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300'
+                      : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300'
+                  }`}
+                  title={title}
+                >
+                  <Icon className="w-3.5 h-3.5" />
+                </button>
+              ))}
             </div>
 
-            <div className="grid grid-cols-3 gap-1">
-              {/* أداة المؤشر */}
-              <button
-                onClick={() => setCurrentTool('pointer')}
-                className={`p-2 rounded-lg transition-colors ${
-                  currentTool === 'pointer'
-                    ? 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300'
-                    : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300'
-                }`}
-                title="مؤشر"
-              >
-                <MousePointer className="w-4 h-4" />
-              </button>
-
-              {/* أداة الخط */}
-              <button
-                onClick={() => setCurrentTool('line')}
-                className={`p-2 rounded-lg transition-colors ${
-                  currentTool === 'line'
-                    ? 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300'
-                    : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300'
-                }`}
-                title="خط"
-              >
-                <Minus className="w-4 h-4" />
-              </button>
-
-              {/* أداة الدائرة */}
-              <button
-                onClick={() => setCurrentTool('circle')}
-                className={`p-2 rounded-lg transition-colors ${
-                  currentTool === 'circle'
-                    ? 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300'
-                    : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300'
-                }`}
-                title="دائرة"
-              >
-                <Circle className="w-4 h-4" />
-              </button>
-
-              {/* أداة المستطيل */}
-              <button
-                onClick={() => setCurrentTool('rectangle')}
-                className={`p-2 rounded-lg transition-colors ${
-                  currentTool === 'rectangle'
-                    ? 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300'
-                    : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300'
-                }`}
-                title="مستطيل"
-              >
-                <SquareIcon className="w-4 h-4" />
-              </button>
-
-              {/* أداة المثلث */}
-              <button
-                onClick={() => setCurrentTool('triangle')}
-                className={`p-2 rounded-lg transition-colors ${
-                  currentTool === 'triangle'
-                    ? 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300'
-                    : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300'
-                }`}
-                title="مثلث"
-              >
-                <Triangle className="w-4 h-4" />
-              </button>
-
-              {/* أداة النص */}
-              <button
-                onClick={() => setCurrentTool('text')}
-                className={`p-2 rounded-lg transition-colors ${
-                  currentTool === 'text'
-                    ? 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300'
-                    : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300'
-                }`}
-                title="نص"
-              >
-                <Type className="w-4 h-4" />
-              </button>
-            </div>
-
-            {/* اختيار اللون */}
-            <div className="mt-3 pt-2 border-t border-gray-200 dark:border-gray-600">
-              <div className="text-xs text-gray-600 dark:text-gray-400 mb-1">اللون:</div>
-              <div className="flex space-x-1 space-x-reverse">
-                {['#0066cc', '#dc2626', '#16a34a', '#ca8a04', '#9333ea', '#000000'].map(color => (
-                  <button
-                    key={color}
-                    onClick={() => setCurrentColor(color)}
-                    className={`w-6 h-6 rounded-full border-2 transition-all ${
-                      currentColor === color
-                        ? 'border-gray-800 dark:border-gray-200 scale-110'
-                        : 'border-gray-300 dark:border-gray-600 hover:scale-105'
-                    }`}
-                    style={{ backgroundColor: color }}
-                    title={`لون ${color}`}
-                  />
-                ))}
-              </div>
+            {/* اختيار اللون في صف واحد */}
+            <div className="flex items-center gap-1">
+              <span className="text-xs text-gray-600 dark:text-gray-400 mr-1">لون:</span>
+              {['#0066cc', '#dc2626', '#16a34a', '#ca8a04', '#9333ea', '#000000'].map(color => (
+                <button
+                  key={color}
+                  onClick={() => setCurrentColor(color)}
+                  className={`w-4 h-4 rounded-full border transition-all ${
+                    currentColor === color
+                      ? 'border-gray-800 dark:border-gray-200 scale-110'
+                      : 'border-gray-300 dark:border-gray-600 hover:scale-105'
+                  }`}
+                  style={{ backgroundColor: color }}
+                  title={`لون ${color}`}
+                />
+              ))}
             </div>
           </div>
         </div>
       )}
 
-      {/* أدوات التحكم */}
+      {/* أدوات التحكم - تصميم مضغوط */}
       {showControls && (
-        <div className="absolute top-4 right-4 flex items-center space-x-2 space-x-reverse z-10">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-2 flex items-center space-x-2 space-x-reverse">
+        <div className="absolute top-2 right-2 z-10">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-1.5 flex items-center gap-1">
             {/* زر إظهار/إخفاء شريط الأدوات */}
             <button
               onClick={() => setShowToolbar(!showToolbar)}
-              className={`p-2 rounded-lg transition-colors ${
+              className={`p-1.5 rounded transition-colors ${
                 showToolbar
                   ? 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300'
                   : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300'
               }`}
               title={showToolbar ? 'إخفاء الأدوات' : 'إظهار الأدوات'}
             >
-              <Palette className="w-5 h-5" />
+              <Palette className="w-4 h-4" />
             </button>
+
+            {/* فاصل */}
+            <div className="w-px h-4 bg-gray-300 dark:bg-gray-600"></div>
 
             {/* زر المسح */}
             <button
               onClick={handleClear}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
               title="مسح السبورة"
               disabled={isAnimating}
             >
-              <Eraser className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              <Eraser className="w-4 h-4 text-gray-600 dark:text-gray-300" />
             </button>
-            
+
             {/* زر الشبكة */}
             <button
               onClick={handleToggleGrid}
-              className={`p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors ${
+              className={`p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors ${
                 showGrid ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-300'
               }`}
               title="إظهار/إخفاء الشبكة"
             >
-              <Grid3X3 className="w-5 h-5" />
+              <Grid3X3 className="w-4 h-4" />
             </button>
-            
+
             {/* زر التحميل */}
             <button
               onClick={handleDownload}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
               title="تحميل السبورة"
             >
-              <Download className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+              <Download className="w-4 h-4 text-gray-600 dark:text-gray-300" />
             </button>
-            
+
             {/* زر الشاشة الكاملة */}
             <button
               onClick={handleToggleFullscreen}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors"
+              className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
               title={isFullscreen ? 'تصغير' : 'شاشة كاملة'}
             >
               {isFullscreen ? (
-                <Minimize2 className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                <Minimize2 className="w-4 h-4 text-gray-600 dark:text-gray-300" />
               ) : (
-                <Maximize2 className="w-5 h-5 text-gray-600 dark:text-gray-300" />
+                <Maximize2 className="w-4 h-4 text-gray-600 dark:text-gray-300" />
               )}
             </button>
-            
+
+            {/* فاصل */}
+            <div className="w-px h-4 bg-gray-300 dark:bg-gray-600"></div>
+
             {/* زر التجربة السريعة */}
             <button
               onClick={handleQuickDemo}
-              className="p-2 hover:bg-gray-100 dark:hover:bg-gray-700 rounded-lg transition-colors bg-purple-100 dark:bg-purple-900"
+              className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors bg-purple-100 dark:bg-purple-900"
               title="تجربة سريعة - نظرية فيثاغورس"
               disabled={isAnimating}
             >
-              <Palette className="w-5 h-5 text-purple-600 dark:text-purple-400" />
+              <Palette className="w-4 h-4 text-purple-600 dark:text-purple-400" />
             </button>
           </div>
         </div>

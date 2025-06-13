@@ -659,7 +659,7 @@ export class MarjanWhiteboard {
    */
   private clearCanvas(): void {
     this.ctx.fillStyle = this.state.backgroundColor;
-    this.ctx.fillRect(0, 0, this.CANVAS_WIDTH, this.CANVAS_HEIGHT);
+    this.ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   }
   
   /**
@@ -670,23 +670,23 @@ export class MarjanWhiteboard {
     this.ctx.strokeStyle = '#e0e0e0';
     this.ctx.lineWidth = 1;
     this.ctx.globalAlpha = 0.5;
-    
+
     // خطوط عمودية
-    for (let x = 0; x <= this.CANVAS_WIDTH; x += this.GRID_SIZE) {
+    for (let x = 0; x <= this.canvas.width; x += this.GRID_SIZE) {
       this.ctx.beginPath();
       this.ctx.moveTo(x, 0);
-      this.ctx.lineTo(x, this.CANVAS_HEIGHT);
+      this.ctx.lineTo(x, this.canvas.height);
       this.ctx.stroke();
     }
-    
+
     // خطوط أفقية
-    for (let y = 0; y <= this.CANVAS_HEIGHT; y += this.GRID_SIZE) {
+    for (let y = 0; y <= this.canvas.height; y += this.GRID_SIZE) {
       this.ctx.beginPath();
       this.ctx.moveTo(0, y);
-      this.ctx.lineTo(this.CANVAS_WIDTH, y);
+      this.ctx.lineTo(this.canvas.width, y);
       this.ctx.stroke();
     }
-    
+
     this.ctx.restore();
   }
   

@@ -273,7 +273,8 @@ export class WhiteboardFunctionExecutor {
           break;
           
         case 'draw_arrow':
-          elementId = this.whiteboard.drawArrow(
+          // إصلاح مشكلة رسم السهم - استخدام خط مع رأس سهم
+          const arrowLine = this.whiteboard.drawLine(
             { x: validatedParams.from_x, y: validatedParams.from_y },
             { x: validatedParams.to_x, y: validatedParams.to_y },
             {
@@ -281,6 +282,42 @@ export class WhiteboardFunctionExecutor {
               strokeWidth: validatedParams.thickness || 3
             }
           );
+
+          // رسم رأس السهم
+          const angle = Math.atan2(
+            validatedParams.to_y - validatedParams.from_y,
+            validatedParams.to_x - validatedParams.from_x
+          );
+          const arrowLength = 15;
+          const arrowAngle = Math.PI / 6;
+
+          // خط رأس السهم الأول
+          this.whiteboard.drawLine(
+            { x: validatedParams.to_x, y: validatedParams.to_y },
+            {
+              x: validatedParams.to_x - arrowLength * Math.cos(angle - arrowAngle),
+              y: validatedParams.to_y - arrowLength * Math.sin(angle - arrowAngle)
+            },
+            {
+              strokeColor: validatedParams.color || '#ff0000',
+              strokeWidth: validatedParams.thickness || 3
+            }
+          );
+
+          // خط رأس السهم الثاني
+          this.whiteboard.drawLine(
+            { x: validatedParams.to_x, y: validatedParams.to_y },
+            {
+              x: validatedParams.to_x - arrowLength * Math.cos(angle + arrowAngle),
+              y: validatedParams.to_y - arrowLength * Math.sin(angle + arrowAngle)
+            },
+            {
+              strokeColor: validatedParams.color || '#ff0000',
+              strokeWidth: validatedParams.thickness || 3
+            }
+          );
+
+          elementId = arrowLine;
           message = `تم رسم سهم يشير من (${validatedParams.from_x}, ${validatedParams.from_y}) إلى (${validatedParams.to_x}, ${validatedParams.to_y})`;
           break;
           

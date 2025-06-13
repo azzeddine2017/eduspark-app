@@ -252,8 +252,18 @@ export class EnhancedTextToSpeech {
     // البحث عن أفضل صوت للغة العربية بترتيب الأولوية
     let voice: SpeechSynthesisVoice | null = null;
 
-    // 1. البحث عن أصوات عربية محددة بأسماء معروفة
-    const preferredArabicVoices = [
+    // تحديد نوع الجهاز
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+    const isDesktop = !isMobile;
+
+    // 1. البحث عن أصوات عربية محددة بأسماء معروفة حسب نوع الجهاز
+    const preferredArabicVoices = isMobile ? [
+      'ar-sa-x-sfb-local', // Android Arabic
+      'ar-SA', // iOS Arabic
+      'Arabic (Saudi Arabia)', // Generic mobile
+      'Samira', // Google Arabic
+      'Fatima', // Google Arabic
+    ] : [
       'Microsoft Hoda Desktop', // Windows Arabic voice
       'Microsoft Naayf Desktop', // Windows Arabic voice
       'Majed', // macOS Arabic voice

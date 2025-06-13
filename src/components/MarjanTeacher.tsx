@@ -445,37 +445,87 @@ export default function MarjanTeacher({
     }
   };
 
-  // وظائف التفاعل الصوتي (مبسطة للنموذج الأولي)
-  const startListening = () => {
-    if (typeof window !== 'undefined' && ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window)) {
-      const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-      const recognition = new SpeechRecognition();
-      
-      recognition.lang = 'ar-SA';
-      recognition.continuous = false;
-      recognition.interimResults = false;
+  // وظائف التفاعل الصوتي المحسنة
+  const startListening = async () => {
+    // تحديد نوع الجهاز
+    const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
 
-      recognition.onstart = () => {
-        setIsListening(true);
-      };
+    console.log('🎤 محاولة بدء التعرف على الكلام...', { isMobile });
 
-      recognition.onresult = (event) => {
-        const transcript = event.results[0][0].transcript;
-        setInputMessage(transcript);
-        setIsListening(false);
-      };
+    if (typeof window !== 'undefined') {
+      // طلب إذن الميكروفون أولاً (مهم للهواتف)
+      try {
+        await navigator.mediaDevices.getUserMedia({ audio: true });
+        console.log('✅ تم الحصول على إذن الميكروفون');
+      } catch (error) {
+        console.error('❌ فشل في الحصول على إذن الميكروفون:', error);
+        alert('يرجى السماح بالوصول للميكروفون لاستخدام هذه الميزة');
+        return;
+      }
 
-      recognition.onerror = () => {
-        setIsListening(false);
-      };
+      // التحقق من دعم التعرف على الكلام
+      if ('webkitSpeechRecognition' in window || 'SpeechRecognition' in window) {
+        const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+        const recognition = new SpeechRecognition();
 
-      recognition.onend = () => {
-        setIsListening(false);
-      };
+        // إعدادات محسنة حسب نوع الجهاز
+        recognition.lang = 'ar-SA';
+        recognition.continuous = false;
+        recognition.interimResults = isMobile; // تفعيل النتائج المؤقتة للهواتف
+        recognition.maxAlternatives = 3;
 
-      recognition.start();
-    } else {
-      alert('المتصفح لا يدعم التعرف على الكلام');
+        // إعدادات إضافية للهواتف
+        if (isMobile) {
+          recognition.serviceURI = 'wss://www.google.com/speech-api/v2/recognize';
+        }
+
+        recognition.onstart = () => {
+          console.log('🎤 بدء التعرف على الكلام');
+          setIsListening(true);
+        };
+
+        recognition.onresult = (event) => {
+          console.log('🎤 نتيجة التعرف:', event.results);
+          const transcript = event.results[0][0].transcript;
+          setInputMessage(transcript);
+          if (event.results[0].isFinal) {
+            setIsListening(false);
+          }
+        };
+
+        recognition.onerror = (event) => {
+          console.error('❌ خطأ في التعرف على الكلام:', event.error);
+          setIsListening(false);
+
+          // رسائل خطأ مخصصة
+          const errorMessages = {
+            'network': 'مشكلة في الاتصال بالإنترنت',
+            'not-allowed': 'لم يتم السماح بالوصول للميكروفون',
+            'no-speech': 'لم يتم اكتشاف كلام',
+            'audio-capture': 'مشكلة في الميكروفون',
+            'service-not-allowed': 'خدمة التعرف على الكلام غير متاحة'
+          };
+
+          const message = errorMessages[event.error as keyof typeof errorMessages] || 'حدث خطأ في التعرف على الكلام';
+          alert(message);
+        };
+
+        recognition.onend = () => {
+          console.log('🎤 انتهاء التعرف على الكلام');
+          setIsListening(false);
+        };
+
+        try {
+          recognition.start();
+        } catch (error) {
+          console.error('❌ فشل في بدء التعرف:', error);
+          setIsListening(false);
+          alert('فشل في بدء التعرف على الكلام');
+        }
+      } else {
+        console.warn('⚠️ التعرف على الكلام غير مدعوم');
+        alert('المتصفح لا يدعم التعرف على الكلام');
+      }
     }
   };
 
