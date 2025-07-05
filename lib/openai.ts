@@ -34,50 +34,57 @@ export const PROMPTS = {
 } as const
 
 // Gemini API call function
-export async function callGemini(prompt: string): Promise<string> {
+export async function callGemini(prompt: string, tools?: any[]): Promise<any> {
   try {
-    console.log('Calling Gemini API with prompt:', prompt.substring(0, 100) + '...')
+    console.log('Calling Gemini API with prompt:', prompt.substring(0, 100) + '...');
+    if (tools) {
+      console.log('With tools:', JSON.stringify(tools, null, 2));
+    }
+
+    const requestBody: any = {
+      contents: [{
+        parts: [{
+          text: prompt
+        }]
+      }],
+      generationConfig: {
+        temperature: 0.7,
+        topK: 40,
+        topP: 0.95,
+        maxOutputTokens: 1024,
+      }
+    };
+
+    if (tools && tools.length > 0) {
+      requestBody.tools = [{
+        function_declarations: tools
+      }];
+    }
 
     const response = await fetch(`${GEMINI_API_URL}?key=${GEMINI_API_KEY}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: prompt
-          }]
-        }],
-        generationConfig: {
-          temperature: 0.7,
-          topK: 40,
-          topP: 0.95,
-          maxOutputTokens: 1024,
-        }
-      })
-    })
+      body: JSON.stringify(requestBody)
+    });
 
-    console.log('Gemini API response status:', response.status)
+    console.log('Gemini API response status:', response.status);
 
     if (!response.ok) {
-      const errorText = await response.text()
-      console.error('Gemini API error response:', errorText)
-      throw new Error(`Gemini API error: ${response.status} - ${errorText}`)
+      const errorText = await response.text();
+      console.error('Gemini API error response:', errorText);
+      throw new Error(`Gemini API error: ${response.status} - ${errorText}`);
     }
 
-    const data = await response.json()
-    console.log('Gemini API response data:', JSON.stringify(data, null, 2))
+    const data = await response.json();
+    console.log('Gemini API response data:', JSON.stringify(data, null, 2));
 
-    const result = data.candidates?.[0]?.content?.parts?.[0]?.text
-    if (!result) {
-      console.error('No text in Gemini response:', data)
-      return 'عذراً، لم أتمكن من الحصول على إجابة من الذكاء الاصطناعي.'
-    }
+    // Return the full response data to be processed by the caller
+    return data;
 
-    return result
   } catch (error) {
-    console.error('Gemini API Error:', error)
-    throw new Error('حدث خطأ في الاتصال بالذكاء الاصطناعي: ' + (error as Error).message)
+    console.error('Gemini API Error:', error);
+    throw new Error('حدث خطأ في الاتصال بالذكاء الاصطناعي: ' + (error as Error).message);
   }
 }

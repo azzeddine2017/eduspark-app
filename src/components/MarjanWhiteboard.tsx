@@ -397,14 +397,14 @@ const MarjanWhiteboardComponent = forwardRef<MarjanWhiteboardRef, MarjanWhiteboa
         </div>
       )}
 
-      {/* أدوات التحكم - تصميم مضغوط */}
+      {/* أدوات التحكم - تصميم مضغوط ومحسن */}
       {showControls && (
         <div className="absolute top-2 right-2 z-10">
-          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-1.5 flex items-center gap-1">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-1 flex items-center gap-0.5">
             {/* زر إظهار/إخفاء شريط الأدوات */}
             <button
               onClick={() => setShowToolbar(!showToolbar)}
-              className={`p-1.5 rounded transition-colors ${
+              className={`w-8 h-8 flex items-center justify-center rounded transition-colors ${
                 showToolbar
                   ? 'bg-purple-100 dark:bg-purple-900 text-purple-600 dark:text-purple-300'
                   : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300'
@@ -415,12 +415,12 @@ const MarjanWhiteboardComponent = forwardRef<MarjanWhiteboardRef, MarjanWhiteboa
             </button>
 
             {/* فاصل */}
-            <div className="w-px h-4 bg-gray-300 dark:bg-gray-600"></div>
+            <div className="w-px h-5 bg-gray-200 dark:bg-gray-600 mx-1"></div>
 
             {/* زر المسح */}
             <button
               onClick={handleClear}
-              className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+              className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
               title="مسح السبورة"
               disabled={isAnimating}
             >
@@ -430,8 +430,8 @@ const MarjanWhiteboardComponent = forwardRef<MarjanWhiteboardRef, MarjanWhiteboa
             {/* زر الشبكة */}
             <button
               onClick={handleToggleGrid}
-              className={`p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors ${
-                showGrid ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400' : 'text-gray-600 dark:text-gray-300'
+              className={`w-8 h-8 flex items-center justify-center rounded transition-colors ${
+                showGrid ? 'bg-blue-100 dark:bg-blue-900 text-blue-600 dark:text-blue-400' : 'hover:bg-gray-100 dark:hover:bg-gray-700 text-gray-600 dark:text-gray-300'
               }`}
               title="إظهار/إخفاء الشبكة"
             >
@@ -441,7 +441,7 @@ const MarjanWhiteboardComponent = forwardRef<MarjanWhiteboardRef, MarjanWhiteboa
             {/* زر التحميل */}
             <button
               onClick={handleDownload}
-              className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+              className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
               title="تحميل السبورة"
             >
               <Download className="w-4 h-4 text-gray-600 dark:text-gray-300" />
@@ -450,7 +450,7 @@ const MarjanWhiteboardComponent = forwardRef<MarjanWhiteboardRef, MarjanWhiteboa
             {/* زر الشاشة الكاملة */}
             <button
               onClick={handleToggleFullscreen}
-              className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
+              className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors"
               title={isFullscreen ? 'تصغير' : 'شاشة كاملة'}
             >
               {isFullscreen ? (
@@ -461,12 +461,12 @@ const MarjanWhiteboardComponent = forwardRef<MarjanWhiteboardRef, MarjanWhiteboa
             </button>
 
             {/* فاصل */}
-            <div className="w-px h-4 bg-gray-300 dark:bg-gray-600"></div>
+            <div className="w-px h-5 bg-gray-200 dark:bg-gray-600 mx-1"></div>
 
             {/* زر التجربة السريعة */}
             <button
               onClick={handleQuickDemo}
-              className="p-1.5 hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors bg-purple-100 dark:bg-purple-900"
+              className="w-8 h-8 flex items-center justify-center hover:bg-gray-100 dark:hover:bg-gray-700 rounded transition-colors bg-purple-100 dark:bg-purple-900"
               title="تجربة سريعة - نظرية فيثاغورس"
               disabled={isAnimating}
             >

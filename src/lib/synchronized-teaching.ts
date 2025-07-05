@@ -128,10 +128,12 @@ export class SynchronizedTeacher {
         await this.speakWithSynchronizedActions(segment);
       } else {
         // نطق عادي
-        await this.tts.speak(segment.text, {
-          pitch: segment.emphasis ? 1.2 : undefined,
-          rate: segment.emphasis ? 0.8 : undefined
-        });
+        const speechOptions: any = {};
+        if (segment.emphasis) {
+          speechOptions.pitch = 1.2;
+          speechOptions.rate = 0.8;
+        }
+        await this.tts.speak(segment.text, speechOptions);
       }
 
       // تنفيذ أفعال السبورة "بعد" النطق

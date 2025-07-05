@@ -24,9 +24,19 @@ async function getUserApiKey(userId: string): Promise<string | null> {
   }
 }
 
-// Gemini API call function with user's API key
-export async function callGemini(prompt: string, userId?: string): Promise<string> {
+// Gemini API call function with user's API key and optional tools support
+export async function callGemini(prompt: string, userIdOrTools?: string | any[]): Promise<string | any> {
   try {
+    // تحديد نوع البارامتر الثاني
+    let userId: string | undefined;
+    let tools: any[] | undefined;
+    
+    if (typeof userIdOrTools === 'string') {
+      userId = userIdOrTools;
+    } else if (Array.isArray(userIdOrTools)) {
+      tools = userIdOrTools;
+    }
+
     // الحصول على مفتاح API (من المستخدم أو من البيئة)
     let apiKey: string | null = null
 
@@ -44,43 +54,55 @@ export async function callGemini(prompt: string, userId?: string): Promise<strin
     }
 
     console.log('Calling Gemini API with URL:', GEMINI_API_URL)
+    if (tools) {
+      console.log('With tools:', JSON.stringify(tools, null, 2));
+    }
+
+    const requestBody: any = {
+      contents: [{
+        parts: [{
+          text: prompt
+        }]
+      }],
+      generationConfig: {
+        temperature: 0.7,
+        topK: 40,
+        topP: 0.95,
+        maxOutputTokens: 1024,
+      },
+      safetySettings: [
+        {
+          category: "HARM_CATEGORY_HARASSMENT",
+          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        },
+        {
+          category: "HARM_CATEGORY_HATE_SPEECH",
+          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        },
+        {
+          category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
+          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        },
+        {
+          category: "HARM_CATEGORY_DANGEROUS_CONTENT",
+          threshold: "BLOCK_MEDIUM_AND_ABOVE"
+        }
+      ]
+    };
+
+    // إضافة أدوات إذا كانت متوفرة
+    if (tools && tools.length > 0) {
+      requestBody.tools = [{
+        function_declarations: tools
+      }];
+    }
 
     const response = await fetch(`${GEMINI_API_URL}?key=${apiKey}`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
       },
-      body: JSON.stringify({
-        contents: [{
-          parts: [{
-            text: prompt
-          }]
-        }],
-        generationConfig: {
-          temperature: 0.7,
-          topK: 40,
-          topP: 0.95,
-          maxOutputTokens: 1024,
-        },
-        safetySettings: [
-          {
-            category: "HARM_CATEGORY_HARASSMENT",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE"
-          },
-          {
-            category: "HARM_CATEGORY_HATE_SPEECH",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE"
-          },
-          {
-            category: "HARM_CATEGORY_SEXUALLY_EXPLICIT",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE"
-          },
-          {
-            category: "HARM_CATEGORY_DANGEROUS_CONTENT",
-            threshold: "BLOCK_MEDIUM_AND_ABOVE"
-          }
-        ]
-      })
+      body: JSON.stringify(requestBody)
     })
 
     console.log('Gemini API Response Status:', response.status)
@@ -93,6 +115,11 @@ export async function callGemini(prompt: string, userId?: string): Promise<strin
 
     const data = await response.json()
     console.log('Gemini API Response Data:', JSON.stringify(data, null, 2))
+
+    // إذا كانت هناك أدوات، إرجاع البيانات كاملة
+    if (tools && tools.length > 0) {
+      return data;
+    }
 
     // التحقق من وجود المحتوى في الاستجابة
     if (!data.candidates || !data.candidates[0] || !data.candidates[0].content) {

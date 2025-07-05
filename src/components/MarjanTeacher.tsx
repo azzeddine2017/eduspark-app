@@ -546,11 +546,35 @@ export default function MarjanTeacher({
 
       const utterance = new SpeechSynthesisUtterance(cleanText);
 
-      // إعدادات محسنة للغة العربية
+      // إعدادات محسنة للغة العربية مع فحص القيم
       utterance.lang = 'ar-SA';
-      utterance.rate = 0.8; // أبطأ للوضوح
-      utterance.pitch = 1.0;
-      utterance.volume = 1.0;
+      
+      // فحص وتصحيح قيمة rate
+      let rate = 0.8; // أبطأ للوضوح
+      if (typeof rate !== 'number' || isNaN(rate) || !isFinite(rate)) {
+        console.warn('⚠️ قيمة rate غير صحيحة:', rate, 'سيتم استخدام القيمة الافتراضية 0.8');
+        rate = 0.8;
+      }
+      rate = Math.max(0.1, Math.min(2.0, rate));
+      utterance.rate = rate;
+      
+      // فحص وتصحيح قيمة pitch
+      let pitch = 1.0;
+      if (typeof pitch !== 'number' || isNaN(pitch) || !isFinite(pitch)) {
+        console.warn('⚠️ قيمة pitch غير صحيحة:', pitch, 'سيتم استخدام القيمة الافتراضية 1.0');
+        pitch = 1.0;
+      }
+      pitch = Math.max(0.0, Math.min(2.0, pitch));
+      utterance.pitch = pitch;
+      
+      // فحص وتصحيح قيمة volume
+      let volume = 1.0;
+      if (typeof volume !== 'number' || isNaN(volume) || !isFinite(volume)) {
+        console.warn('⚠️ قيمة volume غير صحيحة:', volume, 'سيتم استخدام القيمة الافتراضية 1.0');
+        volume = 1.0;
+      }
+      volume = Math.max(0.0, Math.min(1.0, volume));
+      utterance.volume = volume;
 
       // البحث عن صوت عربي مناسب
       const voices = speechSynthesis.getVoices();
@@ -643,10 +667,10 @@ export default function MarjanTeacher({
   return (
     <div className={`${getPosition()} ${getWindowDimensions()} bg-white dark:bg-gray-800 rounded-lg shadow-2xl border border-gray-200 dark:border-gray-700 flex ${showWhiteboard ? 'flex-row' : 'flex-col'} z-50 transition-all duration-300 ${className} ${viewMode === 'fullscreen' ? 'bg-opacity-95 backdrop-blur-sm' : ''}`}>
       {/* رأس النافذة */}
-      <div className={`flex items-center justify-between p-4 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-purple-600 to-blue-600 text-white ${showWhiteboard ? 'rounded-tl-lg' : 'rounded-t-lg'}`}>
-        <div className="flex items-center space-x-3 space-x-reverse">
+      <div className={`flex items-center justify-between p-2 border-b border-gray-200 dark:border-gray-700 bg-gradient-to-r from-purple-600 to-blue-600 text-white ${showWhiteboard ? 'rounded-tl-lg' : 'rounded-t-lg'}`}>
+        <div className="flex items-center space-x-2 space-x-reverse">
           <div className="relative">
-            <Bot className="w-8 h-8" />
+            <Bot className="w-7 h-7" />
             <div className="absolute -bottom-1 -right-1 w-3 h-3 bg-green-400 rounded-full"></div>
           </div>
           <div>
@@ -654,20 +678,18 @@ export default function MarjanTeacher({
             <p className="text-sm opacity-90">معلمك الافتراضي</p>
           </div>
         </div>
-        
-        <div className="flex items-center space-x-2 space-x-reverse">
+        <div className={`flex items-center ${showWhiteboard ? 'space-x-1' : 'space-x-2'} space-x-reverse`}>
           {/* أزرار التحكم في حجم النافذة */}
-          <div className="flex items-center space-x-1 space-x-reverse border-l border-white border-opacity-30 pl-2 ml-2">
+          <div className={`flex items-center ${showWhiteboard ? 'space-x-0.5' : 'space-x-1'} space-x-reverse border-l border-white border-opacity-30 pl-1 ml-1`}>
             <button
               onClick={() => setViewMode(viewMode === 'compact' ? 'large' : viewMode === 'large' ? 'fullscreen' : 'compact')}
-              className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+              className={`transition-colors rounded-lg ${showWhiteboard ? 'p-1' : 'p-2'} hover:bg-white hover:bg-opacity-20`}
               title={viewMode === 'compact' ? 'تكبير النافذة' : viewMode === 'large' ? 'ملء الشاشة' : 'تصغير النافذة'}
             >
               {viewMode === 'compact' ? <Tablet className="w-4 h-4" /> :
                viewMode === 'large' ? <Monitor className="w-4 h-4" /> :
                <Smartphone className="w-4 h-4" />}
             </button>
-
             {/* زر تغيير حجم السبورة */}
             {showWhiteboard && (
               <button
@@ -675,7 +697,7 @@ export default function MarjanTeacher({
                   whiteboardSize === 'small' ? 'medium' :
                   whiteboardSize === 'medium' ? 'large' : 'small'
                 )}
-                className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+                className="transition-colors rounded-lg p-1 hover:bg-white hover:bg-opacity-20"
                 title={`حجم السبورة: ${whiteboardSize === 'small' ? 'صغير' : whiteboardSize === 'medium' ? 'متوسط' : 'كبير'}`}
               >
                 <span className="text-xs font-bold">
@@ -684,30 +706,23 @@ export default function MarjanTeacher({
               </button>
             )}
           </div>
-
           {/* زر السبورة */}
           <button
             onClick={() => setShowWhiteboard(!showWhiteboard)}
-            className={`p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors ${
-              showWhiteboard ? 'bg-white bg-opacity-20' : ''
-            }`}
+            className={`transition-colors rounded-lg ${showWhiteboard ? 'p-1' : 'p-2'} hover:bg-white hover:bg-opacity-20 ${showWhiteboard ? 'bg-white bg-opacity-20' : ''}`}
             title={showWhiteboard ? 'إخفاء السبورة' : 'إظهار السبورة'}
           >
-            {showWhiteboard ? <EyeOff className="w-5 h-5" /> : <PenTool className="w-5 h-5" />}
+            {showWhiteboard ? <EyeOff className="w-4 h-4" /> : <PenTool className="w-4 h-4" />}
           </button>
-
           {/* زر إعدادات التدريس */}
           <div className="relative">
             <button
               onClick={() => setShowMethodSelector(!showMethodSelector)}
-              className={`p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors ${
-                showMethodSelector ? 'bg-white bg-opacity-20' : ''
-              }`}
+              className={`transition-colors rounded-lg ${showWhiteboard ? 'p-1' : 'p-2'} hover:bg-white hover:bg-opacity-20 ${showMethodSelector ? 'bg-white bg-opacity-20' : ''}`}
               title="اختيار طريقة التدريس"
             >
-              <Settings className="w-5 h-5" />
+              <Settings className="w-4 h-4" />
             </button>
-
             {showMethodSelector && (
               <div className="method-selector absolute top-full left-0 mt-2 bg-white dark:bg-gray-800 rounded-lg shadow-lg border border-gray-200 dark:border-gray-700 p-3 min-w-[200px] z-50">
                 <div className="text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">
@@ -742,29 +757,28 @@ export default function MarjanTeacher({
               </div>
             )}
           </div>
-
           {/* أزرار التحكم في العروض التوضيحية */}
           {showWhiteboard && (
-            <div className="flex items-center space-x-1 space-x-reverse border-l border-white border-opacity-30 pl-2 ml-2">
+            <div className="flex items-center space-x-0.5 space-x-reverse border-l border-white border-opacity-30 pl-1 ml-1">
               {!isTeachingWithVoice ? (
-                <div className="flex items-center space-x-1 space-x-reverse">
+                <div className="flex items-center space-x-0.5 space-x-reverse">
                   <button
                     onClick={() => startSynchronizedDemo('pythagoras')}
-                    className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+                    className="p-1 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
                     title="عرض توضيحي: نظرية فيثاغورس"
                   >
                     <span className="text-xs">📐</span>
                   </button>
                   <button
                     onClick={() => startSynchronizedDemo('chemical_reaction')}
-                    className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+                    className="p-1 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
                     title="عرض توضيحي: التفاعلات الكيميائية"
                   >
                     <span className="text-xs">🧪</span>
                   </button>
                   <button
                     onClick={() => startSynchronizedDemo('photosynthesis')}
-                    className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+                    className="p-1 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
                     title="عرض توضيحي: البناء الضوئي"
                   >
                     <span className="text-xs">🌱</span>
@@ -774,14 +788,14 @@ export default function MarjanTeacher({
                 <>
                   <button
                     onClick={pauseSynchronizedDemo}
-                    className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+                    className="p-1 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
                     title="إيقاف مؤقت"
                   >
                     <Pause className="w-4 h-4" />
                   </button>
                   <button
                     onClick={stopSynchronizedDemo}
-                    className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+                    className="p-1 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
                     title="إيقاف العرض"
                   >
                     <Square className="w-4 h-4" />
@@ -790,9 +804,8 @@ export default function MarjanTeacher({
               )}
             </div>
           )}
-
           {/* أزرار التحكم في الصوت */}
-          <div className="flex items-center space-x-1 space-x-reverse">
+          <div className={`flex items-center ${showWhiteboard ? 'space-x-0.5' : 'space-x-1'} space-x-reverse`}>
             {/* زر اختبار الصوت */}
             <button
               onClick={async () => {
@@ -805,29 +818,27 @@ export default function MarjanTeacher({
                   }
                 }
               }}
-              className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+              className="p-1 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
               title="اختبار النظام الصوتي"
               disabled={!voiceEnabled || isSpeaking}
             >
               <span className="text-xs">🎵</span>
             </button>
-
             {/* زر تشغيل/إيقاف الصوت */}
             <button
               onClick={() => setVoiceEnabled(!voiceEnabled)}
-              className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+              className="p-1 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
               title={voiceEnabled ? 'إيقاف الصوت' : 'تشغيل الصوت'}
             >
-              {voiceEnabled ? <Volume2 className="w-5 h-5" /> : <VolumeX className="w-5 h-5" />}
+              {voiceEnabled ? <Volume2 className="w-4 h-4" /> : <VolumeX className="w-4 h-4" />}
             </button>
           </div>
-
           {/* زر الإغلاق */}
           <button
             onClick={() => setIsOpen(false)}
-            className="p-2 hover:bg-white hover:bg-opacity-20 rounded-lg transition-colors"
+            className={`transition-colors rounded-lg ${showWhiteboard ? 'p-1' : 'p-2'} hover:bg-white hover:bg-opacity-20`}
           >
-            <X className="w-5 h-5" />
+            <X className="w-4 h-4" />
           </button>
         </div>
       </div>

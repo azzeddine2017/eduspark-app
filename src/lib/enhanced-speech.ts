@@ -345,11 +345,37 @@ export class EnhancedTextToSpeech {
       // إنشاء utterance جديد
       this.currentUtterance = new SpeechSynthesisUtterance(text);
 
-      // تطبيق الإعدادات
+      // تطبيق الإعدادات مع فحص القيم
       const finalConfig = { ...this.config, ...options };
-      this.currentUtterance.rate = finalConfig.rate;
-      this.currentUtterance.pitch = finalConfig.pitch;
-      this.currentUtterance.volume = finalConfig.volume;
+      
+      // فحص وتصحيح قيم rate
+      let rate = finalConfig.rate;
+      if (typeof rate !== 'number' || isNaN(rate) || !isFinite(rate)) {
+        console.warn('⚠️ قيمة rate غير صحيحة:', rate, 'سيتم استخدام القيمة الافتراضية 0.9');
+        rate = 0.9;
+      }
+      // التأكد من أن rate ضمن النطاق المسموح (0.1 - 2.0)
+      rate = Math.max(0.1, Math.min(2.0, rate));
+      
+      // فحص وتصحيح قيم pitch
+      let pitch = finalConfig.pitch;
+      if (typeof pitch !== 'number' || isNaN(pitch) || !isFinite(pitch)) {
+        console.warn('⚠️ قيمة pitch غير صحيحة:', pitch, 'سيتم استخدام القيمة الافتراضية 1.0');
+        pitch = 1.0;
+      }
+      pitch = Math.max(0.0, Math.min(2.0, pitch));
+      
+      // فحص وتصحيح قيم volume
+      let volume = finalConfig.volume;
+      if (typeof volume !== 'number' || isNaN(volume) || !isFinite(volume)) {
+        console.warn('⚠️ قيمة volume غير صحيحة:', volume, 'سيتم استخدام القيمة الافتراضية 1.0');
+        volume = 1.0;
+      }
+      volume = Math.max(0.0, Math.min(1.0, volume));
+
+      this.currentUtterance.rate = rate;
+      this.currentUtterance.pitch = pitch;
+      this.currentUtterance.volume = volume;
       this.currentUtterance.lang = finalConfig.language;
 
       // اختيار أفضل صوت
