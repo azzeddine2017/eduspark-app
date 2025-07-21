@@ -5,6 +5,11 @@ import { questionAnalyzer } from '@/lib/question-analyzer';
 import { getSocraticQuestions, getRandomGuidingQuestion, getAnalogy } from '@/lib/socratic-questions';
 import { WHITEBOARD_FUNCTIONS } from '@/lib/whiteboard-functions';
 import { methodologySelector, TeachingContext } from '@/lib/teaching-methodologies';
+import { EducationalMemoryManager } from '@/lib/memory/educational-memory';
+import { LearningStyleAnalyzer } from '@/lib/student/learning-style-analyzer';
+import { IntelligentProgressTracker } from '@/lib/progress/progress-tracker';
+import { getServerSession } from 'next-auth';
+import { authOptions } from '@/lib/auth';
 
 interface ChatRequest {
   message: string;
@@ -21,6 +26,9 @@ interface ChatRequest {
     whiteboardAvailable?: boolean;
     preferredMethod?: string;
     previousAttempts?: number;
+    timeOfDay?: number;
+    sessionLength?: number;
+    deviceType?: string;
   };
 }
 
@@ -42,13 +50,26 @@ interface MarjanResponse {
     name: string;
     parameters: any;
   }>;
+  // Enhanced Context Engine Data
+  personalizedInsights?: {
+    learningStyle: string;
+    preferredMethodology: string;
+    currentMastery: number;
+    accuracyScore: number;
+  };
+  progressUpdate?: {
+    conceptProgress: number;
+    overallProgress: number;
+    achievements: string[];
+    nextGoals: string[];
+  };
   success: boolean;
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: ChatRequest = await request.json();
-    
+
     if (!body.message?.trim()) {
       return NextResponse.json(
         { error: 'الرسالة مطلوبة', success: false },
@@ -56,19 +77,42 @@ export async function POST(request: NextRequest) {
       );
     }
 
+    // الحصول على معلومات المستخدم
+    const session = await getServerSession(authOptions);
+    if (!session?.user?.id) {
+      return NextResponse.json(
+        { error: 'يجب تسجيل الدخول أولاً', success: false },
+        { status: 401 }
+      );
+    }
+
+    // إنشاء مديري النظام المحسن
+    const memoryManager = new EducationalMemoryManager();
+    const styleAnalyzer = new LearningStyleAnalyzer();
+    const progressTracker = new IntelligentProgressTracker();
+
+    // جلب أو إنشاء ملف الطالب
+    const studentProfile = await memoryManager.getOrCreateStudentProfile(session.user.id);
+
     // تحليل سؤال الطالب
     const questionAnalysis = questionAnalyzer.analyzeQuestion(body.message);
 
-    // إنشاء سياق التدريس
+    // تحليل أسلوب التعلم الحالي
+    const learningStyleAnalysis = await styleAnalyzer.analyzeLearningStyle(studentProfile.id);
+
+    // تحديد مستوى الطالب بناءً على الملف الشخصي
+    const studentLevel = determineStudentLevel(studentProfile, questionAnalysis.subject);
+
+    // إنشاء سياق التدريس المحسن
     const teachingContext: TeachingContext = {
-      studentLevel: body.studentLevel,
+      studentLevel: studentLevel,
       subject: questionAnalysis.subject,
       questionType: questionAnalysis.type === 'factual' ? 'factual' :
                    questionAnalysis.type === 'conceptual' ? 'conceptual' :
                    questionAnalysis.type === 'procedural' ? 'procedural' : 'analytical',
       studentConfusion: body.conversationHistory.length > 3 ? 'moderate' : 'slight',
       previousAttempts: body.context.previousAttempts || 0,
-      preferredStyle: body.context.preferredMethod as any
+      preferredStyle: determinePreferredStyle(learningStyleAnalysis)
     };
 
     // اختيار أفضل منهجية تدريس
@@ -77,13 +121,23 @@ export async function POST(request: NextRequest) {
 
     // بناء سياق المحادثة
     const conversationContext = buildConversationContext(body.conversationHistory);
-    
-    // بناء Prompt مخصص لمرجان
-    const marjanPrompt = buildMarjanPrompt({
+
+    // بناء سياق شخصي محسن
+    const personalizedContext = buildPersonalizedContext(
+      studentProfile,
+      learningStyleAnalysis,
+      questionAnalysis
+    );
+
+    // بناء Prompt مخصص لمرجان مع السياق الشخصي
+    const marjanPrompt = buildEnhancedMarjanPrompt({
       subject: questionAnalysis.subject,
-      studentLevel: body.studentLevel,
+      studentLevel: studentLevel,
       previousConversation: conversationContext,
-      currentTopic: body.initialTopic || questionAnalysis.keywords.join(', ')
+      currentTopic: body.initialTopic || questionAnalysis.keywords.join(', '),
+      personalizedContext: personalizedContext,
+      learningStyle: learningStyleAnalysis,
+      culturalContext: studentProfile.culturalContext
     });
 
     // إضافة تحليل السؤال للـ prompt
@@ -151,6 +205,38 @@ ${methodologyResponse.response}
       questionAnalysis
     );
 
+    // حفظ التفاعل في الذاكرة التعليمية
+    const startTime = Date.now();
+    await memoryManager.updateShortTermMemory(body.context.sessionId, {
+      studentId: studentProfile.id,
+      sessionId: body.context.sessionId,
+      question: body.message,
+      response: enhancedResponse,
+      methodology: methodologyResponse.method,
+      success: calculateInteractionSuccess(questionAnalysis, aiResponseText),
+      concept: questionAnalysis.keywords[0] || 'general',
+      subject: questionAnalysis.subject,
+      difficulty: questionAnalysis.estimatedDifficulty,
+      responseTime: Math.round((Date.now() - startTime) / 1000)
+    });
+
+    // تحديث الذاكرة متوسطة المدى (غير متزامن)
+    memoryManager.updateMediumTermMemory(studentProfile.id).catch(console.error);
+
+    // إنشاء رؤى شخصية
+    const personalizedInsights = await generatePersonalizedInsights(
+      studentProfile,
+      learningStyleAnalysis,
+      questionAnalysis
+    );
+
+    // إنشاء تحديث التقدم
+    const progressUpdate = await generateProgressUpdate(
+      progressTracker,
+      studentProfile.id,
+      questionAnalysis.keywords[0]
+    );
+
     const response: MarjanResponse = {
       response: enhancedResponse,
       type: responseType,
@@ -161,6 +247,8 @@ ${methodologyResponse.response}
         nextSteps: methodologyResponse.nextSteps
       },
       whiteboardFunctions,
+      personalizedInsights,
+      progressUpdate,
       success: true
     };
 
@@ -294,8 +382,202 @@ function handleMarjanError(error: any): string {
     "يبدو أن هناك مشكلة في الاتصال. لا تقلق، سنحل هذا معاً! 🔧",
     "آسف للانقطاع! أنا هنا ومستعد لمساعدتك. ما سؤالك؟ 😊"
   ];
-  
+
   return friendlyErrors[Math.floor(Math.random() * friendlyErrors.length)];
+}
+
+// ===== ENHANCED CONTEXT ENGINE FUNCTIONS =====
+
+/**
+ * تحديد مستوى الطالب بناءً على الملف الشخصي
+ */
+function determineStudentLevel(
+  studentProfile: any,
+  subject: string
+): 'beginner' | 'intermediate' | 'advanced' {
+  // البحث عن إتقان المفاهيم في هذه المادة
+  const subjectMastery = studentProfile.conceptMastery?.filter(
+    (concept: any) => concept.subject === subject
+  ) || [];
+
+  if (subjectMastery.length === 0) return 'beginner';
+
+  const avgMastery = subjectMastery.reduce(
+    (sum: number, concept: any) => sum + concept.masteryLevel, 0
+  ) / subjectMastery.length;
+
+  if (avgMastery >= 70) return 'advanced';
+  if (avgMastery >= 40) return 'intermediate';
+  return 'beginner';
+}
+
+/**
+ * تحديد الأسلوب المفضل بناءً على تحليل أسلوب التعلم
+ */
+function determinePreferredStyle(learningStyleAnalysis: any): string {
+  const styles = [
+    { name: 'visual', value: learningStyleAnalysis.visualPreference },
+    { name: 'auditory', value: learningStyleAnalysis.auditoryPreference },
+    { name: 'kinesthetic', value: learningStyleAnalysis.kinestheticPreference },
+    { name: 'reading', value: learningStyleAnalysis.readingPreference }
+  ];
+
+  const preferredStyle = styles.reduce((max, style) =>
+    style.value > max.value ? style : max
+  );
+
+  return preferredStyle.name;
+}
+
+/**
+ * بناء السياق الشخصي المحسن
+ */
+function buildPersonalizedContext(
+  studentProfile: any,
+  learningStyleAnalysis: any,
+  questionAnalysis: any
+): string {
+  const context = [];
+
+  // معلومات أسلوب التعلم
+  const dominantStyle = determinePreferredStyle(learningStyleAnalysis);
+  context.push(`أسلوب التعلم المفضل: ${dominantStyle}`);
+
+  // معلومات الاهتمامات
+  if (studentProfile.interests && studentProfile.interests.length > 0) {
+    context.push(`الاهتمامات: ${studentProfile.interests.slice(0, 3).join(', ')}`);
+  }
+
+  // معلومات نقاط القوة والضعف
+  if (studentProfile.strengths && studentProfile.strengths.length > 0) {
+    context.push(`نقاط القوة: ${studentProfile.strengths.slice(0, 2).join(', ')}`);
+  }
+
+  if (studentProfile.weaknesses && studentProfile.weaknesses.length > 0) {
+    context.push(`نقاط تحتاج تحسين: ${studentProfile.weaknesses.slice(0, 2).join(', ')}`);
+  }
+
+  // السياق الثقافي
+  context.push(`السياق الثقافي: ${studentProfile.culturalContext}`);
+
+  return context.join('\n');
+}
+
+/**
+ * بناء برومبت مرجان المحسن
+ */
+function buildEnhancedMarjanPrompt(params: {
+  subject: string;
+  studentLevel: string;
+  previousConversation: string;
+  currentTopic: string;
+  personalizedContext: string;
+  learningStyle: any;
+  culturalContext: string;
+}): string {
+  return `${buildMarjanPrompt({
+    subject: params.subject,
+    studentLevel: params.studentLevel as any,
+    previousConversation: params.previousConversation,
+    currentTopic: params.currentTopic
+  })}
+
+معلومات شخصية عن الطالب:
+${params.personalizedContext}
+
+توجيهات التخصيص:
+- استخدم أمثلة من ${params.culturalContext === 'arabic' ? 'البيئة العربية والإسلامية' : params.culturalContext}
+- اربط المفاهيم بالحياة اليومية في المنطقة العربية
+- استخدم أسلوب التعلم المفضل للطالب
+- كن مراعياً للخلفية الثقافية والدينية
+
+تذكر: أنت مرجان، المعلم الافتراضي الذكي الذي يفهم كل طالب بشكل فردي.`;
+}
+
+/**
+ * حساب نجاح التفاعل
+ */
+function calculateInteractionSuccess(questionAnalysis: any, response: string): number {
+  let success = 0.5; // قيمة أساسية
+
+  // زيادة النجاح بناءً على طول الاستجابة ومحتواها
+  if (response.length > 100) success += 0.1;
+  if (response.length > 300) success += 0.1;
+
+  // زيادة النجاح إذا كانت الاستجابة تحتوي على أمثلة
+  if (response.includes('مثال') || response.includes('مثل')) success += 0.1;
+
+  // زيادة النجاح إذا كانت الاستجابة تحتوي على أسئلة توجيهية
+  if (response.includes('؟')) success += 0.1;
+
+  // تقليل النجاح للأسئلة المعقدة
+  if (questionAnalysis.estimatedDifficulty > 7) success -= 0.1;
+
+  return Math.max(0, Math.min(1, success));
+}
+
+/**
+ * إنشاء الرؤى الشخصية
+ */
+async function generatePersonalizedInsights(
+  studentProfile: any,
+  learningStyleAnalysis: any,
+  questionAnalysis: any
+): Promise<MarjanResponse['personalizedInsights']> {
+  const dominantStyle = determinePreferredStyle(learningStyleAnalysis);
+  const preferredMethodology = learningStyleAnalysis.preferredMethodologies[0]?.methodology || 'direct_instruction';
+
+  // حساب الإتقان الحالي للمفهوم
+  const conceptMastery = studentProfile.conceptMastery?.find(
+    (c: any) => c.conceptName === questionAnalysis.keywords[0]
+  );
+  const currentMastery = conceptMastery?.masteryLevel || 0;
+
+  return {
+    learningStyle: dominantStyle,
+    preferredMethodology: preferredMethodology,
+    currentMastery: currentMastery,
+    accuracyScore: learningStyleAnalysis.confidence
+  };
+}
+
+/**
+ * إنشاء تحديث التقدم
+ */
+async function generateProgressUpdate(
+  progressTracker: IntelligentProgressTracker,
+  studentId: string,
+  concept?: string
+): Promise<MarjanResponse['progressUpdate']> {
+  try {
+    if (concept) {
+      const conceptProgress = await progressTracker.trackConceptProgress(studentId, concept);
+      const progressReport = await progressTracker.generateProgressReport(studentId);
+
+      return {
+        conceptProgress: conceptProgress.currentMastery,
+        overallProgress: progressReport.overallProgress,
+        achievements: progressReport.achievements.map(a => a.title),
+        nextGoals: conceptProgress.nextSteps.slice(0, 3)
+      };
+    }
+
+    const progressReport = await progressTracker.generateProgressReport(studentId);
+    return {
+      conceptProgress: 0,
+      overallProgress: progressReport.overallProgress,
+      achievements: progressReport.achievements.map(a => a.title),
+      nextGoals: progressReport.recommendations.slice(0, 3).map(r => r.title)
+    };
+  } catch (error) {
+    console.error('خطأ في إنشاء تحديث التقدم:', error);
+    return {
+      conceptProgress: 0,
+      overallProgress: 0,
+      achievements: [],
+      nextGoals: []
+    };
+  }
 }
 
 

@@ -109,6 +109,9 @@ model User {
   localNode         LocalNode? @relation(fields: [localNodeId], references: [id])
   subscriptions     Subscription[]
 
+  // Enhanced Marjan Context Engine Relations
+  studentProfile    StudentProfile?
+
   @@map("users")
 }
 
@@ -1213,5 +1216,241 @@ model ChallengeComment {
   challenge     PilotChallenge  @relation(fields: [challengeId], references: [id], onDelete: Cascade)
 
   @@map("challenge_comments")
+}
+
+// ===== MARJAN ENHANCED CONTEXT ENGINE MODELS =====
+// المرحلة الأولى: نظام الذاكرة التعليمية وملف الطالب الذكي
+
+// ملف الطالب الذكي المحسن
+model StudentProfile {
+  id                      String   @id @default(cuid())
+  userId                  String   @unique
+  user                    User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  // أساليب التعلم (مجموعها = 100)
+  learningStyleVisual     Int      @default(25) // 0-100
+  learningStyleAuditory   Int      @default(25) // 0-100
+  learningStyleKinesthetic Int     @default(25) // 0-100
+  learningStyleReading    Int      @default(25) // 0-100
+
+  // تفضيلات التعلم
+  preferredPace           String   @default("medium") // slow, medium, fast
+  preferredFeedback       String   @default("immediate") // immediate, delayed
+  preferredExamples       String   @default("many") // many, few
+  preferredPractice       String   @default("varied") // repetitive, varied
+
+  // السياق الثقافي والشخصي
+  culturalContext         String   @default("arabic")
+  interests               Json     @default("[]") // قائمة الاهتمامات
+  strengths               Json     @default("[]") // نقاط القوة
+  weaknesses              Json     @default("[]") // نقاط الضعف
+
+  // معلومات إضافية
+  age                     Int?
+  educationLevel          String?
+  occupation              String?
+
+  // مؤشرات الثقة في التحليل
+  learningStyleConfidence Float    @default(0.5) // 0.0-1.0
+  profileCompleteness     Float    @default(0.0) // 0.0-1.0
+
+  // تواريخ
+  createdAt               DateTime @default(now())
+  updatedAt               DateTime @updatedAt
+
+  // Relations
+  conceptMastery          ConceptMastery[]
+  educationalInteractions EducationalInteraction[]
+  learningRecommendations LearningRecommendation[]
+
+  @@map("student_profiles")
+}
+
+// تتبع إتقان المفاهيم
+model ConceptMastery {
+  id                String         @id @default(cuid())
+  studentId         String
+  student           StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  conceptName       String         // اسم المفهوم
+  subject           String         // المادة الدراسية
+  masteryLevel      Int            @default(0) // 0-100
+  attemptsCount     Int            @default(0)
+  successRate       Decimal        @default(0.00) @db.Decimal(5,2)
+
+  // تواريخ مهمة
+  firstEncountered  DateTime       @default(now())
+  lastPracticed     DateTime       @default(now())
+
+  // معلومات إضافية
+  difficultyLevel   Int?           // 1-10
+  timeToMaster      Int?           // بالدقائق
+  retentionRate     Decimal?       @default(0.00) @db.Decimal(5,2)
+
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  @@unique([studentId, conceptName, subject])
+  @@index([conceptName, subject])
+  @@index([masteryLevel])
+  @@map("concept_mastery")
+}
+
+// سجل التفاعلات التعليمية المحسن
+model EducationalInteraction {
+  id                    String         @id @default(cuid())
+  studentId             String
+  student               StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  sessionId             String         // معرف الجلسة
+  question              String         @db.Text
+  response              String         @db.Text
+
+  // معلومات المنهجية
+  methodologyUsed       String         // المنهجية المستخدمة
+  methodologyReasoning  String?        @db.Text // سبب اختيار المنهجية
+
+  // مؤشرات النجاح
+  successIndicator      Decimal        @db.Decimal(3,2) // 0.00-1.00
+  comprehensionLevel    Decimal?       @db.Decimal(3,2) // 0.00-1.00
+  engagementLevel       Int?           // 1-5
+  satisfactionRating    Int?           // 1-5
+
+  // معلومات المفهوم
+  conceptAddressed      String?
+  subject               String?
+  difficultyLevel       Int?           // 1-10
+
+  // معلومات التوقيت
+  responseTimeSeconds   Int?
+  timeOfDay             Int?           // ساعة اليوم (0-23)
+  sessionLength         Int?           // طول الجلسة بالدقائق
+
+  // معلومات السياق
+  deviceType            String?        // desktop, mobile, tablet
+  usedWhiteboard        Boolean        @default(false)
+  includedDiagrams      Boolean        @default(false)
+
+  // معلومات إضافية
+  metadata              Json?          // بيانات إضافية مرنة
+
+  createdAt             DateTime       @default(now())
+
+  @@index([studentId, createdAt])
+  @@index([sessionId])
+  @@index([conceptAddressed, subject])
+  @@index([methodologyUsed])
+  @@map("educational_interactions")
+}
+
+// نظام التوصيات التعليمية الذكية
+model LearningRecommendation {
+  id                String         @id @default(cuid())
+  studentId         String
+  student           StudentProfile @relation(fields: [studentId], references: [id], onDelete: Cascade)
+
+  recommendationType String        // next_concept, review_topic, resource, schedule_adjustment
+  title             String
+  description       String         @db.Text
+  reasoning         String         @db.Text // سبب التوصية
+
+  // معلومات المحتوى
+  conceptName       String?
+  subject           String?
+  difficultyLevel   Int?           // 1-10
+  estimatedTime     Int?           // بالدقائق
+
+  // معلومات الأولوية
+  priority          Int            @default(5) // 1-10
+  urgency           String         @default("medium") // low, medium, high
+
+  // حالة التوصية
+  status            String         @default("pending") // pending, accepted, rejected, completed
+  acceptedAt        DateTime?
+  completedAt       DateTime?
+
+  // فعالية التوصية
+  effectivenessScore Decimal?      @db.Decimal(3,2) // 0.00-1.00
+  userFeedback      String?        @db.Text
+
+  // معلومات إضافية
+  metadata          Json           @default("{}")
+
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  @@index([studentId, status])
+  @@index([recommendationType])
+  @@index([priority, urgency])
+  @@map("learning_recommendations")
+}
+
+// نظام تحليل أنماط التعلم
+model LearningPattern {
+  id                String         @id @default(cuid())
+  studentId         String
+
+  // نمط التعلم المحدد
+  patternType       String         // time_preference, methodology_preference, difficulty_progression
+  patternName       String
+  patternData       Json           // بيانات النمط المفصلة
+
+  // قوة النمط
+  confidence        Decimal        @db.Decimal(3,2) // 0.00-1.00
+  frequency         Int            @default(1) // عدد مرات ظهور النمط
+
+  // فترة التحليل
+  analysisStartDate DateTime
+  analysisEndDate   DateTime
+
+  // حالة النمط
+  isActive          Boolean        @default(true)
+  lastObserved      DateTime       @default(now())
+
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  @@index([studentId, patternType])
+  @@index([confidence])
+  @@map("learning_patterns")
+}
+
+// نظام تتبع الجلسات التعليمية
+model LearningSession {
+  id                String         @id @default(cuid())
+  studentId         String
+  sessionId         String         @unique
+
+  // معلومات الجلسة
+  startTime         DateTime       @default(now())
+  endTime           DateTime?
+  duration          Int?           // بالثواني
+
+  // إحصائيات الجلسة
+  questionsCount    Int            @default(0)
+  conceptsCovered   Json           @default("[]") // قائمة المفاهيم
+  methodologiesUsed Json           @default("[]") // قائمة المنهجيات
+
+  // تقييم الجلسة
+  overallSuccess    Decimal?       @db.Decimal(3,2) // 0.00-1.00
+  studentMood       String?        // happy, neutral, frustrated, confused
+  learningGoalsMet  Boolean?
+
+  // معلومات السياق
+  timeOfDay         Int?           // ساعة اليوم (0-23)
+  dayOfWeek         Int?           // يوم الأسبوع (1-7)
+  deviceType        String?
+
+  // ملاحظات
+  notes             String?        @db.Text
+  challenges        Json?          @default("[]") // التحديات المواجهة
+  achievements      Json?          @default("[]") // الإنجازات
+
+  createdAt         DateTime       @default(now())
+  updatedAt         DateTime       @updatedAt
+
+  @@index([studentId, startTime])
+  @@index([sessionId])
+  @@map("learning_sessions")
 }
 
