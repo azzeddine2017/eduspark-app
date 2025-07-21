@@ -4,10 +4,14 @@ import { buildMarjanPrompt, getRandomResponse } from '@/lib/marjan-prompts';
 import { questionAnalyzer } from '@/lib/question-analyzer';
 import { getSocraticQuestions, getRandomGuidingQuestion, getAnalogy } from '@/lib/socratic-questions';
 import { WHITEBOARD_FUNCTIONS } from '@/lib/whiteboard-functions';
-import { methodologySelector, TeachingContext } from '@/lib/teaching-methodologies';
+import { methodologySelector, TeachingContext, TeachingMethod } from '@/lib/teaching-methodologies';
 import { EducationalMemoryManager } from '@/lib/memory/educational-memory';
 import { LearningStyleAnalyzer } from '@/lib/student/learning-style-analyzer';
 import { IntelligentProgressTracker } from '@/lib/progress/progress-tracker';
+import { SmartExampleGenerator } from '@/lib/content/smart-example-generator';
+import { EducationalStoryGenerator } from '@/lib/content/educational-story-generator';
+import { SmartRecommendationEngine } from '@/lib/recommendations/smart-recommendation-engine';
+import { EnhancedMethodologySelector } from '@/lib/methodology/enhanced-methodology-selector';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
@@ -63,6 +67,18 @@ interface MarjanResponse {
     achievements: string[];
     nextGoals: string[];
   };
+  // Phase 2: Adaptive Content
+  adaptiveContent?: {
+    customExample?: any;
+    educationalStory?: any;
+    smartRecommendations?: any[];
+  };
+  roleSpecificContent?: {
+    userRole: string;
+    adaptedInstructions: string[];
+    roleSpecificTips: string[];
+    relevantResources: string[];
+  };
   success: boolean;
 }
 
@@ -86,13 +102,28 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // إنشاء مديري النظام المحسن
+    // إنشاء مديري النظام المحسن - المرحلة الأولى والثانية
     const memoryManager = new EducationalMemoryManager();
     const styleAnalyzer = new LearningStyleAnalyzer();
     const progressTracker = new IntelligentProgressTracker();
 
+    // المرحلة الثانية: المحتوى التكيفي
+    const exampleGenerator = new SmartExampleGenerator();
+    const storyGenerator = new EducationalStoryGenerator();
+    const recommendationEngine = new SmartRecommendationEngine();
+    const enhancedMethodologySelector = new EnhancedMethodologySelector();
+
     // جلب أو إنشاء ملف الطالب
     const studentProfile = await memoryManager.getOrCreateStudentProfile(session.user.id);
+
+    // جلب معلومات المستخدم مع الدور
+    const user = await getUserWithRole(session.user.id);
+    if (!user) {
+      return NextResponse.json(
+        { error: 'لم يتم العثور على بيانات المستخدم', success: false },
+        { status: 404 }
+      );
+    }
 
     // تحليل سؤال الطالب
     const questionAnalysis = questionAnalyzer.analyzeQuestion(body.message);
@@ -103,8 +134,8 @@ export async function POST(request: NextRequest) {
     // تحديد مستوى الطالب بناءً على الملف الشخصي
     const studentLevel = determineStudentLevel(studentProfile, questionAnalysis.subject);
 
-    // إنشاء سياق التدريس المحسن
-    const teachingContext: TeachingContext = {
+    // إنشاء سياق التدريس المحسن مع معلومات الدور
+    const enhancedTeachingContext = {
       studentLevel: studentLevel,
       subject: questionAnalysis.subject,
       questionType: questionAnalysis.type === 'factual' ? 'factual' :
@@ -112,12 +143,31 @@ export async function POST(request: NextRequest) {
                    questionAnalysis.type === 'procedural' ? 'procedural' : 'analytical',
       studentConfusion: body.conversationHistory.length > 3 ? 'moderate' : 'slight',
       previousAttempts: body.context.previousAttempts || 0,
-      preferredStyle: determinePreferredStyle(learningStyleAnalysis)
+      preferredStyle: determinePreferredStyle(learningStyleAnalysis),
+      // المرحلة الثانية: معلومات إضافية
+      userRole: user.role,
+      culturalContext: studentProfile.culturalContext,
+      timeConstraints: {
+        availableTime: body.context.sessionLength || 30,
+        timeOfDay: body.context.timeOfDay || new Date().getHours(),
+        sessionType: body.context.sessionLength && body.context.sessionLength < 15 ? 'quick' : 'standard'
+      },
+      deviceCapabilities: {
+        hasWhiteboard: body.context.whiteboardAvailable || false,
+        hasAudio: true,
+        hasVideo: true,
+        screenSize: body.context.deviceType === 'mobile' ? 'small' : 'large',
+        internetSpeed: 'fast'
+      }
     };
 
-    // اختيار أفضل منهجية تدريس
-    const selectedMethod = methodologySelector.selectBestMethod(teachingContext, body.message);
-    const methodologyResponse = methodologySelector.applyMethodology(selectedMethod, body.message, teachingContext);
+    // اختيار أفضل منهجية تدريس محسنة
+    const methodologyResponse = await enhancedMethodologySelector.selectBestMethod(
+      enhancedTeachingContext,
+      questionAnalysis.intent,
+      studentProfile,
+      [] // سيتم تطوير تاريخ الأداء لاحقاً
+    );
 
     // بناء سياق المحادثة
     const conversationContext = buildConversationContext(body.conversationHistory);
@@ -237,18 +287,40 @@ ${methodologyResponse.response}
       questionAnalysis.keywords[0]
     );
 
+    // المرحلة الثانية: توليد المحتوى التكيفي
+    const adaptiveContent = await generateAdaptiveContent(
+      exampleGenerator,
+      storyGenerator,
+      recommendationEngine,
+      questionAnalysis,
+      studentProfile,
+      user.role,
+      enhancedTeachingContext
+    );
+
+    // إنشاء المحتوى الخاص بالدور
+    const roleSpecificContent = generateRoleSpecificContent(
+      user.role,
+      questionAnalysis,
+      methodologyResponse,
+      studentProfile
+    );
+
     const response: MarjanResponse = {
       response: enhancedResponse,
       type: responseType,
-      teachingMethod: methodologyResponse.method,
+      teachingMethod: methodologyResponse.methodology,
       methodReasoning: methodologyResponse.reasoning,
       metadata: {
         ...metadata,
-        nextSteps: methodologyResponse.nextSteps
+        nextSteps: methodologyResponse.implementationSteps.map(step => step.description)
       },
       whiteboardFunctions,
       personalizedInsights,
       progressUpdate,
+      // المرحلة الثانية: المحتوى التكيفي
+      adaptiveContent,
+      roleSpecificContent,
       success: true
     };
 
@@ -414,19 +486,19 @@ function determineStudentLevel(
 /**
  * تحديد الأسلوب المفضل بناءً على تحليل أسلوب التعلم
  */
-function determinePreferredStyle(learningStyleAnalysis: any): string {
+function determinePreferredStyle(learningStyleAnalysis: any): TeachingMethod {
   const styles = [
-    { name: 'visual', value: learningStyleAnalysis.visualPreference },
-    { name: 'auditory', value: learningStyleAnalysis.auditoryPreference },
-    { name: 'kinesthetic', value: learningStyleAnalysis.kinestheticPreference },
-    { name: 'reading', value: learningStyleAnalysis.readingPreference }
+    { name: 'visual_demo', value: learningStyleAnalysis.visualPreference },
+    { name: 'narrative', value: learningStyleAnalysis.auditoryPreference },
+    { name: 'problem_based', value: learningStyleAnalysis.kinestheticPreference },
+    { name: 'direct_instruction', value: learningStyleAnalysis.readingPreference }
   ];
 
   const preferredStyle = styles.reduce((max, style) =>
     style.value > max.value ? style : max
   );
 
-  return preferredStyle.name;
+  return preferredStyle.name as TeachingMethod;
 }
 
 /**
@@ -578,6 +650,261 @@ async function generateProgressUpdate(
       nextGoals: []
     };
   }
+}
+
+// ===== PHASE 2: ADAPTIVE CONTENT FUNCTIONS =====
+
+/**
+ * جلب معلومات المستخدم مع الدور
+ */
+async function getUserWithRole(userId: string): Promise<any> {
+  const { PrismaClient } = require('@prisma/client');
+  const prisma = new PrismaClient();
+
+  try {
+    const user = await prisma.user.findUnique({
+      where: { id: userId },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        role: true,
+        isActive: true
+      }
+    });
+
+    await prisma.$disconnect();
+    return user;
+  } catch (error) {
+    console.error('خطأ في جلب بيانات المستخدم:', error);
+    await prisma.$disconnect();
+    return null;
+  }
+}
+
+/**
+ * توليد المحتوى التكيفي
+ */
+async function generateAdaptiveContent(
+  exampleGenerator: any,
+  storyGenerator: any,
+  recommendationEngine: any,
+  questionAnalysis: any,
+  studentProfile: any,
+  userRole: string,
+  context: any
+): Promise<any> {
+  try {
+    const adaptiveContent: any = {};
+
+    // توليد مثال مخصص إذا كان مناسباً
+    if (shouldGenerateExample(questionAnalysis, userRole)) {
+      const exampleRequest = {
+        concept: questionAnalysis.keywords[0] || 'general',
+        subject: questionAnalysis.subject,
+        difficulty: questionAnalysis.estimatedDifficulty || 5,
+        culturalContext: studentProfile.culturalContext,
+        learningStyle: getDominantLearningStyle(studentProfile.learningStyle),
+        userRole: userRole,
+        interests: studentProfile.interests,
+        realLifeContext: true
+      };
+
+      adaptiveContent.customExample = await exampleGenerator.generateCustomExample(exampleRequest);
+    }
+
+    // توليد قصة تعليمية للطلاب الصغار
+    if (shouldGenerateStory(questionAnalysis, userRole, studentProfile)) {
+      const storyRequest = {
+        concept: questionAnalysis.keywords[0] || 'general',
+        subject: questionAnalysis.subject,
+        targetAge: studentProfile.age || 15,
+        culturalContext: studentProfile.culturalContext,
+        userRole: userRole,
+        learningObjective: `فهم مفهوم ${questionAnalysis.keywords[0]}`,
+        storyLength: 'medium'
+      };
+
+      adaptiveContent.educationalStory = await storyGenerator.generateEducationalStory(storyRequest);
+    }
+
+    // توليد توصيات ذكية
+    if (shouldGenerateRecommendations(userRole)) {
+      const recommendationRequest = {
+        studentId: studentProfile.id,
+        userRole: userRole,
+        context: {
+          currentSession: {
+            sessionId: context.sessionId || 'current',
+            duration: context.timeConstraints?.availableTime || 30,
+            conceptsCovered: [questionAnalysis.keywords[0]],
+            currentMood: 'neutral',
+            engagementLevel: 7
+          },
+          recentPerformance: [],
+          learningGoals: [],
+          timeConstraints: context.timeConstraints
+        }
+      };
+
+      adaptiveContent.smartRecommendations = await recommendationEngine.generateSmartRecommendations(recommendationRequest);
+    }
+
+    return adaptiveContent;
+  } catch (error) {
+    console.error('خطأ في توليد المحتوى التكيفي:', error);
+    return {};
+  }
+}
+
+/**
+ * توليد المحتوى الخاص بالدور
+ */
+function generateRoleSpecificContent(
+  userRole: string,
+  questionAnalysis: any,
+  methodologyResponse: any,
+  studentProfile: any
+): any {
+  const roleContent = {
+    userRole: userRole,
+    adaptedInstructions: [],
+    roleSpecificTips: [],
+    relevantResources: []
+  };
+
+  switch (userRole) {
+    case 'STUDENT':
+      roleContent.adaptedInstructions = [
+        'اقرأ الشرح بعناية',
+        'جرب الأمثلة بنفسك',
+        'اطرح أسئلة إذا لم تفهم شيئاً'
+      ];
+      roleContent.roleSpecificTips = [
+        'خذ وقتك في الفهم',
+        'لا تتردد في طلب المساعدة',
+        'مارس ما تعلمته'
+      ];
+      roleContent.relevantResources = [
+        'تمارين إضافية',
+        'فيديوهات تعليمية',
+        'ألعاب تعليمية'
+      ];
+      break;
+
+    case 'INSTRUCTOR':
+      roleContent.adaptedInstructions = [
+        'استخدم هذا المحتوى كدليل تدريس',
+        'اضبط الصعوبة حسب مستوى الطلاب',
+        'استخدم الأمثلة المقترحة'
+      ];
+      roleContent.roleSpecificTips = [
+        'راقب فهم الطلاب',
+        'استخدم أساليب تقييم متنوعة',
+        'شجع المشاركة الفعالة'
+      ];
+      roleContent.relevantResources = [
+        'خطط دروس جاهزة',
+        'أدوات تقييم',
+        'أنشطة صفية'
+      ];
+      break;
+
+    case 'ADMIN':
+      roleContent.adaptedInstructions = [
+        'راجع فعالية المحتوى',
+        'تأكد من توافق المعايير',
+        'راقب مؤشرات الأداء'
+      ];
+      roleContent.roleSpecificTips = [
+        'ركز على النتائج القابلة للقياس',
+        'راجع التكاليف والفوائد',
+        'خطط للتوسع'
+      ];
+      roleContent.relevantResources = [
+        'تقارير الأداء',
+        'مؤشرات الجودة',
+        'خطط التطوير'
+      ];
+      break;
+
+    case 'CONTENT_CREATOR':
+      roleContent.adaptedInstructions = [
+        'استخدم هذا كمرجع للتصميم',
+        'اضبط المحتوى للجمهور المستهدف',
+        'اختبر الفعالية'
+      ];
+      roleContent.roleSpecificTips = [
+        'ركز على تجربة المستخدم',
+        'استخدم مبادئ التصميم التعليمي',
+        'اجعل المحتوى تفاعلياً'
+      ];
+      roleContent.relevantResources = [
+        'أدوات التصميم',
+        'مكتبات المحتوى',
+        'معايير الجودة'
+      ];
+      break;
+
+    case 'MENTOR':
+      roleContent.adaptedInstructions = [
+        'استخدم هذا لتوجيه الطلاب',
+        'ركز على التحفيز والدعم',
+        'راقب التقدم الشخصي'
+      ];
+      roleContent.roleSpecificTips = [
+        'كن صبوراً ومشجعاً',
+        'اربط التعلم بالأهداف الشخصية',
+        'قدم الدعم العاطفي'
+      ];
+      roleContent.relevantResources = [
+        'استراتيجيات التحفيز',
+        'أدوات متابعة التقدم',
+        'مصادر الدعم'
+      ];
+      break;
+
+    default:
+      // محتوى افتراضي للطالب
+      roleContent.adaptedInstructions = ['اتبع التعليمات المقدمة'];
+      roleContent.roleSpecificTips = ['تعلم بالسرعة التي تناسبك'];
+      roleContent.relevantResources = ['مصادر تعليمية عامة'];
+  }
+
+  return roleContent;
+}
+
+// وظائف مساعدة للمحتوى التكيفي
+function shouldGenerateExample(questionAnalysis: any, userRole: string): boolean {
+  // توليد أمثلة للمفاهيم المعقدة أو للمدرسين
+  return questionAnalysis.estimatedDifficulty > 5 ||
+         userRole === 'INSTRUCTOR' ||
+         userRole === 'CONTENT_CREATOR';
+}
+
+function shouldGenerateStory(questionAnalysis: any, userRole: string, studentProfile: any): boolean {
+  // توليد قصص للطلاب الصغار أو للمفاهيم المجردة
+  return (studentProfile.age && studentProfile.age < 16) ||
+         questionAnalysis.type === 'conceptual' ||
+         userRole === 'CONTENT_CREATOR';
+}
+
+function shouldGenerateRecommendations(userRole: string): boolean {
+  // توليد توصيات لجميع الأدوار
+  return true;
+}
+
+function getDominantLearningStyle(learningStyle: any): string {
+  if (!learningStyle) return 'visual';
+
+  const styles = [
+    { name: 'visual', value: learningStyle.visual || 0 },
+    { name: 'auditory', value: learningStyle.auditory || 0 },
+    { name: 'kinesthetic', value: learningStyle.kinesthetic || 0 },
+    { name: 'reading', value: learningStyle.reading || 0 }
+  ];
+
+  return styles.reduce((max, style) => style.value > max.value ? style : max).name;
 }
 
 
