@@ -124,9 +124,9 @@ export interface ImplementationStep {
 
 export class EnhancedMethodologySelector {
   private prisma: PrismaClient;
-  private methodologyDatabase: Map<TeachingMethod, any>;
-  private roleSpecificRules: Map<string, any>;
-  private culturalAdaptations: Map<string, any>;
+  private methodologyDatabase: Map<TeachingMethod, any> = new Map();
+  private roleSpecificRules: Map<string, any> = new Map();
+  private culturalAdaptations: Map<string, any> = new Map();
 
   constructor() {
     this.prisma = new PrismaClient();
@@ -238,7 +238,7 @@ export class EnhancedMethodologySelector {
       'visual_demo',
       'narrative',
       'worked_example',
-      'discovery'
+      'analogy_based'
     ];
 
     const scores = [];
@@ -371,7 +371,7 @@ export class EnhancedMethodologySelector {
   }
 
   private analyzeRoleRequirements(userRole: string): any {
-    const roleRequirements = {
+    const roleRequirements: { [key: string]: any } = {
       'STUDENT': {
         focus: 'learning',
         needsSimplicity: true,

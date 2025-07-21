@@ -295,7 +295,7 @@ function getRolePreferredMethodology(role) {
     'STUDENT': 'visual_demo',
     'INSTRUCTOR': 'scaffolding',
     'ADMIN': 'direct_instruction',
-    'CONTENT_CREATOR': 'discovery',
+    'CONTENT_CREATOR': 'analogy_based',
     'MENTOR': 'socratic'
   };
   return methodologies[role] || 'direct_instruction';

@@ -172,8 +172,8 @@ export interface RecommendationMetadata {
 
 export class SmartRecommendationEngine {
   private prisma: PrismaClient;
-  private recommendationAlgorithms: Map<string, any>;
-  private roleSpecificRules: Map<string, any>;
+  private recommendationAlgorithms: Map<string, any> = new Map();
+  private roleSpecificRules: Map<string, any> = new Map();
 
   constructor() {
     this.prisma = new PrismaClient();

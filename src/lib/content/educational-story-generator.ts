@@ -148,9 +148,9 @@ export interface StoryMetadata {
 
 export class EducationalStoryGenerator {
   private prisma: PrismaClient;
-  private storyTemplates: Map<string, any>;
-  private characterArchetypes: Map<string, any>;
-  private culturalSettings: Map<string, any>;
+  private storyTemplates: Map<string, any> = new Map();
+  private characterArchetypes: Map<string, any> = new Map();
+  private culturalSettings: Map<string, any> = new Map();
 
   constructor() {
     this.prisma = new PrismaClient();
@@ -311,13 +311,13 @@ export class EducationalStoryGenerator {
 
   // إنشاء شخصية المرشد
   private createMentorCharacter(request: StoryRequest, context: any): Character {
-    const mentorTypes = {
+    const mentorTypes: { [key: string]: { name: string; personality: string } } = {
       'teacher': { name: 'الأستاذ حكيم', personality: 'حكيم وصبور' },
       'grandfather': { name: 'الجد عبدالرحمن', personality: 'حنون ومليء بالحكمة' },
       'scientist': { name: 'الدكتورة نور', personality: 'فضولية ومبدعة' },
       'inventor': { name: 'المخترع سالم', personality: 'مبتكر وعملي' }
     };
-    
+
     const mentorType = this.selectMentorType(request.subject);
     const mentor = mentorTypes[mentorType] || mentorTypes['teacher'];
     

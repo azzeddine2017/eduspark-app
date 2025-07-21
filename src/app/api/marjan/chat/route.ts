@@ -137,27 +137,29 @@ export async function POST(request: NextRequest) {
     // إنشاء سياق التدريس المحسن مع معلومات الدور
     const enhancedTeachingContext = {
       studentLevel: studentLevel,
-      subject: questionAnalysis.subject,
-      questionType: questionAnalysis.type === 'factual' ? 'factual' :
-                   questionAnalysis.type === 'conceptual' ? 'conceptual' :
-                   questionAnalysis.type === 'procedural' ? 'procedural' : 'analytical',
-      studentConfusion: body.conversationHistory.length > 3 ? 'moderate' : 'slight',
+      subject: questionAnalysis.subject as string,
+      questionType: (questionAnalysis.type === 'factual' ? 'factual' :
+                    questionAnalysis.type === 'conceptual' ? 'conceptual' :
+                    questionAnalysis.type === 'procedural' ? 'procedural' : 'analytical') as 'factual' | 'conceptual' | 'procedural' | 'analytical',
+      studentConfusion: (body.conversationHistory.length > 3 ? 'moderate' : 'slight') as 'none' | 'slight' | 'moderate' | 'high',
       previousAttempts: body.context.previousAttempts || 0,
       preferredStyle: determinePreferredStyle(learningStyleAnalysis),
       // المرحلة الثانية: معلومات إضافية
-      userRole: user.role,
+      userRole: user.role as 'STUDENT' | 'ADMIN' | 'INSTRUCTOR' | 'CONTENT_CREATOR' | 'MENTOR',
       culturalContext: studentProfile.culturalContext,
       timeConstraints: {
         availableTime: body.context.sessionLength || 30,
         timeOfDay: body.context.timeOfDay || new Date().getHours(),
-        sessionType: body.context.sessionLength && body.context.sessionLength < 15 ? 'quick' : 'standard'
+        sessionType: (body.context.sessionLength && body.context.sessionLength < 15 ? 'quick' :
+                     body.context.sessionLength && body.context.sessionLength > 60 ? 'extended' :
+                     'standard') as 'quick' | 'standard' | 'extended'
       },
       deviceCapabilities: {
         hasWhiteboard: body.context.whiteboardAvailable || false,
         hasAudio: true,
         hasVideo: true,
-        screenSize: body.context.deviceType === 'mobile' ? 'small' : 'large',
-        internetSpeed: 'fast'
+        screenSize: (body.context.deviceType === 'mobile' ? 'small' : 'large') as 'small' | 'medium' | 'large',
+        internetSpeed: 'fast' as 'slow' | 'medium' | 'fast'
       }
     };
 
@@ -205,14 +207,12 @@ export async function POST(request: NextRequest) {
 
 سؤال الطالب: "${body.message}"
 
-المنهجية المختارة: ${methodologyResponse.method}
+المنهجية المختارة: ${methodologyResponse.methodology}
 السبب: ${methodologyResponse.reasoning}
 
-${methodologyResponse.response}
-
 تذكر:
-1. اتبع المنهجية المختارة: ${methodologyResponse.method}
-2. ${methodologyResponse.nextSteps ? 'الخطوات التالية: ' + methodologyResponse.nextSteps.join(', ') : ''}
+1. اتبع المنهجية المختارة: ${methodologyResponse.methodology}
+2. ${methodologyResponse.implementationSteps && methodologyResponse.implementationSteps.length > 0 ? 'الخطوات التالية: ' + methodologyResponse.implementationSteps.map(step => step.description).join(', ') : ''}
 3. استخدم أمثلة من الحياة اليومية
 4. كن مشجعاً وإيجابياً
 5. ${body.context.whiteboardAvailable ? 'استخدم السبورة للتوضيح البصري عند الحاجة عبر استدعاء الوظائف المتاحة.' : 'إذا احتاج الأمر رسماً، اذكر أنك ستوضح بصرياً'}
@@ -262,7 +262,7 @@ ${methodologyResponse.response}
       sessionId: body.context.sessionId,
       question: body.message,
       response: enhancedResponse,
-      methodology: methodologyResponse.method,
+      methodology: methodologyResponse.methodology,
       success: calculateInteractionSuccess(questionAnalysis, aiResponseText),
       concept: questionAnalysis.keywords[0] || 'general',
       subject: questionAnalysis.subject,
@@ -768,9 +768,9 @@ function generateRoleSpecificContent(
 ): any {
   const roleContent = {
     userRole: userRole,
-    adaptedInstructions: [],
-    roleSpecificTips: [],
-    relevantResources: []
+    adaptedInstructions: [] as string[],
+    roleSpecificTips: [] as string[],
+    relevantResources: [] as string[]
   };
 
   switch (userRole) {

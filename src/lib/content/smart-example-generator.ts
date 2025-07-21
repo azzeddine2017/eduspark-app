@@ -313,7 +313,7 @@ export class SmartExampleGenerator {
   }
 
   private analyzeLearningStyleRequirements(learningStyle: string): any {
-    const requirements = {
+    const requirements: { [key: string]: any } = {
       'visual': {
         needsVisuals: true,
         preferredElements: ['diagrams', 'charts', 'illustrations'],
@@ -335,12 +335,12 @@ export class SmartExampleGenerator {
         interactionStyle: 'read_and_reflect'
       }
     };
-    
+
     return requirements[learningStyle] || requirements['visual'];
   }
 
   private analyzeRoleRequirements(userRole: string): any {
-    const roleRequirements = {
+    const roleRequirements: { [key: string]: any } = {
       'STUDENT': {
         focus: 'learning',
         needsEncouragement: true,
@@ -372,7 +372,7 @@ export class SmartExampleGenerator {
         needsProgress: true
       }
     };
-    
+
     return roleRequirements[userRole] || roleRequirements['STUDENT'];
   }
 
