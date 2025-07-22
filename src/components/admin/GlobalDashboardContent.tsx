@@ -1,10 +1,12 @@
 'use client';
 
 import { useState } from 'react';
-import { 
+import Link from 'next/link';
+import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   LineChart, Line, PieChart, Pie, Cell, AreaChart, Area
 } from 'recharts';
+import { Bot, Sparkles, BookOpen, ArrowRight } from 'lucide-react';
 import StatCard from '@/components/ui/StatCard';
 import WorldMap from '@/components/admin/WorldMap';
 import ActivityFeed from '@/components/admin/ActivityFeed';
@@ -46,6 +48,44 @@ export default function GlobalDashboardContent({
 
   return (
     <div className="space-y-8">
+      {/* مولد الدورات الذكي - مرجان */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 text-white">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <div className="flex items-center gap-2">
+              <Bot className="w-8 h-8" />
+              <Sparkles className="w-6 h-6 text-yellow-300" />
+            </div>
+            <div>
+              <h3 className="text-2xl font-bold">مولد الدورات الذكي - مرجان</h3>
+              <p className="text-blue-100 mt-1">دع مرجان ينشئ دورات تعليمية شاملة ومتنوعة تلقائياً</p>
+            </div>
+          </div>
+          <Link
+            href="/admin/course-generator"
+            className="bg-white text-blue-600 px-6 py-3 rounded-lg font-bold hover:bg-blue-50 transition-colors flex items-center gap-2"
+          >
+            <BookOpen className="w-5 h-5" />
+            إنشاء دورة جديدة
+            <ArrowRight className="w-4 h-4" />
+          </Link>
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-6">
+          <div className="bg-white/10 rounded-lg p-4">
+            <div className="text-2xl font-bold">50+</div>
+            <div className="text-blue-100">دورة مولدة</div>
+          </div>
+          <div className="bg-white/10 rounded-lg p-4">
+            <div className="text-2xl font-bold">10</div>
+            <div className="text-blue-100">مواد مختلفة</div>
+          </div>
+          <div className="bg-white/10 rounded-lg p-4">
+            <div className="text-2xl font-bold">95%</div>
+            <div className="text-blue-100">معدل الرضا</div>
+          </div>
+        </div>
+      </div>
+
       {/* مؤشرات الأداء الرئيسية */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <StatCard
