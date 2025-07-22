@@ -83,85 +83,74 @@ export async function POST(request: NextRequest) {
       duration: `${Math.round(generatedCourse.duration / 60)} ساعة`
     });
 
+    // تحويل مستوى الصعوبة إلى enum
+    const courseLevel = generatedCourse.level === 'beginner' ? 'BEGINNER' :
+                       generatedCourse.level === 'intermediate' ? 'INTERMEDIATE' :
+                       'ADVANCED';
+
     // حفظ الدورة في قاعدة البيانات
     const savedCourse = await prisma.course.create({
       data: {
         title: generatedCourse.title,
         description: generatedCourse.description,
-        subject: generatedCourse.subject,
-        level: generatedCourse.level,
+        level: courseLevel as any,
         duration: generatedCourse.duration,
-        instructorId: session.user.id,
-        isPublished: false, // تحتاج مراجعة قبل النشر
-        metadata: {
-          generatedBy: 'marjan',
-          generationTime,
-          requirements,
-          courseData: generatedCourse
-        }
+        authorId: session.user.id,
+        isPublished: false // تحتاج مراجعة قبل النشر
       }
     });
 
-    // إنشاء الوحدات والدروس
+    // إنشاء الدروس (تجميع جميع الدروس من جميع الوحدات)
+    let lessonOrder = 1;
     for (const module of generatedCourse.modules) {
-      const savedModule = await prisma.courseModule.create({
+      // إنشاء درس للوحدة (كعنوان فرعي)
+      await prisma.lesson.create({
         data: {
-          title: module.title,
-          description: module.description,
-          duration: module.duration,
+          title: `📚 ${module.title}`,
+          content: {
+            type: 'module_header',
+            description: module.description,
+            objectives: module.learningObjectives,
+            moduleTitle: module.title,
+            moduleDuration: module.duration
+          },
+          order: lessonOrder++,
+          duration: 5, // 5 دقائق للمراجعة
           courseId: savedCourse.id,
-          orderIndex: generatedCourse.modules.indexOf(module),
-          learningObjectives: module.learningObjectives
+          isPublished: false
         }
       });
 
-      // إنشاء الدروس
+      // إنشاء الدروس الفعلية
       for (const lesson of module.lessons) {
         await prisma.lesson.create({
           data: {
             title: lesson.title,
-            content: lesson.content,
-            type: lesson.type,
-            duration: lesson.duration,
-            moduleId: savedModule.id,
-            orderIndex: module.lessons.indexOf(lesson),
-            metadata: {
+            content: {
+              type: lesson.type,
+              text: lesson.content,
               examples: lesson.examples,
-              activities: lesson.activities,
-              resources: lesson.resources
-            }
-          }
-        });
-      }
-
-      // إنشاء التقييم إذا كان موجوداً
-      if (module.assessment) {
-        await prisma.assessment.create({
-          data: {
-            title: module.assessment.title,
-            type: module.assessment.type,
-            moduleId: savedModule.id,
-            passingScore: module.assessment.passingScore,
-            timeLimit: module.assessment.timeLimit,
-            questions: module.assessment.questions
+              activitiesCount: lesson.activities.length,
+              resourcesCount: lesson.resources.length,
+              hasInteractiveElements: lesson.activities.length > 0
+            },
+            order: lessonOrder++,
+            duration: lesson.duration,
+            courseId: savedCourse.id,
+            isPublished: false
           }
         });
       }
     }
 
-    // تسجيل النشاط
-    await prisma.activityLog.create({
-      data: {
-        userId: session.user.id,
-        action: 'COURSE_GENERATED',
-        details: {
-          courseId: savedCourse.id,
-          title: generatedCourse.title,
-          modules: generatedCourse.modules.length,
-          lessons: generatedCourse.totalLessons,
-          generationTime
-        }
-      }
+    // تسجيل النشاط في console
+    console.log('✅ تم إنشاء دورة جديدة:', {
+      courseId: savedCourse.id,
+      title: generatedCourse.title,
+      modules: generatedCourse.modules.length,
+      lessons: generatedCourse.totalLessons,
+      generationTime,
+      userId: session.user.id
     });
 
     // إرجاع النتيجة
@@ -225,21 +214,16 @@ export async function GET(request: NextRequest) {
     });
 
     if (user?.role !== 'ADMIN') {
-      where.instructorId = session.user.id;
+      where.authorId = session.user.id;
     }
 
     const courses = await prisma.course.findMany({
       where,
       include: {
-        instructor: {
+        author: {
           select: { name: true, email: true }
         },
-        modules: {
-          include: {
-            lessons: true,
-            assessments: true
-          }
-        },
+        lessons: true,
         _count: {
           select: {
             enrollments: true
@@ -259,17 +243,13 @@ export async function GET(request: NextRequest) {
         id: course.id,
         title: course.title,
         description: course.description,
-        subject: course.subject,
         level: course.level,
         duration: course.duration,
         isPublished: course.isPublished,
-        instructor: course.instructor,
-        modules: course.modules.length,
-        lessons: course.modules.reduce((total, module) => total + module.lessons.length, 0),
-        assessments: course.modules.reduce((total, module) => total + module.assessments.length, 0),
+        author: course.author,
+        lessons: course.lessons.length,
         enrollments: course._count.enrollments,
-        createdAt: course.createdAt,
-        metadata: course.metadata
+        createdAt: course.createdAt
       })),
       pagination: {
         page,
