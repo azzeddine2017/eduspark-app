@@ -445,7 +445,7 @@ export class AdvancedTestingMonitoring {
           status: 'error',
           actualResults: {},
           metrics: this.getEmptyMetrics(),
-          failureReason: error.message,
+          failureReason: error instanceof Error ? error.message : String(error),
           errorDetails: error,
           environment: suite.environment,
           version: '1.0.0',
@@ -495,7 +495,7 @@ export class AdvancedTestingMonitoring {
       return result;
       
     } catch (error) {
-      throw new Error(`فشل في تنفيذ الاختبار: ${error.message}`);
+      throw new Error(`فشل في تنفيذ الاختبار: ${error instanceof Error ? error.message : String(error)}`);
     }
   }
 

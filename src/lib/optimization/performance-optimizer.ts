@@ -97,7 +97,7 @@ export interface AdaptiveConfiguration {
 }
 
 export class PerformanceOptimizer {
-  private currentMetrics: PerformanceMetrics;
+  private currentMetrics!: PerformanceMetrics;
   private historicalMetrics: PerformanceMetrics[] = [];
   private activeOptimizations: Map<string, OptimizationResult> = new Map();
   private optimizationStrategies: Map<string, OptimizationStrategy> = new Map();
@@ -250,7 +250,7 @@ export class PerformanceOptimizer {
       
     } catch (error) {
       result.status = 'failed';
-      result.issues.push(`خطأ في التنفيذ: ${error.message}`);
+      result.issues.push(`خطأ في التنفيذ: ${error instanceof Error ? error.message : String(error)}`);
       await this.rollbackOptimization(strategy);
     }
     

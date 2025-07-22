@@ -230,8 +230,8 @@ export class ExecutiveAnalyticsSystem {
   private dashboards: Map<string, ExecutiveDashboard> = new Map();
   private kpis: Map<string, KPI> = new Map();
   private reports: Map<string, ExecutiveReport> = new Map();
-  private financialMetrics: FinancialMetrics;
-  
+  private financialMetrics!: FinancialMetrics; // استخدام definite assignment assertion
+
   // إعدادات النظام
   private readonly UPDATE_INTERVAL = 3600000; // 1 hour
   private readonly REPORT_RETENTION_MONTHS = 12;

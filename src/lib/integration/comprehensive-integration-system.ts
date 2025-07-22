@@ -95,23 +95,23 @@ export interface SystemEvent {
 
 export class ComprehensiveIntegrationSystem {
   private components: Map<string, any> = new Map();
-  private systemHealth: SystemHealth;
+  private systemHealth!: SystemHealth;
   private configuration: SystemConfiguration;
   private events: SystemEvent[] = [];
-  private metrics: IntegrationMetrics;
+  private metrics!: IntegrationMetrics;
   
   // مكونات النظام
-  private continuousLearningEngine: ContinuousLearningEngine;
-  private patternRecognitionSystem: PatternRecognitionSystem;
-  private smartPredictionSystem: SmartPredictionSystem;
-  private performanceOptimizer: PerformanceOptimizer;
-  private advancedAnalyticsEngine: AdvancedAnalyticsEngine;
-  private feedbackProcessor: FeedbackProcessor;
-  private adaptiveContentEvolver: AdaptiveContentEvolver;
-  private smartExampleGenerator: SmartExampleGenerator;
-  private educationalStoryGenerator: EducationalStoryGenerator;
-  private smartRecommendationEngine: SmartRecommendationEngine;
-  private enhancedMethodologySelector: EnhancedMethodologySelector;
+  private continuousLearningEngine!: ContinuousLearningEngine;
+  private patternRecognitionSystem!: PatternRecognitionSystem;
+  private smartPredictionSystem!: SmartPredictionSystem;
+  private performanceOptimizer!: PerformanceOptimizer;
+  private advancedAnalyticsEngine!: AdvancedAnalyticsEngine;
+  private feedbackProcessor!: FeedbackProcessor;
+  private adaptiveContentEvolver!: AdaptiveContentEvolver;
+  private smartExampleGenerator!: SmartExampleGenerator;
+  private educationalStoryGenerator!: EducationalStoryGenerator;
+  private smartRecommendationEngine!: SmartRecommendationEngine;
+  private enhancedMethodologySelector!: EnhancedMethodologySelector;
 
   // إعدادات التكامل
   private readonly HEALTH_CHECK_INTERVAL = 60000; // 1 minute
@@ -182,7 +182,9 @@ export class ComprehensiveIntegrationSystem {
       
     } catch (error) {
       console.error('❌ خطأ في تهيئة المكونات:', error);
-      this.logEvent('error', 'system', 'فشل في تهيئة المكونات', { error: error.message });
+      this.logEvent('error', 'system', 'فشل في تهيئة المكونات', {
+        error: error instanceof Error ? error.message : String(error)
+      });
     }
   }
 
@@ -264,7 +266,7 @@ export class ComprehensiveIntegrationSystem {
           status: 'critical',
           performance: 0,
           lastCheck: new Date(),
-          issues: [error.message],
+          issues: [error instanceof Error ? error.message : String(error)],
           metrics: {}
         };
       }
@@ -345,7 +347,7 @@ export class ComprehensiveIntegrationSystem {
     } catch (error) {
       status = 'critical';
       performance = 0;
-      issues.push(`خطأ في الفحص: ${error.message}`);
+      issues.push(`خطأ في الفحص: ${error instanceof Error ? error.message : String(error)}`);
     }
     
     return {
@@ -381,7 +383,9 @@ export class ComprehensiveIntegrationSystem {
       
     } catch (error) {
       console.error('خطأ في تحديث المقاييس:', error);
-      this.logEvent('error', 'metrics', 'فشل في تحديث المقاييس', { error: error.message });
+      this.logEvent('error', 'metrics', 'فشل في تحديث المقاييس', {
+        error: error instanceof Error ? error.message : String(error)
+      });
     }
   }
 

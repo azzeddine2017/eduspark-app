@@ -185,8 +185,8 @@ export class PatternRecognitionSystem {
           outcomes: [
             {
               metric: 'next_step',
-              expectedValue: seq.sequence[seq.sequence.length - 1],
-              actualValue: seq.sequence[seq.sequence.length - 1],
+              expectedValue: seq.sequence.length,
+              actualValue: seq.sequence.length,
               variance: 1 - seq.confidence
             }
           ],

@@ -308,7 +308,7 @@ export class AdaptiveContentEvolver {
       
     } catch (error) {
       result.status = 'failed';
-      console.error(`خطأ في تنفيذ التطوير: ${error.message}`);
+      console.error(`خطأ في تنفيذ التطوير: ${error instanceof Error ? error.message : String(error)}`);
       await this.rollbackEvolution(evolution);
     }
     
@@ -445,10 +445,10 @@ export class AdaptiveContentEvolver {
 
   private async analyzeContentPerformance(request: ContentEvolutionRequest): Promise<any> {
     const analysis = {
-      insights: [],
-      gaps: [],
-      strengths: [],
-      opportunities: []
+      insights: [] as string[],
+      gaps: [] as string[],
+      strengths: [] as string[],
+      opportunities: [] as string[]
     };
     
     const performance = request.performanceData;
@@ -602,11 +602,11 @@ export class AdaptiveContentEvolver {
     };
   }
 
-  private determineEvolutionType(changes: ContentChange[]): string {
+  private determineEvolutionType(changes: ContentChange[]): 'optimization' | 'adaptation' | 'enhancement' | 'personalization' {
     const hasStructuralChanges = changes.some(c => c.changeType === 'structure');
     const hasLanguageChanges = changes.some(c => c.changeType === 'language');
     const hasInteractionChanges = changes.some(c => c.changeType === 'interaction');
-    
+
     if (hasStructuralChanges) return 'enhancement';
     if (hasLanguageChanges) return 'adaptation';
     if (hasInteractionChanges) return 'optimization';
