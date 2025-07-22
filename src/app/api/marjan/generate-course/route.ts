@@ -126,14 +126,7 @@ export async function POST(request: NextRequest) {
         await prisma.lesson.create({
           data: {
             title: lesson.title,
-            content: {
-              type: lesson.type,
-              text: lesson.content,
-              examples: lesson.examples,
-              activitiesCount: lesson.activities.length,
-              resourcesCount: lesson.resources.length,
-              hasInteractiveElements: lesson.activities.length > 0
-            },
+            content: lesson.content, // المحتوى النظيف مباشرة كنص
             order: lessonOrder++,
             duration: lesson.duration,
             courseId: savedCourse.id,

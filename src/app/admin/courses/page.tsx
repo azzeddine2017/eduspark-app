@@ -3,14 +3,12 @@ import Link from "next/link"
 import { getCurrentUser } from "@/lib/auth"
 import { prisma } from "@/lib/prisma"
 import Layout from "@/components/Layout"
+import CourseActions from "@/components/admin/CourseActions"
 import {
   BookOpen,
   Search,
   Filter,
   Plus,
-  Edit,
-  Trash2,
-  Eye,
   Users,
   Clock,
   Star,
@@ -231,28 +229,10 @@ export default async function AdminCoursesPage() {
                       </div>
                     </td>
                     <td>
-                      <div className="flex items-center space-x-2 space-x-reverse">
-                        <Link
-                          href={`/courses/${course.id}`}
-                          className="p-2 text-textSecondary hover:text-primary transition-colors"
-                          title="عرض الدورة"
-                        >
-                          <Eye className="w-4 h-4" />
-                        </Link>
-                        <Link
-                          href={`/admin/courses/${course.id}/edit`}
-                          className="p-2 text-textSecondary hover:text-warning transition-colors"
-                          title="تعديل"
-                        >
-                          <Edit className="w-4 h-4" />
-                        </Link>
-                        <button
-                          className="p-2 text-textSecondary hover:text-error transition-colors"
-                          title="حذف"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
-                      </div>
+                      <CourseActions
+                        courseId={course.id}
+                        courseTitle={course.title}
+                      />
                     </td>
                   </tr>
                 ))}

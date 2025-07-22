@@ -81,6 +81,45 @@ export default async function AdminDashboard() {
           </div>
         </div>
 
+        {/* لوحة التحكم المتقدمة */}
+        <div className="mb-8">
+          <Link href="/admin/dashboard" className="block">
+            <div className="bg-gradient-to-r from-blue-600 to-purple-600 rounded-xl p-6 text-white hover:from-blue-700 hover:to-purple-700 transition-all duration-300 transform hover:scale-105">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className="flex items-center gap-2">
+                    <span className="text-3xl">🚀</span>
+                    <span className="text-2xl">✨</span>
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold">لوحة التحكم المتقدمة</h3>
+                    <p className="text-blue-100 mt-1">تحليلات متقدمة، مولد الدورات الذكي، وإدارة شاملة</p>
+                  </div>
+                </div>
+                <div className="hidden md:flex items-center gap-2 bg-white/20 px-4 py-2 rounded-lg">
+                  <span className="text-lg">📊</span>
+                  <span className="font-bold">دخول</span>
+                  <span className="text-lg">→</span>
+                </div>
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mt-4">
+                <div className="bg-white/10 rounded-lg p-3">
+                  <div className="text-lg font-bold">🤖 مرجان الذكي</div>
+                  <div className="text-blue-100 text-sm">مولد الدورات التلقائي</div>
+                </div>
+                <div className="bg-white/10 rounded-lg p-3">
+                  <div className="text-lg font-bold">📈 تحليلات متقدمة</div>
+                  <div className="text-blue-100 text-sm">رؤى عميقة للأداء</div>
+                </div>
+                <div className="bg-white/10 rounded-lg p-3">
+                  <div className="text-lg font-bold">🌍 إدارة عالمية</div>
+                  <div className="text-blue-100 text-sm">تحكم شامل في المنصة</div>
+                </div>
+              </div>
+            </div>
+          </Link>
+        </div>
+
         {/* Statistics Cards */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
           <div className="card p-6 hover:shadow-lg transition-all duration-300">
