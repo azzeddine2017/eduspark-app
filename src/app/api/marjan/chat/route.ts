@@ -12,6 +12,13 @@ import { SmartExampleGenerator } from '@/lib/content/smart-example-generator';
 import { EducationalStoryGenerator } from '@/lib/content/educational-story-generator';
 import { SmartRecommendationEngine } from '@/lib/recommendations/smart-recommendation-engine';
 import { EnhancedMethodologySelector } from '@/lib/methodology/enhanced-methodology-selector';
+import { ContinuousLearningEngine } from '@/lib/learning/continuous-learning-engine';
+import { PatternRecognitionSystem } from '@/lib/learning/pattern-recognition';
+import { SmartPredictionSystem } from '@/lib/prediction/smart-prediction-system';
+import { PerformanceOptimizer } from '@/lib/optimization/performance-optimizer';
+import { AdvancedAnalyticsEngine } from '@/lib/analytics/advanced-analytics-engine';
+import { FeedbackProcessor } from '@/lib/learning/feedback-processor';
+import { AdaptiveContentEvolver } from '@/lib/learning/adaptive-content-evolver';
 import { getServerSession } from 'next-auth';
 import { authOptions } from '@/lib/auth';
 
@@ -79,6 +86,25 @@ interface MarjanResponse {
     roleSpecificTips: string[];
     relevantResources: string[];
   };
+
+  // المرحلة الثالثة: التعلم المستمر والذكاء التكيفي
+  continuousLearning?: {
+    learningStats: any;
+    insights: any[];
+    patterns: any[];
+    predictions: any;
+  };
+
+  systemIntelligence?: {
+    performanceHealth: number;
+    realTimeMetrics: {
+      activeUsers: number;
+      totalInteractions: number;
+      averageSatisfaction: number;
+    };
+    adaptiveRecommendations: any[];
+  };
+
   success: boolean;
 }
 
@@ -112,6 +138,15 @@ export async function POST(request: NextRequest) {
     const storyGenerator = new EducationalStoryGenerator();
     const recommendationEngine = new SmartRecommendationEngine();
     const enhancedMethodologySelector = new EnhancedMethodologySelector();
+
+    // المرحلة الثالثة: التعلم المستمر والذكاء التكيفي
+    const continuousLearningEngine = new ContinuousLearningEngine();
+    const patternRecognitionSystem = new PatternRecognitionSystem();
+    const smartPredictionSystem = new SmartPredictionSystem();
+    const performanceOptimizer = new PerformanceOptimizer();
+    const advancedAnalyticsEngine = new AdvancedAnalyticsEngine();
+    const feedbackProcessor = new FeedbackProcessor();
+    const adaptiveContentEvolver = new AdaptiveContentEvolver();
 
     // جلب أو إنشاء ملف الطالب
     const studentProfile = await memoryManager.getOrCreateStudentProfile(session.user.id);
@@ -306,6 +341,62 @@ export async function POST(request: NextRequest) {
       studentProfile
     );
 
+    // المرحلة الثالثة: التعلم المستمر والتنبؤ الذكي
+    const learningInteraction = {
+      sessionId: `session_${Date.now()}`,
+      studentId: studentProfile.id,
+      question: body.message,
+      response: '', // سيتم ملؤه لاحقاً
+      methodology: methodologyResponse.methodology,
+      userRole: user.role,
+      timestamp: new Date(),
+      responseTime: Date.now() - startTime,
+      userSatisfaction: undefined,
+      learningEffectiveness: undefined,
+      engagementLevel: undefined,
+      subject: questionAnalysis.subject,
+      difficulty: questionAnalysis.estimatedDifficulty || 5,
+      culturalContext: studentProfile.culturalContext,
+      deviceType: body.context.deviceType || 'desktop',
+      timeOfDay: new Date().getHours(),
+      wasHelpful: true, // افتراضي
+      followUpQuestions: 0,
+      conceptMastered: false,
+      timeToMastery: undefined
+    };
+
+    // تسجيل التفاعل للتعلم المستمر
+    await continuousLearningEngine.recordInteraction(learningInteraction);
+
+    // إضافة التفاعل لنظام التعرف على الأنماط
+    patternRecognitionSystem.addInteraction(learningInteraction);
+
+    // إضافة البيانات لمحرك التحليلات
+    advancedAnalyticsEngine.addInteractionData(learningInteraction);
+
+    // التنبؤ بالاحتياجات المستقبلية
+    const predictions = await generateSmartPredictions(
+      smartPredictionSystem,
+      studentProfile.id,
+      user.role,
+      questionAnalysis
+    );
+
+    // جمع إحصائيات التعلم المستمر
+    const learningStats = await continuousLearningEngine.getLearningStatistics();
+
+    // الحصول على الرؤى من التعلم المستمر
+    const learningInsights = continuousLearningEngine.getLearningInsights();
+
+    // الحصول على الأنماط المكتشفة
+    const discoveredPatterns = patternRecognitionSystem.getDiscoveredPatterns();
+
+    // الحصول على تقرير الأداء
+    const performanceReport = performanceOptimizer.getPerformanceReport();
+
+    // الحصول على المؤشرات الفورية
+    const realTimeMetrics = advancedAnalyticsEngine.getRealTimeMetrics();
+
     const response: MarjanResponse = {
       response: enhancedResponse,
       type: responseType,
@@ -321,6 +412,26 @@ export async function POST(request: NextRequest) {
       // المرحلة الثانية: المحتوى التكيفي
       adaptiveContent,
       roleSpecificContent,
+
+      // المرحلة الثالثة: التعلم المستمر والذكاء التكيفي
+      continuousLearning: {
+        learningStats,
+        insights: learningInsights.slice(0, 3), // أهم 3 رؤى
+        patterns: discoveredPatterns.slice(0, 2), // أهم نمطين
+        predictions: predictions
+      },
+
+      // معلومات الأداء والتحليلات
+      systemIntelligence: {
+        performanceHealth: performanceReport.systemHealth,
+        realTimeMetrics: {
+          activeUsers: realTimeMetrics.active_users,
+          totalInteractions: realTimeMetrics.total_interactions,
+          averageSatisfaction: realTimeMetrics.average_satisfaction
+        },
+        adaptiveRecommendations: predictions.recommendations || []
+      },
+
       success: true
     };
 
@@ -905,6 +1016,82 @@ function getDominantLearningStyle(learningStyle: any): string {
   ];
 
   return styles.reduce((max, style) => style.value > max.value ? style : max).name;
+}
+
+// ===== PHASE 3: SMART PREDICTIONS FUNCTIONS =====
+
+/**
+ * توليد التنبؤات الذكية
+ */
+async function generateSmartPredictions(
+  predictionSystem: any,
+  studentId: string,
+  userRole: string,
+  questionAnalysis: any
+): Promise<any> {
+  try {
+    const predictions: any = {
+      recommendations: [],
+      nextConcepts: [],
+      difficultyPrediction: null,
+      optimalTiming: null
+    };
+
+    // التنبؤ بصعوبة التعلم
+    if (questionAnalysis.keywords && questionAnalysis.keywords.length > 0) {
+      predictions.difficultyPrediction = await predictionSystem.predictLearningDifficulty(
+        studentId,
+        questionAnalysis.keywords[0],
+        userRole
+      );
+    }
+
+    // التنبؤ بالتوقيت الأمثل
+    predictions.optimalTiming = await predictionSystem.predictOptimalTiming(studentId);
+
+    // التنبؤ بأفضل منهجية
+    if (questionAnalysis.subject) {
+      const methodologyPrediction = await predictionSystem.predictBestMethodology(
+        studentId,
+        questionAnalysis.subject,
+        userRole
+      );
+
+      predictions.recommendations.push({
+        type: 'methodology',
+        title: 'منهجية مقترحة',
+        description: `ننصح باستخدام ${methodologyPrediction.methodology}`,
+        confidence: methodologyPrediction.confidence,
+        reasoning: methodologyPrediction.reasoning
+      });
+    }
+
+    // التنبؤ بمستوى المشاركة
+    const engagementPrediction = await predictionSystem.predictEngagementLevel(
+      studentId,
+      'explanation'
+    );
+
+    if (engagementPrediction.engagementLevel < 0.7) {
+      predictions.recommendations.push({
+        type: 'engagement',
+        title: 'تحسين المشاركة',
+        description: 'ننصح بإضافة عناصر تفاعلية لزيادة المشاركة',
+        factors: engagementPrediction.factors,
+        suggestions: engagementPrediction.recommendations
+      });
+    }
+
+    return predictions;
+  } catch (error) {
+    console.error('خطأ في توليد التنبؤات الذكية:', error);
+    return {
+      recommendations: [],
+      nextConcepts: [],
+      difficultyPrediction: null,
+      optimalTiming: null
+    };
+  }
 }
 
 
