@@ -1,0 +1,24 @@
+Format: https://gnu.org
+Title: GNU General Public License v3.0
+Project: Eduspark App
+Copyright (C) 2026 Azzeddine (https://github.com)
+
+All rights reserved.
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program. If not, see <https://gnu.org>.
+
+ADDITIONAL TERMS & PROTECTIONS:
+1. Attribution: Any distribution of this software, modified or unmodified, must prominently credit "Azzeddine" as the original creator and founder of the Eduspark project.
+2. Anti-Exploitation: No commercial entity or individual may privatize, close-source, or monetize this source code without an explicit, separate written commercial partnership agreement signed by the original copyright holder.
+3. Open Core Maintenance: Under the Holacracy ecosystem framework of Eduspark, any ecosystem, context engine, or framework built upon this code must remain permanently open, transparent, and compliant with the GPLv3 viral license terms.
